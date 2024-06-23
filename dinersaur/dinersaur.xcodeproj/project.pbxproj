@@ -15,6 +15,7 @@
 		34AAE61D2C28A8EB00F5A4A2 /* dinersaurTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AAE61C2C28A8EB00F5A4A2 /* dinersaurTests.swift */; };
 		34AAE6272C28A8EB00F5A4A2 /* dinersaurUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AAE6262C28A8EB00F5A4A2 /* dinersaurUITests.swift */; };
 		34AAE6292C28A8EB00F5A4A2 /* dinersaurUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34AAE6282C28A8EB00F5A4A2 /* dinersaurUITestsLaunchTests.swift */; };
+		AB18153B2C28B3760083C718 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB18153A2C28B3760083C718 /* HomeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		34AAE6222C28A8EB00F5A4A2 /* dinersaurUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = dinersaurUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		34AAE6262C28A8EB00F5A4A2 /* dinersaurUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dinersaurUITests.swift; sourceTree = "<group>"; };
 		34AAE6282C28A8EB00F5A4A2 /* dinersaurUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dinersaurUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		AB18153A2C28B3760083C718 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +103,7 @@
 				34AAE60D2C28A8E900F5A4A2 /* Item.swift */,
 				34AAE60F2C28A8EB00F5A4A2 /* Assets.xcassets */,
 				34AAE6112C28A8EB00F5A4A2 /* Preview Content */,
+				AB18153A2C28B3760083C718 /* HomeView.swift */,
 			);
 			path = dinersaur;
 			sourceTree = "<group>";
@@ -261,6 +264,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				34AAE60C2C28A8E900F5A4A2 /* ContentView.swift in Sources */,
+				AB18153B2C28B3760083C718 /* HomeView.swift in Sources */,
 				34AAE60E2C28A8E900F5A4A2 /* Item.swift in Sources */,
 				34AAE60A2C28A8E900F5A4A2 /* dinersaurApp.swift in Sources */,
 			);
