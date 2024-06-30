@@ -34,11 +34,9 @@ ion-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 0.25em;
-  margin-bottom: 0.25em;
   transition: all 0.25s;
   width: 100vw;
-  height: 6em;
+  height: 5.5em;
 }
 
 .title {
