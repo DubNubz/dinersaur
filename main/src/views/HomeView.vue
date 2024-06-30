@@ -2,8 +2,11 @@
   <ion-page>
     <ion-header>
       <div class="header">
-        <ion-toolbar class="title" :class="{ disabled: searchBarActive }">
-          <ion-title>Dinersaur</ion-title>
+        <ion-toolbar class="title">
+          <div class="logo">
+            <ion-img src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
+            <ion-title :class="{ disabled: searchBarActive }">Dinersaur</ion-title>
+          </div>
         </ion-toolbar>
         <ion-toolbar class="search">
           <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" @ion-focus="searchBarActive = true" @ion-blur="searchBarActive = false" class="searchbar"></ion-searchbar>
@@ -24,7 +27,7 @@
 <script setup lang="ts">
 
 import { ref, onMounted, watch } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg } from '@ionic/vue';
 
 const searchBarActive = ref(false);
 const currentSearch = ref("");
@@ -50,6 +53,23 @@ function search () {
 
 .title {
   width: fit-content;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding-right: 0.5em;
+
+  ion-img {
+    width: 5em;
+    height: 5em;
+  }
+
+  ion-title {
+    padding: 0;
+  }
 }
 
 .disabled {
