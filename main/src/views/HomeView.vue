@@ -1,18 +1,6 @@
 <template>
   <ion-page>
-    <ion-header>
-      <div class="header">
-        <ion-toolbar class="title">
-          <div class="logo">
-            <ion-img src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
-            <ion-title :class="{ disabled: searchBarActive }">Dinersaur</ion-title>
-          </div>
-        </ion-toolbar>
-        <ion-toolbar class="search">
-          <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" @ion-focus="searchBarActive = true" @ion-blur="searchBarActive = false" class="searchbar"></ion-searchbar>
-        </ion-toolbar>
-      </div>
-    </ion-header>
+    <Header />
 
     <ion-content :fullscreen="true">
       <ion-header collapse="condense">
@@ -28,60 +16,12 @@
 
 import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg } from '@ionic/vue';
-
-const searchBarActive = ref(false);
-const currentSearch = ref("");
-
-watch(() => currentSearch.value, () => search());
-
-function search () {
-
-}
+import Header from '@/components/Header.vue';
 
 </script>
 
 <style lang="scss" scoped>
 
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0.25em;
-  margin-bottom: 0.25em;
-  transition: all 0.25s;
-}
 
-.title {
-  width: fit-content;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5em;
-  padding-right: 0.5em;
-
-  ion-img {
-    width: 5em;
-    height: 5em;
-  }
-
-  ion-title {
-    padding: 0;
-  }
-}
-
-.disabled {
-  display: none;
-}
-
-.search {
-  transition: all 0.25s;
-}
-
-ion-searchbar.searchbar {
-  transition: all 0.25s;
-}
 
 </style>
