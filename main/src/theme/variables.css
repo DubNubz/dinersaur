@@ -2,7 +2,7 @@
 http://ionicframework.com/docs/theming/ */
 :root {
 	--ion-background-color: var(--ion-color-light);
-	--ion-font-family: 'Moon';
+	--ion-font-family: 'Sequel';
 
 	--ion-color-primary: #8a42f5;
 	--ion-color-primary-rgb: 138,66,245;
@@ -70,5 +70,10 @@ http://ionicframework.com/docs/theming/ */
 
 @font-face {
 	font-family: 'Moon';
-	src: url('/fonts/Moon2.0-Light.otf');
+	src: url('/fonts/Moon2.0-Bold.otf');
+}
+
+@font-face {
+	font-family: 'Sequel';
+	src: url('/fonts/Sequel-Regular.ttf');
 }
