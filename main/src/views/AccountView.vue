@@ -7,7 +7,7 @@
     </ion-header>
     <ion-content :fullscreen="true">
       <ExploreContainer name="Tab 3 page" />
-      <div>
+      <div class="top-div">
         <ion-item class="profile">
           <ion-label class="profile-label">Profile</ion-label>
 
@@ -54,21 +54,15 @@ async function changeProfile() {
     padding-bottom: 400px;
   }
   .profile {
-    margin-bottom: 100px;
-    align-items: center;
-    justify-content: center;
+    width: 100vw;
+    height: 100vh;
   }
   .changeAvatar{
-    position: absolute;
-    left: 50%;
-    top: 200px;
-    transform: translateX(-50%);
   }
   .avatar{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%);
     transform: scale(3);
+  }
+  .top-div{
+    display: flex;
   }
 </style>
