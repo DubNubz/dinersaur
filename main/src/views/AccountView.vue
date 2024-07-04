@@ -22,10 +22,9 @@
       </div>
       <div class="divThree">
         <IonLabel>Name:<br>{{ userName }}</IonLabel>
+        <StarRating :rating="4.8"/>
       </div>
-      <div class="divFour">
-        <StarRating :rating="3.8"/>
-      </div>
+      <div class="divFour"></div>
     </ion-content>
   </ion-page>
 </template>
@@ -99,7 +98,15 @@ onMounted(() => {
   .divThree{
     padding-top: 20px;
     padding-left: 10px;
-    
+    padding-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
-
+  .divFour{
+    width: 100vw;
+    height: 1px;
+    margin: 10px;
+    background-color: black;
+  }
 </style>
