@@ -11,14 +11,16 @@
         <p v-else>You have {{ arrayOfReservations.length }} upcoming reservations!</p>
       </div>
       <div class="divThree">
-        <ion-card v-for="reservation in arrayOfReservations" :key="reservation.id">
-          <ion-card-header>
-            <ion-card-title>{{ reservation.title }}</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            {{ reservation.content }}
-          </ion-card-content>
-        </ion-card>
+        <div class="subDivThree">
+          <ion-card v-for="reservation in arrayOfReservations" :key="reservation.id">
+            <ion-card-header>
+              <ion-card-title>{{ reservation.title }}</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              {{ reservation.content }}
+            </ion-card-content>
+          </ion-card>
+        </div>
       </div>
       <div class="divider"></div>
       <div class="divFour">
@@ -39,7 +41,7 @@
 <script setup lang="ts">
 
 import { ref, onMounted, watch } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle} from '@ionic/vue';
 import Header from '@/components/Header.vue';
 
 const arrayOfReservations = ref<Array<{ title: string, content: string, id: string }>>([]); // we should probably import these or make these global variables
@@ -71,7 +73,19 @@ arrayOfReservations.value.push(newCard);
 
 .divThree{
   display: flex;
+  flex-wrap: nowrap;
   align-items: flex-start;
+  overflow-x: scroll;
+  white-space: nowrap;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-bottom: 10px;
+}
+
+.subDivThree{
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: visible;
 }
 
 .divider{
@@ -84,6 +98,13 @@ arrayOfReservations.value.push(newCard);
 .divFour{
   display: flex;
   align-items: flex-start;
+}
+
+ion-card{
+  flex: 0 0 auto;
+  width: 250px; 
+  margin-bottom: 0;
+  margin-top: 0;
 }
 
 </style>

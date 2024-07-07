@@ -97,7 +97,7 @@ const userName = ref('');
 
 </script>
 
-<style>
+<style scoped lang="scss">
   .divOne{
     display: flex;
     align-items: flex-start;
