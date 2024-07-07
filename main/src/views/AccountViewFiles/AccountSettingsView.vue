@@ -3,7 +3,7 @@
     <ion-header>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-back-button></ion-back-button>
+          <ion-back-button default-href="/"></ion-back-button>
         </ion-buttons>
         <ion-title>Back Button</ion-title>
       </ion-toolbar>
@@ -18,11 +18,10 @@
 <script setup lang="ts">
 
 import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/vue';
+import AccountView from '../AccountView.vue';
 
 </script>
 
 <style lang="scss" scoped>
-
-
 
 </style>

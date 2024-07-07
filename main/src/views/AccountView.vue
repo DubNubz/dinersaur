@@ -7,7 +7,7 @@
     </ion-header>
     <ion-content :fullscreen="true">
       <div class="divOne">
-        <ion-label class="profile-label">PRoFile</ion-label>
+        <ion-label class="profile-label">Profile</ion-label>
       </div>
       <div class="divTwo">
         <div class="avatarContainer">
@@ -95,13 +95,6 @@ async function changeProfile() {
 // Name
 const userName = ref('');
 
-// Directory
-const router = useRouter();
-
-function navigateTo(page: string) {
-  router.push({ path: `/${page}` });
-}
-
 </script>
 
 <style>
@@ -168,7 +161,7 @@ function navigateTo(page: string) {
 .allergyButton {
   flex: 1 1 40%;
   margin: 5px;
-  max-width: 45%;
+  width: 45vw;
   min-width: 120px;
   display: flex;
   justify-content: center;
