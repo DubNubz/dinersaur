@@ -1,12 +1,12 @@
 <template>
-    <ion-header>
+    <ion-header :class="{ enabledHeader: searchBarActive }">
         <ion-toolbar class="title">
           <div class="logo">
             <ion-img src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
-            <ion-title :class="{ disabled: searchBarActive }">Dinersaur</ion-title>
+            <ion-title class="dinersaurText sequel" :class="{ disabled: searchBarActive }">Dinersaur</ion-title>
           </div>
         </ion-toolbar>
-        <ion-toolbar class="search">
+        <ion-toolbar class="search" :class="{ enabled: searchBarActive }">
           <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" @ion-focus="searchBarActive = true" @ion-blur="searchBarActive = false" class="searchbar"></ion-searchbar>
         </ion-toolbar>
     </ion-header>
@@ -39,6 +39,10 @@ ion-header {
   height: 5.5em;
 }
 
+ion-header.enabledHeader {
+  justify-content: space-between;
+}
+
 .title {
   width: fit-content;
 }
@@ -60,12 +64,22 @@ ion-header {
   }
 }
 
-.disabled {
-  display: none;
+ion-title.dinersaurText {
+  width: 110px;
+  transition: all 0.15s;
+}
+
+ion-title.disabled {
+  width: 0px;
 }
 
 .search {
+  width: 50%;
   transition: all 0.25s;
+}
+
+.enabled {
+  width: 75%;
 }
 
 ion-searchbar.searchbar {

@@ -6,7 +6,6 @@
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
-      <ExploreContainer name="Tab 3 page" />
       <div class="divOne">
         <ion-label class="profile-label">PRoFile</ion-label>
       </div>
@@ -29,22 +28,33 @@
         <ion-label>Preferences</ion-label>
       </div>
       <div class="divSix">
-        <ion-button class="allergyButton" @click="navigateTo('allergies')">
-          <ion-label >Allergies</ion-label>
-          <ion-icon :icon="medkit" color="secondary"></ion-icon>
-        </ion-button>
-        <ion-button class="billingButton">
-          <ion-label >Billing</ion-label>
-          <ion-icon :icon="card" color="secondary"></ion-icon>
-        </ion-button>
-        <ion-button class="languageButton">
-          <ion-label>Language</ion-label>
-          <ion-icon :icon="language" color="secondary"></ion-icon>
-        </ion-button>
-        <ion-button class="accountButton">
-          <ion-label>Account</ion-label>
-          <ion-icon :icon="key" color="secondary"></ion-icon>
-        </ion-button>
+        <ion-nav-link router-direction="forward" :component="AllergiesView">
+          <ion-button class="allergyButton">
+            <ion-label >Allergies</ion-label>
+            <ion-icon :icon="medkit" color="secondary"></ion-icon>
+          </ion-button>
+        </ion-nav-link>
+
+        <ion-nav-link router-direction="forward" :component="BillingView">
+          <ion-button class="billingButton">
+            <ion-label >Billing</ion-label>
+            <ion-icon :icon="card" color="secondary"></ion-icon>
+          </ion-button>
+        </ion-nav-link>
+        
+        <ion-nav-link router-direction="forward" :component="LanguageView">
+          <ion-button class="languageButton">
+            <ion-label>Language</ion-label>
+            <ion-icon :icon="language" color="secondary"></ion-icon>
+          </ion-button>
+        </ion-nav-link>
+
+        <ion-nav-link router-direction="forward" :component="AccountSettingsView">
+          <ion-button class="accountButton">
+            <ion-label>Account</ion-label>
+            <ion-icon :icon="key" color="secondary"></ion-icon>
+          </ion-button>
+        </ion-nav-link>
       </div>
     </ion-content>
   </ion-page>
@@ -52,17 +62,25 @@
 
 <script setup lang="ts">
 
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonAvatar } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonAvatar, IonNavLink, IonNav } from '@ionic/vue';
 import { add, medkit, language, card, key } from 'ionicons/icons';
 import { defineComponent, ref, onMounted } from 'vue';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { useRouter } from 'vue-router';
 import StarRating from '../components/StarRating.vue';
 
+import AccountSettingsView from './AccountViewFiles/AccountSettingsView.vue';
+import AllergiesView from './AccountViewFiles/AllergiesView.vue';
+import BillingView from './AccountViewFiles/BillingView.vue';
+import LanguageView from './AccountViewFiles/LanguageView.vue';
+
+onMounted(() => {
+  userName.value = localStorage.getItem('userName') ?? "";
+});
+
 // Change Profile Picture
 
-const image = ref<string | undefined>();
-image.value = "https://ionicframework.com/docs/img/demos/avatar.svg";
+const image = ref("https://ionicframework.com/docs/img/demos/avatar.svg");
 
 async function changeProfile() {
   const profilePic = await Camera.getPhoto( {
@@ -71,15 +89,11 @@ async function changeProfile() {
       resultType: CameraResultType.Uri 
     } 
   )
-  image.value = profilePic.webPath;
+  image.value = profilePic.webPath ?? "";
 }
 
 // Name
 const userName = ref('');
-
-onMounted(() => {
-  userName.value = localStorage.getItem('userName') || '';
-});
 
 // Directory
 const router = useRouter();

@@ -3,11 +3,6 @@
     <Header />
 
     <ion-content :fullscreen="true">
-      <ion-header>
-        <ion-toolbar>
-          <ion-title size="large">Tab 1</ion-title>
-        </ion-toolbar>
-      </ion-header>
     </ion-content>
   </ion-page>
 </template>

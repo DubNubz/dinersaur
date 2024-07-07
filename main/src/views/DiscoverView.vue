@@ -1,11 +1,7 @@
 <template>
   <ion-page>
     
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Photo Gallery</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <Header />
 
     <ion-content :fullscreen="true">
       <ion-grid>
@@ -31,6 +27,7 @@
 import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonImg } from '@ionic/vue';
 import { camera, trash, close } from 'ionicons/icons';
 import { usePhotoGallery, type UserPhoto } from '@/composables/usePhotoGallery';
+import Header from '@/components/Header.vue';
 
 const { photos, takePhoto } = usePhotoGallery();
 

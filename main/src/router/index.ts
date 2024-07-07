@@ -15,12 +15,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: '', redirect: '/pages/home'},
       { path: 'home', component: () => import('@/views/HomeView.vue') },
       { path: 'discover', component: () => import('@/views/DiscoverView.vue') },
-      { path: 'account', component: () => import('@/views/AccountView.vue'), children: [
-        { path: 'allergies', component: () => import('@/views/AccountViewFiles/AllergiesView.vue') },
-        { path: 'billing', component: () => import('@/views/AccountViewFiles/BillingView.vue') },
-        { path: 'language', component: () => import('@/views/AccountViewFiles/LanguageView.vue') },
-        { path: 'account', component: () => import('@/views/AccountViewFiles/AccountSettingsView.vue') }
-      ] },
+      { path: 'account/', component: () => import('@/views/InitialAccountView.vue') }
     ]
   }
 ]

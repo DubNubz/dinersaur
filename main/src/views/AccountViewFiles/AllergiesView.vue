@@ -2,29 +2,27 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-button slot="start">
-            <ion-back-button></ion-back-button>
-        </ion-button>
-        <ion-title>Allergies</ion-title>
+        <ion-buttons slot="start">
+          <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-title>Back Button</ion-title>
       </ion-toolbar>
     </ion-header>
-    <ion-content>
-      <div>
-        <ion-label>sjalkdsj;ladjslasdkj</ion-label>
-        <ion-list>
-            <ion-item>
-                <ion-label>Allergies List</ion-label>
-            </ion-item>
-        </ion-list>
-      </div>
+    <ion-content class="ion-padding">
+      <h1>Page Two</h1>
+      <p>Use the back button to navigate to the previous page.</p>
     </ion-content>
   </ion-page>
 </template>
 
 <script setup lang="ts">
-    import{ IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonList, IonBackButton } from '@ionic/vue';
+
+import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/vue';
+
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+
 
 </style>
