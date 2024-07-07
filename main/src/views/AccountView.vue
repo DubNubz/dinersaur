@@ -22,9 +22,30 @@
       </div>
       <div class="divThree">
         <IonLabel>Name:<br>{{ userName }}</IonLabel>
-        <StarRating :rating="4.8"/>
+        <StarRating :rating="3.6"/>
       </div>
       <div class="divFour"></div>
+      <div class="divFive">
+        <ion-label>Preferences</ion-label>
+      </div>
+      <div class="divSix">
+        <ion-button class="allergyButton" @click="navigateTo('allergies')">
+          <ion-label >Allergies</ion-label>
+          <ion-icon :icon="medkit" color="secondary"></ion-icon>
+        </ion-button>
+        <ion-button class="billingButton">
+          <ion-label >Billing</ion-label>
+          <ion-icon :icon="card" color="secondary"></ion-icon>
+        </ion-button>
+        <ion-button class="languageButton">
+          <ion-label>Language</ion-label>
+          <ion-icon :icon="language" color="secondary"></ion-icon>
+        </ion-button>
+        <ion-button class="accountButton">
+          <ion-label>Account</ion-label>
+          <ion-icon :icon="key" color="secondary"></ion-icon>
+        </ion-button>
+      </div>
     </ion-content>
   </ion-page>
 </template>
@@ -32,9 +53,10 @@
 <script setup lang="ts">
 
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonAvatar } from '@ionic/vue';
-import { add } from 'ionicons/icons';
+import { add, medkit, language, card, key } from 'ionicons/icons';
 import { defineComponent, ref, onMounted } from 'vue';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { useRouter } from 'vue-router';
 import StarRating from '../components/StarRating.vue';
 
 // Change Profile Picture
@@ -58,6 +80,13 @@ const userName = ref('');
 onMounted(() => {
   userName.value = localStorage.getItem('userName') || '';
 });
+
+// Directory
+const router = useRouter();
+
+function navigateTo(page: string) {
+  router.push({ path: `/${page}` });
+}
 
 </script>
 
@@ -104,9 +133,37 @@ onMounted(() => {
     justify-content: space-between;
   }
   .divFour{
-    width: 100vw;
+    width: 95vw;
     height: 1px;
     margin: 10px;
     background-color: black;
   }
+  .divFive{
+    display: flex;
+    justify-content: center;
+    padding-bottom: 10px;
+  }
+  .divSix{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+.accountButton,
+.billingButton,
+.languageButton,
+.allergyButton {
+  flex: 1 1 40%;
+  margin: 5px;
+  max-width: 45%;
+  min-width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  ion-label{
+    padding-right: 5px;
+  }
+  ion-icon{
+    padding-left: 5px;
+  }
+}
 </style>

@@ -53,7 +53,7 @@ const clipStar = computed(() => {
 .visibi {
     width: 24px;
     height: 24px;
-    background-color: rgb(255, 255, 255);
+    background-color: var(--ion-color-light);
     position: absolute;
     z-index: 1;
     visibility: hidden;
