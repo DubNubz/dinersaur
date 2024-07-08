@@ -7,7 +7,7 @@
           </div>
         </ion-toolbar>
         <ion-toolbar class="search" :class="{ enabled: searchBarActive }">
-          <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" @ion-focus="searchBarActive = true" @ion-blur="searchBarActive = false" class="searchbar"></ion-searchbar>
+          <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" show-clear-button="focus" @ion-focus="searchBarActive = true" @ion-blur="searchBarActive = false" class="searchbar"></ion-searchbar>
         </ion-toolbar>
     </ion-header>
 </template>

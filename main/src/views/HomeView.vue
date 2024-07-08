@@ -34,6 +34,10 @@
           </ion-card-content>
         </ion-card>
       </div>
+
+      <GoogleMap api-key="AIzaSyCMXfre823EDS2YC_BfExnrJWnQmTObOFI" style="width: 100%; height: 500px" :center="center" :zoom="15">
+        <Marker :options="{ position: center }" />
+      </GoogleMap>
     </ion-content>
   </ion-page>
 </template>
@@ -43,18 +47,20 @@
 import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle} from '@ionic/vue';
 import Header from '@/components/Header.vue';
+import { userStore } from '@/stores/userStore';
+import { GoogleMap, Marker } from 'vue3-google-map';
 
-const arrayOfReservations = ref<Array<{ title: string, content: string, id: string }>>([]); // we should probably import these or make these global variables
-const arrayOfPastReservations = ref<Array<{ title: string, content: string, id: string }>>([]);
+const center = ref({ lat: 40.689247, lng: -74.044502 });
+
+const arrayOfReservations = userStore().reservations;
+const arrayOfPastReservations = userStore().pastReservations;
 
 const newCard = {
   title: "number1restaurant",
   content: "at 6pm tn",
   id: "1",
 }
-arrayOfReservations.value.push(newCard);
-arrayOfReservations.value.push(newCard);
-arrayOfReservations.value.push(newCard);
+arrayOfReservations.push(newCard, newCard, newCard);
 
 </script>
 

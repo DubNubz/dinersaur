@@ -30,7 +30,8 @@
     "pinia": "^2.1.7",
     "sass": "^1.77.6",
     "vue": "^3.3.0",
-    "vue-router": "^4.2.0"
+    "vue-router": "^4.2.0",
+    "vue3-google-map": "^0.20.0"
   },
   "devDependencies": {
     "@capacitor/cli": "6.1.0",

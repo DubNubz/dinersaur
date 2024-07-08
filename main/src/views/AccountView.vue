@@ -97,64 +97,75 @@ const userName = ref('');
 
 </script>
 
-<style scoped lang="scss">
-  .divOne{
-    display: flex;
-    align-items: flex-start;
-    justify-content: left;
-  }
-  .divTwo{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    height: 30%;
-  }
-  .profile-label{
-    padding-top: 10px;
-    padding-left: 10px;
-    align-items: flex-start;
-  }
-  .avatarContainer{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .avatar {
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    z-index: 1;
-  }
-  .avatarButton{
-    position: absolute;
-    padding-top: 45%;
-    z-index: 2;
-  }
-  .divThree{
-    padding-top: 20px;
-    padding-left: 10px;
-    padding-right: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .divFour{
-    width: 95vw;
-    height: 1px;
-    margin: 10px;
-    background-color: black;
-  }
-  .divFive{
-    display: flex;
-    justify-content: center;
-    padding-bottom: 10px;
-  }
-  .divSix{
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-  }
+<style lang="scss" scoped>
+
+.divOne {
+  display: flex;
+  align-items: flex-start;
+  justify-content: left;
+}
+
+.divTwo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 30%;
+}
+
+.profile-label {
+  padding-top: 10px;
+  padding-left: 10px;
+  align-items: flex-start;
+}
+
+.avatarContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  z-index: 1;
+}
+
+.avatarButton {
+  position: absolute;
+  padding-top: 45%;
+  z-index: 2;
+}
+
+.divThree {
+  padding-top: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.divFour {
+  width: 95vw;
+  height: 1px;
+  margin: 10px;
+  background-color: black;
+}
+
+.divFive {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 10px;
+}
+
+.divSix {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
 .accountButton,
 .billingButton,
 .languageButton,
@@ -166,9 +177,11 @@ const userName = ref('');
   display: flex;
   justify-content: center;
   align-items: center;
+
   ion-label{
     padding-right: 5px;
   }
+  
   ion-icon{
     padding-left: 5px;
   }

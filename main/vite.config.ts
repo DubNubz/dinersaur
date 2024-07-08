@@ -19,5 +19,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom'
+  },
+  optimizeDeps: {
+    exclude: ['vue3-google-map']
   }
 })

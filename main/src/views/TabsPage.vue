@@ -20,6 +20,14 @@
 </template>
 
 <script setup lang="ts">
+
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
 import { homeOutline, compassOutline, personCircleOutline } from 'ionicons/icons';
+
 </script>
+
+<style lang="scss" scoped>
+
+
+
+</style>
