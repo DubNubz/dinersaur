@@ -34,10 +34,6 @@
           </ion-card-content>
         </ion-card>
       </div>
-
-      <GoogleMap api-key="AIzaSyCMXfre823EDS2YC_BfExnrJWnQmTObOFI" style="width: 100%; height: 500px" :center="center" :zoom="15">
-        <Marker :options="{ position: center }" />
-      </GoogleMap>
     </ion-content>
   </ion-page>
 </template>
@@ -48,7 +44,6 @@ import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle} from '@ionic/vue';
 import Header from '@/components/Header.vue';
 import { userStore } from '@/stores/userStore';
-import { GoogleMap, Marker } from 'vue3-google-map';
 
 const center = ref({ lat: 40.689247, lng: -74.044502 });
 

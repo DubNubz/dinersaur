@@ -14,6 +14,10 @@
         <ion-tab-button tab="tab3" href="/pages/account">
           <ion-icon aria-hidden="true" :icon="personCircleOutline" />
         </ion-tab-button>
+
+        <ion-tab-button tab="tab4" href="/pages/map">
+          <ion-icon aria-hidden="true" :icon="mapOutline" />
+        </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
   </ion-page>
@@ -22,7 +26,7 @@
 <script setup lang="ts">
 
 import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { homeOutline, compassOutline, personCircleOutline } from 'ionicons/icons';
+import { homeOutline, compassOutline, personCircleOutline, mapOutline } from 'ionicons/icons';
 
 </script>
 

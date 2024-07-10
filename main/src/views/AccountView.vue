@@ -66,7 +66,6 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel
 import { add, medkit, language, card, key } from 'ionicons/icons';
 import { defineComponent, ref, onMounted } from 'vue';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-import { useRouter } from 'vue-router';
 import StarRating from '../components/StarRating.vue';
 
 import AccountSettingsView from './AccountViewFiles/AccountSettingsView.vue';

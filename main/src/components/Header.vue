@@ -7,15 +7,15 @@
           </div>
         </ion-toolbar>
         <ion-toolbar class="search" :class="{ enabled: searchBarActive }">
-          <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" show-clear-button="focus" @ion-focus="searchBarActive = true" @ion-blur="searchBarActive = false" class="searchbar"></ion-searchbar>
+          <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" show-clear-button="focus" @ion-focus="searchBarActive = true;" @ion-blur="searchBarActive = false" class="searchbar" @ionInput="handleInput"></ion-searchbar>
         </ion-toolbar>
     </ion-header>
 </template>
 
 <script setup lang="ts">
 
-import { ref, onMounted, watch } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg } from '@ionic/vue';
+import { ref, onMounted, watch, defineEmits } from 'vue';
+import { IonHeader, IonToolbar, IonTitle, IonSearchbar, IonImg } from '@ionic/vue';
 
 const searchBarActive = ref(false);
 const currentSearch = ref("");
@@ -25,6 +25,36 @@ watch(() => currentSearch.value, () => search());
 function search () {
 
 }
+
+const searchResults = ref<any[]>([]);
+let autocompleteService: google.maps.places.AutocompleteService;
+let placesService: google.maps.places.PlacesService;
+
+const emit = defineEmits(['updateSearchResults']);
+
+async function handleInput(event: any) {
+  const query = event.target.value;
+  if (query.length > 0){
+    const results = await getAutocompleteResults(query);
+    searchResults.value = results;
+    emit('updateSearchResults', results);
+  }
+}
+
+const getAutocompleteResults = (query: string): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+        if (!autocompleteService) {
+            autocompleteService = new google.maps.places.AutocompleteService();
+        }
+        autocompleteService.getPlacePredictions({ input: query }, (predictions, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+                resolve(predictions || []);
+            } else {
+                resolve([]);
+            }
+        });
+    });
+};
 
 </script>
 
@@ -52,7 +82,7 @@ ion-header.enabledHeader {
   align-items: center;
   justify-content: center;
   gap: 0.5em;
-  padding-right: 0.5em;
+  padding-right: 1em;
 
   ion-img {
     width: 5em;
