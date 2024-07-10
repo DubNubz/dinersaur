@@ -7,16 +7,16 @@
           <ion-icon aria-hidden="true" :icon="homeOutline" />
         </ion-tab-button>
 
+        <ion-tab-button tab="tab4" href="/pages/map">
+          <ion-icon aria-hidden="true" :icon="mapOutline" />
+        </ion-tab-button>
+
         <ion-tab-button tab="tab2" href="/pages/discover">
           <ion-icon aria-hidden="true" :icon="compassOutline" />
         </ion-tab-button>
 
         <ion-tab-button tab="tab3" href="/pages/account">
           <ion-icon aria-hidden="true" :icon="personCircleOutline" />
-        </ion-tab-button>
-
-        <ion-tab-button tab="tab4" href="/pages/map">
-          <ion-icon aria-hidden="true" :icon="mapOutline" />
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>

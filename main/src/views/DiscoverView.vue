@@ -1,20 +1,13 @@
 <template>
   <ion-page>
-    
-    <Header />
+    <ion-content>
+      <video ref="video1" width="1080" height="1920" class="video" autoplay controls loop disablepictureinpicture disableremoteplayback muted>
+        <source src="/Baby Shark (360p).mp4" type="video/mp4" />
+      </video>
 
-    <ion-content :fullscreen="true">
-      <ion-grid>
-        <ion-row>
-          <ion-col size="6" :key="photo.filepath" v-for="photo in photos">
-            <ion-img :src="photo.webviewPath"></ion-img>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-
-      <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-        <ion-fab-button @click="takePhoto()">
-          <ion-icon :icon="camera"></ion-icon>
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button>
+          <ion-icon :icon="heartOutline"></ion-icon>
         </ion-fab-button>
       </ion-fab>
     </ion-content>
@@ -24,11 +17,24 @@
 
 <script setup lang="ts">
 
+import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonImg } from '@ionic/vue';
-import { camera, trash, close } from 'ionicons/icons';
-import { usePhotoGallery, type UserPhoto } from '@/composables/usePhotoGallery';
-import Header from '@/components/Header.vue';
+import { heartOutline } from 'ionicons/icons';
 
-const { photos, takePhoto } = usePhotoGallery();
+const video1 = ref<HTMLElement> ();
+
+onMounted(() => {
+  video1.value?.removeAttribute("muted")
+})
 
 </script>
+
+<style lang="scss" scoped>
+
+.video {
+  width: 100%;
+  height: 99%;
+  overflow: hidden;
+}
+
+</style>

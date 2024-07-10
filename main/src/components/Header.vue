@@ -26,35 +26,35 @@ function search () {
 
 }
 
-const searchResults = ref<any[]>([]);
-// let autocompleteService: google.maps.places.AutocompleteService;
-// let placesService: google.maps.places.PlacesService;
+/* const searchResults = ref<any[]>([]);
+let autocompleteService: google.maps.places.AutocompleteService;
+let placesService: google.maps.places.PlacesService;
 
-// const emit = defineEmits(['updateSearchResults']);
+const emit = defineEmits(['updateSearchResults']);
 
-// async function handleInput(event: any) {
-//   const query = event.target.value;
-//   if (query.length > 0){
-//     const results = await getAutocompleteResults(query);
-//     searchResults.value = results;
-//     emit('updateSearchResults', results);
-//   }
-// }
+async function handleInput(event: any) {
+  const query = event.target.value;
+  if (query.length > 0){
+    const results = await getAutocompleteResults(query);
+    searchResults.value = results;
+    emit('updateSearchResults', results);
+  }
+}
 
-// const getAutocompleteResults = (query: string): Promise<any[]> => {
-//     return new Promise((resolve, reject) => {
-//         if (!autocompleteService) {
-//             autocompleteService = new google.maps.places.AutocompleteService();
-//         }
-//         autocompleteService.getPlacePredictions({ input: query }, (predictions, status) => {
-//             if (status === google.maps.places.PlacesServiceStatus.OK) {
-//                 resolve(predictions || []);
-//             } else {
-//                 resolve([]);
-//             }
-//         });
-//     });
-// };
+const getAutocompleteResults = (query: string): Promise<any[]> => {
+    return new Promise((resolve, reject) => {
+        if (!autocompleteService) {
+            autocompleteService = new google.maps.places.AutocompleteService();
+        }
+        autocompleteService.getPlacePredictions({ input: query }, (predictions, status) => {
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+               resolve(predictions || []);
+            } else {
+                resolve([]);
+            }
+        });
+    });
+}; */
 
 </script>
 
