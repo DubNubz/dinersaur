@@ -1,0 +1,160 @@
+<script setup lang="ts">
+import { onMounted, nextTick, ref, watch } from "vue";
+import { GoogleMap } from "@capacitor/google-maps";
+
+// PROPS
+
+const props = defineProps<{
+    markerData: { coordinate: any; title: string; snippet: string }[];
+}>();
+
+// EVENTS
+const emits = defineEmits<{
+    (event: "onMarkerClicked", marker: any): void;
+}>();
+
+const mapRef = ref<HTMLElement>();
+let newMap: GoogleMap;
+
+onMounted(async () => {
+  await nextTick();
+  await createMap();
+  await createMarker();
+  await clickMarker();
+});
+
+watch(
+  () => props.markerData,
+  () => {
+    createMarker();
+    clickMarker();
+  }
+);
+
+async function createMap() {
+  if (!mapRef.value) return;
+
+  newMap = await GoogleMap.create({
+    id: "my-cool-map",
+    element: mapRef.value,
+    apiKey: import.meta.env.VITE_MAPS_API_KEY as string,
+    config: {
+      center: {
+        lat: 37.783,
+        lng: -122.408,
+      },
+      zoom: 12,
+      disableDefaultUI: true,
+      styles: [
+        {
+          featureType: "poi",
+          elementType: "all",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "transit",
+          elementType: "all",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "administrative",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "landscape",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+          featureType: "water",
+          elementType: "labels",
+          stylers: [{ visibility: "off" }],
+        },
+        {
+            elementType: "geometry",
+            stylers: [{ color: "#eaeaf2" }], // light purple
+        },
+        {
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#523735" }], // dark brown
+        },
+        {
+            elementType: "labels.text.stroke",
+            stylers: [{ color: "#f5f1e6" }], // off-white
+        },
+        {
+            featureType: "road",
+            elementType: "geometry",
+            stylers: [{ color: "#f5f1e6" }], // light off-white
+        },
+        {
+            featureType: "road.arterial",
+            elementType: "geometry",
+            stylers: [{ color: "#e0d4d3" }], // light purple
+        },
+        {
+            featureType: "road.highway",
+            elementType: "geometry",
+            stylers: [{ color: "#f8c967" }], // yellow
+        },
+        {
+            featureType: "road.highway",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#e9bc62" }], // darker yellow
+        },
+        {
+            featureType: "road.highway.controlled_access",
+            elementType: "geometry",
+            stylers: [{ color: "#e98d58" }], // orange-yellow
+        },
+        {
+            featureType: "road.highway.controlled_access",
+            elementType: "geometry.stroke",
+            stylers: [{ color: "#db8555" }], // darker orange-yellow
+        },
+        {
+            featureType: "road.local",
+            elementType: "labels.text.fill",
+            stylers: [{ color: "#806b63" }], // brown
+        },
+        {
+            featureType: "water",
+            elementType: "geometry.fill",
+            stylers: [{ color: "#a1c4fd" }], // light blue
+        },    
+      ],
+    },
+  });
+}
+
+async function createMarker() {
+  await newMap.addMarkers(
+    props.markerData.map(({ coordinate, title, snippet }) => ({
+      coordinate,
+      title,
+      snippet,
+    }))
+  );
+}
+
+async function clickMarker() {
+    newMap.setOnMarkerClickListener((event) => {
+        emits("onMarkerClicked", event);
+    });
+}
+</script>
+
+<template>
+  <div>
+    <capacitor-google-map ref="mapRef" class="googleMap"></capacitor-google-map>
+  </div>
+</template>
+
+<style lang="scss">
+    .googleMap{
+        display: inline-block; 
+        width: 100vw; 
+        height: 100vh
+    }
+</style>

@@ -1,76 +1,76 @@
 <template>
     <ion-page>
-        <Header @updateSearchResults="updateSearchResults" />
+    <ion-header :translucent="true">
+      <ion-toolbar>
+        <ion-title>Discover</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <my-map
+        :markerData="markerData"
+        @onMarkerClicked="openModel">
+      </my-map>
+
+      <ion-modal
+        :is-open="markerIsOpen"
+        @didDismiss="closeModal"
+        :initial-breakpoint="0.25"
+        :breakpoints="[0, 0.25, 0.5, 0.75]"
+      >
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>{{ selectedMarker?.title }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button @click="closeModal">Close</ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
         <ion-content>
-            <GoogleMap api-key="AIzaSyCMXfre823EDS2YC_BfExnrJWnQmTObOFI" :options='mapOptions' :center="center" :zoom="15" class="googleMap" >
-                <Marker :options="{ position: center }" />
-            </GoogleMap>
+          <p>{{ selectedMarker?.snippet }}</p>
         </ion-content>
-    </ion-page>
+      </ion-modal>
+
+    </ion-content>
+  </ion-page>
 </template>
 
 <script setup lang="ts">
-import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonImg } from '@ionic/vue';
-import { defineComponent, ref, onMounted } from 'vue';
-import Header from '@/components/Header.vue';
-import { GoogleMap, Marker } from 'vue3-google-map';
 
-type LocationData = {
-    lat: number, 
-    lng: number
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButtons, IonButton} from "@ionic/vue";
+
+import { ref } from "vue";
+import MyMap from "./MyMap.vue";
+
+const selectedMarker = ref<Marker | null>(null);
+const markerIsOpen = ref<boolean>(false);
+
+type Marker = {
+  coordinate: any,
+  title: string,
+  snippet: string, 
 }
 
-const mapOptions = ref({
-    disableDefaultUI: true, 
-    zoomControl: false,
-    mapTypeControl: false,
-    scaleControl: false,
-    streetViewControl: false,
-    rotateControl: false,
-    fullscreenControl: false
-});
+const markerData = ref<Marker[]>([
+    {
+    coordinate: { lat: 37.769, lng: -122.446 },
+    title: "title one",
+    snippet: "title one snippet content will be presented here",
+  },
+]);
 
-const center = ref<LocationData> ({ lat: 40.689247, lng: -74.044502 });
-
-onMounted(() => {
-    getCurrentLocation();
-});
-
-function getCurrentLocation () {
-    if (navigator.geolocation){
-        navigator.geolocation.getCurrentPosition((position) => {
-            center.value = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-        });
-    }
+function openModel(marker: Marker) {
+  selectedMarker.value = marker;
+  markerIsOpen.value = true;
 }
 
-function updateSearchResults (results: any[]) {
-    if (results.length > 0) {
-        getPlaceDetails(results[0].place_id);
-    }
+function closeModal(){
+  selectedMarker.value = null;
+  markerIsOpen.value = false;
 }
 
-function getPlaceDetails(placeID: string) {
-    // if (!placesService) {
-    //     placesService = new google.maps.places.PlacesService(document.createElement('div'));
-    // }
-    // placesService.getDetails({ placeId }, (place, status) => {
-    //     if (status === google.maps.places.PlacesServiceStatus.OK) {
-    //         center.value = {
-    //             lat: place.geometry.location.lat(),
-    //             lng: place.geometry.location.lng()
-    //         };
-    //     }
-    // });
-}
 </script>
 
 <style scoped>
-    .googleMap{
-        width: 100vw; 
-        height: 100vh;
-    }
+
 </style>

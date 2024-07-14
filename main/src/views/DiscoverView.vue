@@ -1,7 +1,7 @@
 <template>
   <ion-page>
     <ion-content>
-      <video ref="video1" width="1080" height="1920" class="video" autoplay controls loop disablepictureinpicture disableremoteplayback muted>
+      <video ref="video1" width="1080" height="1920" class="video" autoplay controls loop disablepictureinpicture disableremoteplayback>
         <source src="/Baby Shark (360p).mp4" type="video/mp4" />
       </video>
 
