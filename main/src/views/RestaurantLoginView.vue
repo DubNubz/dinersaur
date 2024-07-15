@@ -13,8 +13,10 @@
                                 <img src="/icons/apple.svg" alt="Sign in with Apple">
                             </ion-button>
                         </div>
-                        <input label="Email" placeholder="Email" v-model="email" required>
+                        <input label="Email" placeholder="Business Email" v-model="email" required>
                         <input label="Password" placeholder="Password" v-model="password" type="password" required>
+                        <input label="Phone Number" placeholder="Business Phone Number" v-model="phoneNumber" required>
+                        <input label="Address" placeholder="Business Address" v-model="address" required>
                         <p class="errorMessage" v-if="showError">{{ errorMessage }}</p>
                         <div class="signUpDiv">
                             <ion-button class="signup" @click="signUp">Sign Up</ion-button>
@@ -39,6 +41,8 @@ import router from '@/router';
 
 const email = ref("");
 const password = ref("");
+const phoneNumber = ref("");
+const address = ref("");
 
 const access = ref(false);
 watch(() => access.value, () => router.push("/pages/home"));

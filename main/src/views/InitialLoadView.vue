@@ -24,7 +24,7 @@ const loadingBarPercentage = ref(0);
 watch(() => loadingBarPercentage.value, async () => {
     if (loadingBarPercentage.value >= 100) {
         await delay(500);
-        router.push("/pages/home");
+        router.push("/chooseAccount");
     }
 });
 

@@ -3,6 +3,8 @@ import { RouteRecordRaw } from 'vue-router';
 
 const routes: Array<RouteRecordRaw> = [
   { path: '/', component: () => import("@/views/InitialLoadView.vue")}, 
+  { path: '/chooseAccount', component: () => import("@/views/ChooseTypeOfAccount.vue")},
+  { path: '/restaurantLogin', component: () => import("@/views/RestaurantLoginView.vue") },
   { path: '/login', component: () => import("@/views/LoginView.vue")}, {
     path: '/pages/',
     component: () => import('@/views/TabsPage.vue'),
