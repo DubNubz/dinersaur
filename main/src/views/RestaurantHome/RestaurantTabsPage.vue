@@ -1,0 +1,37 @@
+<template>
+  <ion-page>
+    <ion-tabs>
+      <ion-router-outlet></ion-router-outlet>
+      <ion-tab-bar slot="bottom">
+        <ion-tab-button tab="tab1" href="/restaurantPages/restaurantHome">
+          <ion-icon aria-hidden="true" :icon="homeOutline" />
+        </ion-tab-button>
+
+        <ion-tab-button tab="tab4" href="/restaurantPages/restaurantMap">
+          <ion-icon aria-hidden="true" :icon="mapOutline" />
+        </ion-tab-button>
+
+        <ion-tab-button tab="tab2" href="/restaurantPages/restaurantDiscover">
+          <ion-icon aria-hidden="true" :icon="compassOutline" />
+        </ion-tab-button>
+
+        <ion-tab-button tab="tab3" href="/restaurantPages/restaurantAccount">
+          <ion-icon aria-hidden="true" :icon="personCircleOutline" />
+        </ion-tab-button>
+      </ion-tab-bar>
+    </ion-tabs>
+  </ion-page>
+</template>
+
+<script setup lang="ts">
+
+import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
+import { homeOutline, compassOutline, personCircleOutline, mapOutline } from 'ionicons/icons';
+
+</script>
+
+<style lang="scss" scoped>
+
+
+
+</style>
