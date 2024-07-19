@@ -114,6 +114,7 @@ async function signinWIthGoogle () {
         const user = result.user;
         userStore().userData = user;
         access.value = true;
+        
     } catch (error: any) {
         console.log(error.message)
         getErrorMessage(error.message);

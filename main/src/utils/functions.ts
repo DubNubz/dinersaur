@@ -39,4 +39,14 @@ export function compareObjectsSingle(obj1: Record<any, any> | undefined, obj2: R
   
     return true;
 }
+
+export function concatBigNumber (num: number) {
+  const numString = String(Math.abs(num));
+
+  if (numString.length < 4) return num.toLocaleString();
+  else if (numString.length < 7) return (num/1000).toFixed(1) + "K";
+  else if (numString.length < 10) return (num/1000000).toFixed(1) + "M";
+  else if (numString.length < 13) return (num/1000000000).toFixed(1) + "B";
+  else return (num/1000000000000).toFixed(1) + "T";
+}
   
