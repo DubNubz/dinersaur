@@ -21,7 +21,7 @@
       </div>
       <div class="divThree">
         <IonLabel>Name:<br>{{ userName }}</IonLabel>
-        <StarRating :rating="3.6"/>
+        <StarRating :rating="userStore().rating"/>
       </div>
       <div class="divFour"></div>
       <div class="divFive">
@@ -67,6 +67,7 @@ import { add, medkit, language, card, key } from 'ionicons/icons';
 import { defineComponent, ref, onMounted } from 'vue';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import StarRating from '../components/StarRating.vue';
+import { userStore } from '@/stores/userStore';
 
 import AccountSettingsView from './AccountViewFiles/AccountSettingsView.vue';
 import AllergiesView from './AccountViewFiles/AllergiesView.vue';

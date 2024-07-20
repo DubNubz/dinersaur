@@ -50,13 +50,6 @@ const center = ref({ lat: 40.689247, lng: -74.044502 });
 const arrayOfReservations = userStore().reservations;
 const arrayOfPastReservations = userStore().pastReservations;
 
-const newCard = {
-  title: "number1restaurant",
-  content: "at 6pm tn",
-  id: "1",
-}
-arrayOfReservations.push(newCard, newCard, newCard);
-
 </script>
 
 <style lang="scss" scoped>
