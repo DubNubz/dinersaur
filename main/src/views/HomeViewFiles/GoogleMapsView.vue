@@ -71,6 +71,10 @@ function closeModal(){
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+
+ion-content {
+  overflow: hidden;
+}
 
 </style>

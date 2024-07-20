@@ -36,6 +36,8 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, Ion
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider  } from "firebase/auth";
 import { userStore } from '@/stores/userStore';
 import router from '@/router';
+import { setDoc, doc } from "firebase/firestore"; 
+import { db } from '@/utils/firebase';
 
 const email = ref("");
 const password = ref("");
@@ -81,6 +83,27 @@ async function signUp () {
         const user = userCredential.user;
         userStore().userData = user;
         access.value = true;
+
+        await setDoc(doc(db, "users", user.uid), {
+            name: "",
+            allergies: [],
+            language: "English",
+            rating: 5,
+            currentReservations: [],
+            pastReservations: [],
+            billing: {
+                cardNumber: 0,
+                name: "",
+                expiration: new Date(),
+                address: ""
+            },
+            smProfile: {
+                followers: [],
+                following: [],
+                bookmarkedVideos: [],
+                posts: []
+            }
+        });
 
     } catch (error: any) {
         getErrorMessage(error.message);

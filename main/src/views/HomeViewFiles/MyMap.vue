@@ -1,3 +1,9 @@
+<template>
+  <div>
+    <capacitor-google-map ref="mapRef" class="googleMap"></capacitor-google-map>
+  </div>
+</template>
+
 <script setup lang="ts">
 import { onMounted, nextTick, ref, watch } from "vue";
 import { GoogleMap } from "@capacitor/google-maps";
@@ -145,16 +151,13 @@ async function clickMarker() {
 }
 </script>
 
-<template>
-  <div>
-    <capacitor-google-map ref="mapRef" class="googleMap"></capacitor-google-map>
-  </div>
-</template>
-
 <style lang="scss">
-    .googleMap{
-        display: inline-block; 
-        width: 100vw; 
-        height: 100vh
-    }
+
+.googleMap{
+    display: inline-block; 
+    width: 100vw; 
+    height: 100vh;
+    overflow: hidden;
+}
+
 </style>

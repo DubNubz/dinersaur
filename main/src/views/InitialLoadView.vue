@@ -18,6 +18,9 @@ import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonImg } from '@ionic/vue';
 import { delay } from '@/utils/functions';
 import router from '@/router';
+import { doc, getDoc } from 'firebase/firestore';
+import { userStore } from '@/stores/userStore';
+import { db } from '@/utils/firebase';
 
 const loadingBarPercentage = ref(0);
 
@@ -29,6 +32,31 @@ watch(() => loadingBarPercentage.value, async () => {
 });
 
 onMounted(async () => {
+    const store = userStore();
+    const user = store.userData;
+
+    if (user) {
+        try {
+            const docData = await getDoc(doc(db, "users", user.uid));
+            const userData = docData.data();
+            if (!userData) return;
+
+            store.currentAllergies = userData.allergies;
+            store.billing = userData.billing;
+            store.reservations = userData.currentReservations;
+            store.language = userData.language;
+            store.name = userData.name;
+            store.pastReservations = userData.pastReservations;
+            store.rating = userData.rating;
+            store.smProfile = userData.smProfile;
+            console.log(store)
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+
     /* load data from firebase into userStore.ts */
 
     // can be deleted

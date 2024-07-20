@@ -29,13 +29,43 @@ export interface VideoComment extends VideoCommentReply {
     replies: VideoCommentReply[];
 }
 
+export type BillingInfo = {
+    address: string;
+    cardNumber: number;
+    expiration: Date;
+    name: string; 
+}
+
+export type smProfile = {
+    bookmarkedVideos: Video[];
+    followers: string[];
+    following: string[];
+    posts: Video[];
+}
 
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ();
-    const reservations = ref<Reservation[]> ([]);
-    const pastReservations = ref<Reservation[]> ([]);
+    
     const currentAllergies = ref<string[]> ([]);
+    const billing = ref<BillingInfo> ({
+        address: "",
+        cardNumber: 0,
+        expiration: new Date(),
+        name: ""
+    });
+    const reservations = ref<Reservation[]> ([]);
+    const language = ref("English");
+    const name = ref("");
+    const pastReservations = ref<Reservation[]> ([]);
+    const rating = ref(5);
+    const smProfile = ref<smProfile> ({
+        bookmarkedVideos: [],
+        followers: [],
+        following: [],
+        posts: []
+    });
+
     const currentVideo = ref<Video> ();
 
-    return { userData, reservations, pastReservations, currentAllergies, currentVideo };
+    return { userData, reservations, pastReservations, currentAllergies, currentVideo, billing, language, name, rating, smProfile };
 });
