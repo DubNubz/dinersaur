@@ -15,7 +15,7 @@
 <script setup lang="ts">
 
 import { ref, onMounted, watch } from 'vue';
-import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonImg } from '@ionic/vue';
+import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonImg, onIonViewDidEnter } from '@ionic/vue';
 import { delay } from '@/utils/functions';
 import router from '@/router';
 import { doc, getDoc } from 'firebase/firestore';
@@ -31,9 +31,10 @@ watch(() => loadingBarPercentage.value, async () => {
     }
 });
 
-onMounted(async () => {
+onIonViewDidEnter(async () => {
     const store = userStore();
     const user = store.userData;
+    console.log(user)
 
     if (user) {
         try {

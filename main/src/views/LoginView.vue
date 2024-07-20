@@ -36,7 +36,7 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, Ion
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider  } from "firebase/auth";
 import { userStore } from '@/stores/userStore';
 import router from '@/router';
-import { setDoc, doc } from "firebase/firestore"; 
+import { setDoc, doc, getDoc } from "firebase/firestore"; 
 import { db } from '@/utils/firebase';
 
 const email = ref("");
@@ -120,6 +120,21 @@ async function login () {
         userStore().userData = user;
         access.value = true;
 
+        const store = userStore();
+        const docData = await getDoc(doc(db, "users", user.uid));
+        const userData = docData.data();
+        if (!userData) return;
+
+        store.currentAllergies = userData.allergies;
+        store.billing = userData.billing;
+        store.reservations = userData.currentReservations;
+        store.language = userData.language;
+        store.name = userData.name;
+        store.pastReservations = userData.pastReservations;
+        store.rating = userData.rating;
+        store.smProfile = userData.smProfile;
+        console.log(store)
+        
     } catch (error: any) {
         console.log(error.message)
         getErrorMessage(error.message);
