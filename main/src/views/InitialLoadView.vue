@@ -32,31 +32,6 @@ watch(() => loadingBarPercentage.value, async () => {
 });
 
 onIonViewDidEnter(async () => {
-    const store = userStore();
-    const user = store.userData;
-    console.log(user)
-
-    if (user) {
-        try {
-            const docData = await getDoc(doc(db, "users", user.uid));
-            const userData = docData.data();
-            if (!userData) return;
-
-            store.currentAllergies = userData.allergies;
-            store.billing = userData.billing;
-            store.reservations = userData.currentReservations;
-            store.language = userData.language;
-            store.name = userData.name;
-            store.pastReservations = userData.pastReservations;
-            store.rating = userData.rating;
-            store.smProfile = userData.smProfile;
-            console.log(store)
-
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
 
     /* load data from firebase into userStore.ts */
 

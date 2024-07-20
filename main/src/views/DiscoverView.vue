@@ -9,6 +9,9 @@
       <video ref="videoRef" width="1080" height="1920" class="video" autoplay loop disablepictureinpicture disableremoteplayback>
         <source :src="currentVideo.url" type="video/mp4" />
       </video>
+
+      <input ref="fileInput" type="file"></input>
+      <button @click="createVideo">uploa</button>
       
       <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 2.5em;">
         <ion-fab-button @click="activateBookmark">
@@ -132,16 +135,22 @@
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle, IonContent, onIonViewDidLeave, onIonViewDidEnter, IonButton,
   IonButtons, IonModal, IonToast, IonList, IonItem, IonLabel, IonInfiniteScroll, IonInfiniteScrollContent, 
-  InfiniteScrollCustomEvent, IonAvatar } from '@ionic/vue';
+  InfiniteScrollCustomEvent, IonAvatar, IonInput } from '@ionic/vue';
 import { heart, chatboxEllipses, bookmarks, heartOutline, bookmarksOutline, thumbsUpOutline, thumbsDownOutline, thumbsUp, thumbsDown } from 'ionicons/icons';
 import { userStore, VideoCommentReply, type VideoComment } from '@/stores/userStore';
-import { compareObjectsSingle, concatBigNumber, delay } from '@/utils/functions';
+import { compareObjectsSingle, concatBigNumber, delay, getRandomIntInclusive, getRandomItemFromArray } from '@/utils/functions';
+import { collection, doc, getDocs, limit, orderBy, query, setDoc, startAfter } from 'firebase/firestore';
+import { db } from '@/utils/firebase';
+import { getStorage, ref as firebaseRef, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-const currentVideo = userStore().currentVideo ?? {
+const currentVideo = ref({
   author: "author",
-  avatar: "https://cdn.pixabay.com/photo/2024/05/26/10/15/bird-8788491_1280.jpg",
-  url: "/Baby Shark (360p).mp4",
+  url: 
+  "https://firebasestorage.googleapis.com/v0/b/dinersaur-8bd21.appspot.com/o/videos%2FFFF2SXdVZ6?alt=media&token=a3d5d0ba-1f1a-4294-905f-f5c828b0f031",
   likes: 123456,
+  views: 15305,
+  id: "10505",
+  created: new Date(),
   comments: [{
     author: "urmom",
     avatar: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
@@ -162,7 +171,7 @@ const currentVideo = userStore().currentVideo ?? {
       dislikes: 4420
     }]
   }]
-};
+});
 const videoRef = ref<HTMLVideoElement> ();
 const page = ref();
 const commentsModal = ref();
@@ -183,17 +192,73 @@ const toastIcon = ref<string> ();
 const commentLoader = getComments();
 const replyLoader = getReplies();
 
+const fileInput = ref ();
+
 // when next video is played or if page/app is left:
 //   if liked = true, send to firebase
 
 onIonViewDidEnter(() => {
   videoRef.value?.play();
-  commentLoader.next();
+  getVideo();
+  // commentLoader.next();
 })
 
 onIonViewDidLeave(() => {
   videoRef.value?.pause();
 });
+
+async function getVideo () {
+  const allVideos = await getDocs(collection(db, "videos"));
+  const numberOfVideos = allVideos.size;
+
+  const randomIndex = getRandomIntInclusive(0, numberOfVideos - 1);
+
+  const randomDocQuery = query(collection(db, "videos"), orderBy("__name__"), limit(1), startAfter(allVideos.docs[randomIndex].id));
+  const randomDocSnapshot = await getDocs(randomDocQuery);
+
+  currentVideo.value = randomDocSnapshot.docs[0];
+  console.log(currentVideo.value)
+}
+
+async function createVideo () {
+  
+  const base64Characters = [
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
+    'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
+    '4', '5', '6', '7', '8', '9', '-', '_'];
+    
+    let videoID = "";
+    for (let i = 0; i < 10; i++) {
+      videoID += getRandomItemFromArray(base64Characters);
+    }
+    
+    const storage = getStorage();
+    const file = fileInput.value.files[0];
+    const video = firebaseRef(storage, "videos/" + videoID);
+
+  try {
+    const user = userStore().userData;
+    if (!user) throw Error;
+
+    const uploadTask = uploadBytesResumable(video, file);
+    uploadTask.on('state_changed', () => {}, () => {}, async () => {
+      const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+      console.log(downloadURL)
+    
+      await setDoc(doc(db, "videos", videoID), {
+        id: videoID,
+        author: user.uid,
+        views: 0,
+        likes: 0,
+        comments: [],
+        url: downloadURL,
+        created: new Date()
+      });
+    })
+  } catch (error) {
+
+  }
+}
 
 function* getComments () {
   let i = 0;

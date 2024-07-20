@@ -43,12 +43,15 @@
 import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle} from '@ionic/vue';
 import Header from '@/components/Header.vue';
-import { userStore } from '@/stores/userStore';
+import { Reservation, userStore } from '@/stores/userStore';
 
 const center = ref({ lat: 40.689247, lng: -74.044502 });
 
-const arrayOfReservations = userStore().reservations;
-const arrayOfPastReservations = userStore().pastReservations;
+const arrayOfReservations = ref<Reservation[]> ([]);
+const arrayOfPastReservations = ref<Reservation[]> ([]);
+
+watch(() => userStore().reservations, () => arrayOfReservations.value = userStore().reservations);
+watch(() => userStore().pastReservations, () => arrayOfPastReservations.value = userStore().pastReservations);
 
 </script>
 

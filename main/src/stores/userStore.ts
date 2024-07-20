@@ -10,6 +10,7 @@ export type Reservation = {
 }
 
 export type Video = {
+    id: string;
     author: string;
     avatar: string;
     url: string;

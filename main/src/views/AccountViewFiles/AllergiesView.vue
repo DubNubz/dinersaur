@@ -65,6 +65,8 @@ import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonLabel, IonIcon, IonSearchbar, IonList, IonItem, IonCheckbox, IonModal } from '@ionic/vue';
 import { allergies } from '@/utils/allergies';
 import { userStore } from '@/stores/userStore';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/utils/firebase';
 
 const search = ref("");
 watch(() => search.value, (newSearch) => search.value = newSearch.toLowerCase());
@@ -79,12 +81,24 @@ function openModal () {
   editAllergiesMenu.value = true;
 }
 
-function closeModal () {
+async function closeModal () {
   currentAllergies.value = [...helperAllergiesList.value];
   editAllergiesMenu.value = false;
   helperAllergiesList.value = [];
   search.value = "";
   userStore().currentAllergies = currentAllergies.value;
+  
+  try {
+    const userData = userStore().userData;
+    if (!userData) return;
+    await updateDoc(doc(db, "users", userData.uid), {
+      allergies: currentAllergies.value
+    });
+
+  } catch (error) {
+    console.error(error);
+  }
+
 }
 
 function addAllergyToList (newAllergy: string) {
