@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@capacitor/google-maps": "^5.4.1"
+  }
+}
