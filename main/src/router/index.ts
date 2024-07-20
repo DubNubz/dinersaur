@@ -22,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: '', redirect: '/restaurantPages/restaurantHome' },
       { path: 'restaurantHome', component: () => import('@/views/RestaurantHome/RestaurantHome.vue') },
       { path: 'restaurantDiscover', component: () => import('@/views/RestaurantHome/RestaurantDiscover.vue') },
-      { path: 'restaurantAccount/', component: () => import('@/views/RestaurantHome/RestaurantAccount.vue') },
+      { path: 'restaurantAccount/', component: () => import('@/views/RestaurantHome/InitialRestaurantAccountView.vue') },
       { path: 'restaurantMap', component: () => import('@/views/RestaurantHome/RestaurantMap.vue') }
     ]
   }
