@@ -3,19 +3,19 @@
     <ion-tabs>
       <ion-router-outlet></ion-router-outlet>
       <ion-tab-bar slot="bottom">
-        <ion-tab-button tab="tab1" href="/restaurantPages/restaurantHome">
+        <ion-tab-button tab="tab1" href="/restaurant/home">
           <ion-icon aria-hidden="true" :icon="homeOutline" />
         </ion-tab-button>
 
-        <ion-tab-button tab="tab4" href="/restaurantPages/restaurantMap">
+        <ion-tab-button tab="tab4" href="/restaurant/map">
           <ion-icon aria-hidden="true" :icon="mapOutline" />
         </ion-tab-button>
 
-        <ion-tab-button tab="tab2" href="/restaurantPages/restaurantDiscover">
+        <ion-tab-button tab="tab2" href="/restaurant/discover">
           <ion-icon aria-hidden="true" :icon="compassOutline" />
         </ion-tab-button>
 
-        <ion-tab-button tab="tab3" href="/restaurantPages/restaurantAccount">
+        <ion-tab-button tab="tab3" href="/restaurant/account">
           <ion-icon aria-hidden="true" :icon="personCircleOutline" />
         </ion-tab-button>
       </ion-tab-bar>

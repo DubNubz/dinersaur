@@ -16,14 +16,14 @@ const routes: Array<RouteRecordRaw> = [
       { path: 'map', component: () => import('@/views/HomeViewFiles/GoogleMapsView.vue')}
     ]
   }, {
-    path: '/restaurantPages/',
+    path: '/restaurant/',
     component: () => import('@/views/RestaurantHome/RestaurantTabsPage.vue'),
     children: [
-      { path: '', redirect: '/restaurantPages/restaurantHome' },
-      { path: 'restaurantHome', component: () => import('@/views/RestaurantHome/RestaurantHome.vue') },
-      { path: 'restaurantDiscover', component: () => import('@/views/RestaurantHome/RestaurantDiscover.vue') },
-      { path: 'restaurantAccount/', component: () => import('@/views/RestaurantHome/InitialRestaurantAccountView.vue') },
-      { path: 'restaurantMap', component: () => import('@/views/RestaurantHome/RestaurantMap.vue') }
+      { path: '', redirect: '/restaurant/home' },
+      { path: 'home', component: () => import('@/views/RestaurantHome/RestaurantHome.vue') },
+      { path: 'discover', component: () => import('@/views/RestaurantHome/RestaurantDiscover.vue') },
+      { path: 'account/', component: () => import('@/views/RestaurantHome/InitialRestaurantAccountView.vue') },
+      { path: 'map', component: () => import('@/views/RestaurantHome/RestaurantMap.vue') }
     ]
   }
 ]
