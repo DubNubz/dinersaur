@@ -88,7 +88,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { IonPage, IonContent, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton } from '@ionic/vue';
+import { IonPage, IonContent, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonGrid, IonRow, IonCol, IonItem, IonLabel, IonModal, IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonText } from '@ionic/vue';
 import Header from '@/components/Header.vue';
 import { Line } from 'vue-chartjs';
 import {

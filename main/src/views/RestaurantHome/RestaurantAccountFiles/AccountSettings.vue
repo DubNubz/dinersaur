@@ -1,12 +1,10 @@
 <template>
-    <ion-page>
+    <div>
 
-    </ion-page>
+    </div>
 </template>
 
 <script setup lang="ts">
-
-import { IonPage } from '@ionic/vue';
 
 </script>
 
