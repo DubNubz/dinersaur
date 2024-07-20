@@ -154,6 +154,12 @@ const currentVideo = userStore().currentVideo ?? {
       text: "skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt",
       likes: 0,
       dislikes: 4420
+    }, {
+      author: "brainrotted individual 2",
+      avatar: "https://static.gettyimages.com/display-sets/creative-landing/images/GettyImages-1907862843.jpg",
+      text: "skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt",
+      likes: 0,
+      dislikes: 4420
     }]
   }]
 };
