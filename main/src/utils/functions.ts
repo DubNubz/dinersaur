@@ -1,3 +1,6 @@
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
+import { db } from "./firebase";
+import { Video } from "@/stores/userStore";
 
 export function delay (ms: number) {
     return new Promise((executor: any) => setTimeout(executor, ms));
@@ -48,5 +51,34 @@ export function concatBigNumber (num: number) {
   else if (numString.length < 10) return (num/1000000).toFixed(1) + "M";
   else if (numString.length < 13) return (num/1000000000).toFixed(1) + "B";
   else return (num/1000000000000).toFixed(1) + "T";
+}
+
+export async function getVideo () {
+  let videoRendered = false;
+
+  while (!videoRendered) {
+    const allVideos = await getDocs(collection(db, "videos"));
+    const numberOfVideos = allVideos.size;
+  
+    const randomIndex = getRandomIntInclusive(0, numberOfVideos - 1);
+  
+    const randomDocQuery = query(collection(db, "videos"), orderBy("__name__"), limit(1), startAfter(allVideos.docs[randomIndex].id));
+    const randomDocSnapshot = await getDocs(randomDocQuery);
+    if (randomDocSnapshot.empty) continue;
+  
+    const selectedDoc = randomDocSnapshot.docs[0];
+    
+    try {
+      const firebaseObject = await getDoc(doc(db, "videos", selectedDoc.id));
+      console.log(firebaseObject.data())
+      if (firebaseObject.exists()) return firebaseObject.data() as Video;
+  
+    } catch (error) {
+      console.error(error);
+
+    } finally {
+      videoRendered = true;
+    }
+  }
 }
   

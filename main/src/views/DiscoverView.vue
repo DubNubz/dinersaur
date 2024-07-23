@@ -6,7 +6,7 @@
       </div>
       <ion-toast :icon="toastIcon" position="top" :is-open="showBookmarkedImg" :message="toastMessage" :duration="1500" @didDismiss="showBookmarkedImg = false"></ion-toast>
 
-      <video ref="videoRef" width="1080" height="1920" class="video" autoplay loop disablepictureinpicture disableremoteplayback>
+      <video v-if="currentVideo" ref="videoRef" width="1080" height="1920" class="video" autoplay loop disablepictureinpicture disableremoteplayback>
         <source :src="currentVideo.url" type="video/mp4" />
       </video>
 
@@ -135,43 +135,16 @@
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle, IonContent, onIonViewDidLeave, onIonViewDidEnter, IonButton,
   IonButtons, IonModal, IonToast, IonList, IonItem, IonLabel, IonInfiniteScroll, IonInfiniteScrollContent, 
-  InfiniteScrollCustomEvent, IonAvatar, IonInput } from '@ionic/vue';
+  InfiniteScrollCustomEvent, IonAvatar, IonInput, 
+  onIonViewWillEnter} from '@ionic/vue';
 import { heart, chatboxEllipses, bookmarks, heartOutline, bookmarksOutline, thumbsUpOutline, thumbsDownOutline, thumbsUp, thumbsDown } from 'ionicons/icons';
-import { userStore, VideoCommentReply, type VideoComment } from '@/stores/userStore';
-import { compareObjectsSingle, concatBigNumber, delay, getRandomIntInclusive, getRandomItemFromArray } from '@/utils/functions';
-import { collection, doc, getDocs, limit, orderBy, query, setDoc, startAfter } from 'firebase/firestore';
+import { userStore, Video, VideoCommentReply, type VideoComment } from '@/stores/userStore';
+import { compareObjectsSingle, concatBigNumber, delay, getRandomIntInclusive, getRandomItemFromArray, getVideo } from '@/utils/functions';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, startAfter } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 import { getStorage, ref as firebaseRef, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-const currentVideo = ref({
-  author: "author",
-  url: 
-  "https://firebasestorage.googleapis.com/v0/b/dinersaur-8bd21.appspot.com/o/videos%2FFFF2SXdVZ6?alt=media&token=a3d5d0ba-1f1a-4294-905f-f5c828b0f031",
-  likes: 123456,
-  views: 15305,
-  id: "10505",
-  created: new Date(),
-  comments: [{
-    author: "urmom",
-    avatar: "https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg",
-    text: "good vid sticking out ur gyatt for the rizzler ur so skibidi ur so fanum tax i just wanna be ur sigma",
-    likes: 696969,
-    dislikes: 0,
-    replies: [{
-      author: "brainrotted individual",
-      avatar: "https://static.gettyimages.com/display-sets/creative-landing/images/GettyImages-1907862843.jpg",
-      text: "skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt",
-      likes: 0,
-      dislikes: 4420
-    }, {
-      author: "brainrotted individual 2",
-      avatar: "https://static.gettyimages.com/display-sets/creative-landing/images/GettyImages-1907862843.jpg",
-      text: "skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt skibidi ohio gyatt",
-      likes: 0,
-      dislikes: 4420
-    }]
-  }]
-});
+const currentVideo = ref<Video> ();
 const videoRef = ref<HTMLVideoElement> ();
 const page = ref();
 const commentsModal = ref();
@@ -197,31 +170,29 @@ const fileInput = ref ();
 // when next video is played or if page/app is left:
 //   if liked = true, send to firebase
 
-onIonViewDidEnter(() => {
-  videoRef.value?.play();
-  getVideo();
-  // commentLoader.next();
-})
+onIonViewDidEnter(async () => {
+  currentVideo.value = userStore().currentVideo ?? await getVideo();
+
+  let tries = 10;
+  let loaded = false;
+  while (tries < 10 || !loaded) {
+    if (videoRef.value) {
+      loaded = true;
+      videoRef.value?.play();
+    } else {
+      await delay(5);
+      tries++;
+    }
+  }
+
+  commentLoader.next();
+});
 
 onIonViewDidLeave(() => {
   videoRef.value?.pause();
 });
 
-async function getVideo () {
-  const allVideos = await getDocs(collection(db, "videos"));
-  const numberOfVideos = allVideos.size;
-
-  const randomIndex = getRandomIntInclusive(0, numberOfVideos - 1);
-
-  const randomDocQuery = query(collection(db, "videos"), orderBy("__name__"), limit(1), startAfter(allVideos.docs[randomIndex].id));
-  const randomDocSnapshot = await getDocs(randomDocQuery);
-
-  currentVideo.value = randomDocSnapshot.docs[0];
-  console.log(currentVideo.value)
-}
-
 async function createVideo () {
-  
   const base64Characters = [
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
     'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
@@ -264,12 +235,12 @@ function* getComments () {
   let i = 0;
   while (true) {
     if (i % 10) yield;
-    if (!currentVideo.comments[i]) {
+    if (!currentVideo.value?.comments[i]) {
       yield;
       continue;
     }
 
-    loadedComments.value.push(currentVideo.comments[i]);
+    loadedComments.value.push(currentVideo.value.comments[i]);
     i++;
   }
 }

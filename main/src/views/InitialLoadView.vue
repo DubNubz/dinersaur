@@ -16,7 +16,7 @@
 
 import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonImg, onIonViewDidEnter } from '@ionic/vue';
-import { delay } from '@/utils/functions';
+import { delay, getVideo } from '@/utils/functions';
 import router from '@/router';
 import { doc, getDoc } from 'firebase/firestore';
 import { userStore } from '@/stores/userStore';
@@ -32,8 +32,8 @@ watch(() => loadingBarPercentage.value, async () => {
 });
 
 onIonViewDidEnter(async () => {
-
     /* load data from firebase into userStore.ts */
+    userStore().currentVideo = await getVideo();
 
     // can be deleted
     while (loadingBarPercentage.value < 100) {
