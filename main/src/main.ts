@@ -39,6 +39,8 @@ import { createPinia } from 'pinia';
 
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from './utils/firebase';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 defineCustomElements(window);
 
@@ -47,7 +49,9 @@ const app = createApp(App)
   .use(IonicVue)
   .use(router);
 
-initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
+getAuth(firebaseApp);
+getFirestore(firebaseApp);
 
 router.isReady().then(() => {
   app.use(pinia);

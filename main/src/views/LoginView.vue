@@ -133,7 +133,6 @@ async function login () {
         store.pastReservations = userData.pastReservations;
         store.rating = userData.rating;
         store.smProfile = userData.smProfile;
-        console.log(store)
         
     } catch (error: any) {
         console.log(error.message)
@@ -148,10 +147,23 @@ async function signinWIthGoogle () {
 
     try {
         const result = await signInWithPopup(auth, provider);
-        const credential = GoogleAuthProvider.credentialFromResult(result);
         const user = result.user;
         userStore().userData = user;
         access.value = true;
+
+        const store = userStore();
+        const docData = await getDoc(doc(db, "users", user.uid));
+        const userData = docData.data();
+        if (!userData) return;
+
+        store.currentAllergies = userData.allergies;
+        store.billing = userData.billing;
+        store.reservations = userData.currentReservations;
+        store.language = userData.language;
+        store.name = userData.name;
+        store.pastReservations = userData.pastReservations;
+        store.rating = userData.rating;
+        store.smProfile = userData.smProfile;
         
     } catch (error: any) {
         console.log(error.message)
@@ -159,8 +171,6 @@ async function signinWIthGoogle () {
         showError.value = true;
     }
 }
-
-
 
 </script>
 

@@ -62,19 +62,26 @@
 <script setup lang="ts">
 
 import { ref, onMounted, watch } from 'vue';
-import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonLabel, IonIcon, IonSearchbar, IonList, IonItem, IonCheckbox, IonModal } from '@ionic/vue';
+import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonLabel, IonIcon, IonSearchbar, IonList,
+  IonItem, IonCheckbox, IonModal, onIonViewDidEnter } from '@ionic/vue';
 import { allergies } from '@/utils/allergies';
 import { userStore } from '@/stores/userStore';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 
+const page = ref();
+
+const editAllergiesMenu = ref(false);
+
 const search = ref("");
 watch(() => search.value, (newSearch) => search.value = newSearch.toLowerCase());
 
 const helperAllergiesList = ref<string[]> ([]);
-const currentAllergies = ref(userStore().currentAllergies);
-const editAllergiesMenu = ref(false);
-const page = ref();
+const currentAllergies = ref<string[]> ([]);
+
+onMounted(() => {
+  currentAllergies.value = userStore().currentAllergies;
+});
 
 function openModal () {
   helperAllergiesList.value = [...currentAllergies.value];

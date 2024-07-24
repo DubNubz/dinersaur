@@ -1,6 +1,8 @@
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
+import { collection, doc, DocumentData, DocumentSnapshot, getDoc, getDocs, limit, orderBy, query, startAfter } from "firebase/firestore";
 import { db } from "./firebase";
 import { Video } from "@/stores/userStore";
+
+// general functions
 
 export function delay (ms: number) {
     return new Promise((executor: any) => setTimeout(executor, ms));
@@ -53,8 +55,27 @@ export function concatBigNumber (num: number) {
   else return (num/1000000000000).toFixed(1) + "T";
 }
 
+export async function loopUntil <T> (stopCondition: boolean, returnValue: T) {
+  let done = false;
+  let failsafe = 0;
+  while (!done || failsafe < 20) {
+    if (stopCondition) {
+      done = true;
+      console.log(returnValue)
+      return returnValue;
+    } else {
+      await delay(5);
+      failsafe++;
+    }
+  }
+  return returnValue;
+}
+
+// project specific functions
+
 export async function getVideo () {
   let videoRendered = false;
+  let selectedVideo;
 
   while (!videoRendered) {
     const allVideos = await getDocs(collection(db, "videos"));
@@ -68,17 +89,10 @@ export async function getVideo () {
   
     const selectedDoc = randomDocSnapshot.docs[0];
     
-    try {
-      const firebaseObject = await getDoc(doc(db, "videos", selectedDoc.id));
-      console.log(firebaseObject.data())
-      if (firebaseObject.exists()) return firebaseObject.data() as Video;
-  
-    } catch (error) {
-      console.error(error);
-
-    } finally {
-      videoRendered = true;
-    }
+    selectedVideo = await getDoc(doc(db, "videos", selectedDoc.id));
+    videoRendered = true;
   }
+
+  return (selectedVideo as DocumentSnapshot<DocumentData, DocumentData>).data() as Video;
 }
   

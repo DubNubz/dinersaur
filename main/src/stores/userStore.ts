@@ -68,6 +68,7 @@ export const userStore = defineStore('userStore', () => {
     });
 
     const currentVideo = ref<Video> ();
+    const videoQueue = ref<Video[]> ([]);
 
-    return { userData, reservations, pastReservations, currentAllergies, currentVideo, billing, language, name, rating, smProfile };
+    return { userData, reservations, pastReservations, currentAllergies, currentVideo, billing, language, name, rating, smProfile, videoQueue };
 });

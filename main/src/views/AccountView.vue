@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonAvatar, IonNavLink, IonNav } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonAvatar, IonNavLink, IonNav, onIonViewWillEnter } from '@ionic/vue';
 import { add, medkit, language, card, key } from 'ionicons/icons';
 import { defineComponent, ref, onMounted } from 'vue';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
@@ -74,8 +74,9 @@ import AllergiesView from './AccountViewFiles/AllergiesView.vue';
 import BillingView from './AccountViewFiles/BillingView.vue';
 import LanguageView from './AccountViewFiles/LanguageView.vue';
 
-onMounted(() => {
+onIonViewWillEnter(async () => {
   userName.value = localStorage.getItem('userName') ?? "";
+  
 });
 
 // Change Profile Picture

@@ -1,17 +1,26 @@
 <template>
-  <ion-page ref="page">
-    <ion-content>
+  <ion-page ref="page" :class="{ hideBottomVideo: scrollOnCooldown }">
+    <ion-content ref="content" @ion-scroll-start="handleScroll" :scrollEvents="true">
       <div aria-hidden="true" class="fullscreenCover">
         <ion-icon :icon="heart" aria-hidden="true" class="fullscreenIcon" :class="{ hideIcon: !showLikedImg }"></ion-icon>
       </div>
+      <div aria-hidden="true" class="fullscreenCover">
+        <ion-icon ref="pauseIconRef" :icon="pauseIcon == 'pause' ? pauseCircleOutline : playCircleOutline" aria-hidden="true" style="color: var(--ion-color-light)" :class="{ hideIcon: !showPausedImg }"></ion-icon>
+      </div>
       <ion-toast :icon="toastIcon" position="top" :is-open="showBookmarkedImg" :message="toastMessage" :duration="1500" @didDismiss="showBookmarkedImg = false"></ion-toast>
 
-      <video v-if="currentVideo" ref="videoRef" width="1080" height="1920" class="video" autoplay loop disablepictureinpicture disableremoteplayback>
+      
+      <video v-if="currentVideo" ref="videoRef" @ended="scrollVideo" width="1080" height="1920" class="video" autoplay disablepictureinpicture
+      disableremoteplayback @click="pauseVideo">
         <source :src="currentVideo.url" type="video/mp4" />
       </video>
 
-      <input ref="fileInput" type="file"></input>
-      <button @click="createVideo">uploa</button>
+      <video v-if="videoQueue[0]" id="video2" width="1080" height="1920" class="video" disablepictureinpicture disableremoteplayback>
+        <source :src="videoQueue[0].url" type="video/mp4" />
+      </video>
+      
+      <!--<input ref="fileInput" type="file"></input>-->
+      <!--<button @click="createVideo">uploa</button>-->
       
       <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 2.5em;">
         <ion-fab-button @click="activateBookmark">
@@ -136,42 +145,55 @@ import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle, IonContent, onIonViewDidLeave, onIonViewDidEnter, IonButton,
   IonButtons, IonModal, IonToast, IonList, IonItem, IonLabel, IonInfiniteScroll, IonInfiniteScrollContent, 
   InfiniteScrollCustomEvent, IonAvatar, IonInput, 
-  onIonViewWillEnter} from '@ionic/vue';
-import { heart, chatboxEllipses, bookmarks, heartOutline, bookmarksOutline, thumbsUpOutline, thumbsDownOutline, thumbsUp, thumbsDown } from 'ionicons/icons';
+  onIonViewWillEnter,
+  createAnimation} from '@ionic/vue';
+import { heart, chatboxEllipses, bookmarks, heartOutline, bookmarksOutline, thumbsUpOutline, thumbsDownOutline, thumbsUp, thumbsDown, pauseCircleOutline, playCircleOutline } from 'ionicons/icons';
 import { userStore, Video, VideoCommentReply, type VideoComment } from '@/stores/userStore';
-import { compareObjectsSingle, concatBigNumber, delay, getRandomIntInclusive, getRandomItemFromArray, getVideo } from '@/utils/functions';
+import { compareObjectsSingle, concatBigNumber, delay, getRandomIntInclusive, getRandomItemFromArray, getVideo, loopUntil } from '@/utils/functions';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, startAfter } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 import { getStorage, ref as firebaseRef, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import router from '@/router';
 
-const currentVideo = ref<Video> ();
 const videoRef = ref<HTMLVideoElement> ();
 const page = ref();
+const content = ref();
 const commentsModal = ref();
+const fileInput = ref();
+const pauseIconRef = ref();
 
 const liked = ref(false);
 const showLikedImg = ref(false);
 const showBookmarkedImg = ref(false);
+const videoIsPaused = ref(false);
+const showPausedImg = ref(false);
 const bookmarked = ref(false);
 const openComments = ref(false);
 const openReplies = ref(false);
+const scrollOnCooldown = ref(false);
+const hideBottomVideo = ref(false);
 
+const currentVideo = ref<Video> ();
+const videoQueue = ref<Video[]> ([]);
 const loadedComments = ref<VideoComment[]> ([]);
 const loadedReplies = ref<VideoCommentReply[]> ([]);
 const currentComment = ref<VideoComment> ();
-const toastMessage = ref<'Added video to your bookmarks!' | 'Removed video from your bookmarks'> ();
 const toastIcon = ref<string> ();
+const toastMessage = ref<'Added video to your bookmarks!' | 'Removed video from your bookmarks'> ();
+const pauseIcon = ref<"pause" | "play"> ("pause");
 
 const commentLoader = getComments();
 const replyLoader = getReplies();
-
-const fileInput = ref ();
 
 // when next video is played or if page/app is left:
 //   if liked = true, send to firebase
 
 onIonViewDidEnter(async () => {
   currentVideo.value = userStore().currentVideo ?? await getVideo();
+  videoQueue.value = userStore().videoQueue;
+  if (videoQueue.value.length < 5) {
+    for (let i = videoQueue.value.length; i < 5; i++) pushVideoToQueue();
+  }
 
   let tries = 10;
   let loaded = false;
@@ -186,11 +208,52 @@ onIonViewDidEnter(async () => {
   }
 
   commentLoader.next();
+  videoIsPaused.value = false;
 });
 
 onIonViewDidLeave(() => {
   videoRef.value?.pause();
 });
+
+function handleScroll () {
+  if (scrollOnCooldown.value) {
+    content.value.$el.scrollToTop(0);
+    return;
+  }
+  scrollVideo();
+}
+
+async function pushVideoToQueue () {
+  videoQueue.value.push(await getVideo());
+}
+
+async function scrollVideo () {
+  if (!videoRef.value) return;
+  scrollOnCooldown.value = true;
+
+  await content.value.$el.scrollToBottom(300);
+  hideBottomVideo.value = true;
+  currentVideo.value = undefined;
+  hideBottomVideo.value = false;
+  currentVideo.value = await loopUntil(!currentComment.value, videoQueue.value[0]);
+  await delay(15);
+  content.value.$el.scrollToTop(0);
+  try {
+    videoRef.value.currentTime = 0;
+  } catch (error) {
+    videoRef.value.currentTime = 0;
+  }
+  videoIsPaused.value = false;
+  
+  const copyOfQueue = [...videoQueue.value];
+  videoQueue.value.length = 0;
+  videoQueue.value = await loopUntil(videoQueue.value.length == 0, copyOfQueue.slice(1));
+  if (videoQueue.value.length < 4) {
+    for (let i = videoQueue.value.length; i < 4; i++) pushVideoToQueue();
+  }
+  scrollOnCooldown.value = false;
+  pushVideoToQueue();
+}
 
 async function createVideo () {
   const base64Characters = [
@@ -227,7 +290,7 @@ async function createVideo () {
       });
     })
   } catch (error) {
-
+    console.error(error)
   }
 }
 
@@ -278,6 +341,27 @@ function loadNewComments (event: InfiniteScrollCustomEvent) {
   setTimeout(() => event.target.complete(), 500);
 }
 
+async function pauseVideo () {
+  videoIsPaused.value = !videoIsPaused.value;
+
+  if (showPausedImg.value) return;
+
+  if (videoIsPaused.value) {
+    pauseIcon.value = "pause";
+    videoRef.value?.pause();
+  } else {
+    pauseIcon.value = "play";
+    videoRef.value?.play();
+  }
+
+  showPausedImg.value = true;
+  const animation = createAnimation().addElement(pauseIconRef.value.$el).duration(500).iterations(1).keyframes([
+  { offset: 0, width: "0", height: "0", opacity: "100%" }, { offset: 0.6, width: "20vw", height: "20vw" }, { offset: 1, width: "45vw", height: "45vw", opacity: '0%' }]);
+  await animation.play();
+  animation.stop();
+  showPausedImg.value = false;
+}
+
 async function activateBookmark () {
   bookmarked.value = !bookmarked.value;
 
@@ -304,8 +388,8 @@ async function activateLike () {
 
 .video {
   width: 100%;
-  height: 99%;
-  overflow: hidden;
+  height: 100%;
+  object-fit: cover;
 }
 
 .fullscreenCover {

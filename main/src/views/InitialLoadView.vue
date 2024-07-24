@@ -22,7 +22,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { userStore } from '@/stores/userStore';
 import { db } from '@/utils/firebase';
 
-const loadingBarPercentage = ref(0);
+const loadingBarPercentage = ref(10);
 
 watch(() => loadingBarPercentage.value, async () => {
     if (loadingBarPercentage.value >= 100) {
@@ -34,14 +34,19 @@ watch(() => loadingBarPercentage.value, async () => {
 onIonViewDidEnter(async () => {
     /* load data from firebase into userStore.ts */
     userStore().currentVideo = await getVideo();
+    loadingBarPercentage.value += 10;
 
-    // can be deleted
-    while (loadingBarPercentage.value < 100) {
+    for (let i = 0; i < 5; i++) {
+        userStore().videoQueue.push(await getVideo());
         loadingBarPercentage.value += 10;
-        await delay(100);
     }
+    console.log(userStore().currentVideo)
+    console.log(userStore().videoQueue)
+    
+    // check if user is logged in locally
 
     /* when done loading data, set loading bar to 100 */
+    loadingBarPercentage.value = 100;
 });
 
 </script>
