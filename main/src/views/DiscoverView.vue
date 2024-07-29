@@ -22,22 +22,30 @@
       <!--<input ref="fileInput" type="file"></input>-->
       <!--<button @click="createVideo">uploa</button>-->
       
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 2.5em;">
-        <ion-fab-button @click="activateBookmark">
-          <ion-icon :icon="bookmarked ? bookmarks : bookmarksOutline"></ion-icon>
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 2em;">
+        <ion-fab-button class="fabButton" @click="activateBookmark" :class="{ activeFabButton: bookmarked }">
+          <ion-icon class="fabButton" :icon="bookmarks"></ion-icon>
         </ion-fab-button>
       </ion-fab>
 
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 7.5em;">
-        <ion-fab-button @click="openComments = true">
-          <ion-icon :icon="chatboxEllipses"></ion-icon>
-        </ion-fab-button>
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 7em;">
+        <div class="fabButton ion-activatable ion-focusable ripple-parent rectange" @click="openComments = true">
+          <ion-ripple-effect></ion-ripple-effect>
+          <div class="content">
+            <ion-icon class="fabButton" :icon="chatboxEllipses"></ion-icon>
+            <p v-if="currentVideo">{{ currentVideo.comments.length.concat() }}</p>
+          </div>
+        </div>
       </ion-fab>
 
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 12.5em;">
-        <ion-fab-button @click="activateLike">
-          <ion-icon :icon="liked ? heart : heartOutline"></ion-icon>
-        </ion-fab-button>
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 12em;">
+        <div class="fabButton ion-activatable ion-focusable ripple-parent rectangle" @click="activateLike" :class="{ activeFabButton: liked }">
+          <ion-ripple-effect></ion-ripple-effect>
+          <div class="content">
+            <ion-icon :icon="heart"></ion-icon>
+            <p v-if="currentVideo">{{ currentVideo.views.concat() }}</p>
+          </div>
+        </div>
       </ion-fab>
 
       <ion-modal ref="commentsModal" :is-open="openComments" :presenting-element="page">
@@ -63,7 +71,7 @@
                   <button @click="comment.likes++">
                     <ion-icon :icon="thumbsUpOutline"></ion-icon>
                   </button>
-                  <p>{{ concatBigNumber(comment.likes - comment.dislikes) }}</p>
+                  <p>{{ (comment.likes - comment.dislikes).concat() }}</p>
                   <button>
                     <ion-icon :icon="thumbsDownOutline"></ion-icon>
                   </button>
@@ -101,7 +109,7 @@
                   <button>
                     <ion-icon :icon="thumbsUpOutline"></ion-icon>
                   </button>
-                  <p>{{ concatBigNumber(currentComment.likes - currentComment.dislikes) }}</p>
+                  <p>{{ (currentComment.likes - currentComment.dislikes).concat() }}</p>
                   <button>
                     <ion-icon :icon="thumbsDownOutline"></ion-icon>
                   </button>
@@ -120,7 +128,7 @@
                   <button>
                     <ion-icon :icon="thumbsUpOutline"></ion-icon>
                   </button>
-                  <p>{{ concatBigNumber(reply.likes - reply.dislikes) }}</p>
+                  <p>{{ (reply.likes - reply.dislikes).concat() }}</p>
                   <button>
                     <ion-icon :icon="thumbsDownOutline"></ion-icon>
                   </button>
@@ -144,16 +152,16 @@
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle, IonContent, onIonViewDidLeave, onIonViewDidEnter, IonButton,
   IonButtons, IonModal, IonToast, IonList, IonItem, IonLabel, IonInfiniteScroll, IonInfiniteScrollContent, 
-  InfiniteScrollCustomEvent, IonAvatar, IonInput, 
-  onIonViewWillEnter,
-  createAnimation} from '@ionic/vue';
+  InfiniteScrollCustomEvent, IonAvatar, IonInput, onIonViewWillEnter, createAnimation, IonRippleEffect } from '@ionic/vue';
 import { heart, chatboxEllipses, bookmarks, heartOutline, bookmarksOutline, thumbsUpOutline, thumbsDownOutline, thumbsUp, thumbsDown, pauseCircleOutline, playCircleOutline } from 'ionicons/icons';
 import { userStore, Video, VideoCommentReply, type VideoComment } from '@/stores/userStore';
-import { compareObjectsSingle, concatBigNumber, delay, getRandomIntInclusive, getRandomItemFromArray, getVideo, loopUntil } from '@/utils/functions';
+import { compareObjectsSingle, addCustomMethods, delay, getRandomIntInclusive, getRandomItemFromArray, getVideo, loopUntil } from '@/utils/functions';
 import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, startAfter } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 import { getStorage, ref as firebaseRef, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import router from '@/router';
+
+addCustomMethods();
 
 const videoRef = ref<HTMLVideoElement> ();
 const page = ref();
@@ -211,9 +219,20 @@ onIonViewDidEnter(async () => {
   videoIsPaused.value = false;
 });
 
-onIonViewDidLeave(() => {
+onIonViewDidLeave(async () => {
   videoRef.value?.pause();
+  await pushToFirebase();
 });
+
+async function pushToFirebase () {
+  const thingsToPush = {
+    liked: false,
+    bookmarked: false,
+  }
+
+  if (liked.value) thingsToPush.liked = true;
+  if (bookmarked.value) thingsToPush.bookmarked = true;
+}
 
 function handleScroll () {
   if (scrollOnCooldown.value) {
@@ -229,6 +248,9 @@ async function pushVideoToQueue () {
 
 async function scrollVideo () {
   if (!videoRef.value) return;
+
+  await pushToFirebase();
+
   scrollOnCooldown.value = true;
 
   await content.value.$el.scrollToBottom(300);
@@ -244,6 +266,8 @@ async function scrollVideo () {
     videoRef.value.currentTime = 0;
   }
   videoIsPaused.value = false;
+  liked.value = false;
+  bookmarked.value = false;
   
   const copyOfQueue = [...videoQueue.value];
   videoQueue.value.length = 0;
@@ -343,16 +367,13 @@ function loadNewComments (event: InfiniteScrollCustomEvent) {
 
 async function pauseVideo () {
   videoIsPaused.value = !videoIsPaused.value;
+  if (videoIsPaused.value) videoRef.value?.pause();
+  else videoRef.value?.play();
 
   if (showPausedImg.value) return;
 
-  if (videoIsPaused.value) {
-    pauseIcon.value = "pause";
-    videoRef.value?.pause();
-  } else {
-    pauseIcon.value = "play";
-    videoRef.value?.play();
-  }
+  if (videoIsPaused.value) pauseIcon.value = "pause";
+  else pauseIcon.value = "play";
 
   showPausedImg.value = true;
   const animation = createAnimation().addElement(pauseIconRef.value.$el).duration(500).iterations(1).keyframes([
@@ -408,7 +429,63 @@ async function activateLike () {
 }
 
 ion-icon.fullscreenIcon {
-  color: var(--ion-color-light);
+  color: var(--ion-color-secondary);
+}
+
+ion-fab-button.fabButton {
+  --background: transparent;
+  --box-shadow: 0;
+
+  ion-icon {
+    width: 70%;
+    height: 70%;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.fabButton {
+  width: 56px;
+  height: 56px;
+  background-color: transparent;
+
+  ion-ripple-effect {
+    border-radius: 50%;
+  }
+  
+  .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    ion-icon {
+      width: 70%;
+      height: 70%;
+      color: white;
+    }
+
+    p {
+      margin: 0;
+      color: white;
+    }
+  }
+}
+
+ion-fab-button.activeFabButton {
+  --color: var(--ion-color-secondary);
+}
+
+.activeFabButton {
+  .content {
+    ion-icon {
+      color: var(--ion-color-secondary);
+    }
+  }
 }
 
 .hideIcon {

@@ -53,7 +53,7 @@ type Marker = {
 
 const markerData = ref<Marker[]>([
     {
-    coordinate: { lat: 37.769, lng: -122.446 },
+    coordinate: { lat: 40.610199, lng: -74.005980 },
     title: "title one",
     snippet: "title one snippet content will be presented here",
   },

@@ -12,7 +12,7 @@
 
     <ion-content class="ion-padding">
 
-      <h1>Your allergies</h1>
+      <h1>Your Allergies</h1>
       <ion-list>
         <ion-item v-for="allergy in currentAllergies">
           <ion-label>{{ allergy }}</ion-label>

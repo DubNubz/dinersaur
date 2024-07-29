@@ -2,6 +2,11 @@
   <ion-page>
     <ion-tabs>
       <ion-router-outlet></ion-router-outlet>
+      <ion-fab vertical="bottom" horizontal="center" slot="fixed" style="margin-bottom: 1em;">
+        <ion-fab-button>
+          <ion-icon :icon="add"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
       <ion-tab-bar slot="bottom">
         <ion-tab-button tab="tab1" href="/pages/home">
           <ion-icon aria-hidden="true" :icon="homeOutline" />
@@ -25,8 +30,8 @@
 
 <script setup lang="ts">
 
-import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { homeOutline, compassOutline, personCircleOutline, mapOutline } from 'ionicons/icons';
+import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet, IonFab, IonFabButton } from '@ionic/vue';
+import { homeOutline, compassOutline, personCircleOutline, mapOutline, bookmarks, addCircle, addCircleOutline, add } from 'ionicons/icons';
 
 </script>
 

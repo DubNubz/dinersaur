@@ -44,6 +44,9 @@ import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle} from '@ionic/vue';
 import Header from '@/components/Header.vue';
 import { Reservation, userStore } from '@/stores/userStore';
+import { addCustomMethods } from '@/utils/functions';
+
+addCustomMethods();
 
 const center = ref({ lat: 40.689247, lng: -74.044502 });
 

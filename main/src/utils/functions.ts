@@ -18,6 +18,10 @@ export function getRandomItemFromArray (arr: any[]) {
     return arr[getRandomIntInclusive(0, arr.length - 1)];
 }
 
+export function compareObjectsInArray(obj1: Record<any, any>, obj2: Record<any, any>) {
+  return Object.keys(obj1).every(key => obj2.hasOwnProperty(key) && obj1[key] === obj2[key]);
+}
+
 export function compareObjectsSingle(obj1: Record<any, any> | undefined, obj2: Record<any, any> | undefined) {
     if (!obj1 || !obj2) return;
 
@@ -45,16 +49,6 @@ export function compareObjectsSingle(obj1: Record<any, any> | undefined, obj2: R
     return true;
 }
 
-export function concatBigNumber (num: number) {
-  const numString = String(Math.abs(num));
-
-  if (numString.length < 4) return num.toLocaleString();
-  else if (numString.length < 7) return (num/1000).toFixed(1) + "K";
-  else if (numString.length < 10) return (num/1000000).toFixed(1) + "M";
-  else if (numString.length < 13) return (num/1000000000).toFixed(1) + "B";
-  else return (num/1000000000000).toFixed(1) + "T";
-}
-
 export async function loopUntil <T> (stopCondition: boolean, returnValue: T) {
   let done = false;
   let failsafe = 0;
@@ -69,6 +63,50 @@ export async function loopUntil <T> (stopCondition: boolean, returnValue: T) {
     }
   }
   return returnValue;
+}
+
+// general methods
+
+export function addCustomMethods () {
+  String.prototype.capitalize = function () {
+    const string = this.valueOf();
+    return string[0].toUpperCase() + string.slice(1);
+  }
+
+  Number.prototype.concat = function () {
+    const num = this.valueOf();
+    const numString = String(Math.abs(num));
+  
+    if (numString.length < 4) return num.toLocaleString();
+    else if (numString.length < 7) return (num/1000).toFixed(1) + "K";
+    else if (numString.length < 10) return (num/1000000).toFixed(1) + "M";
+    else if (numString.length < 13) return (num/1000000000).toFixed(1) + "B";
+    else return (num/1000000000000).toFixed(1) + "T";
+  }
+
+  Number.prototype.isEven = function () {
+    const num = this.valueOf();
+    return num % 2 == 0;
+  }
+
+  Array.prototype.toUnique = function () {
+    return [...new Set(this)];
+  }
+}
+
+declare global {
+  interface String {
+    capitalize(): string;
+  }
+
+  interface Number {
+    concat(): string;
+    isEven(): boolean;
+  }
+
+  interface Array<T> {
+    toUnique(): Array<T>;
+  }
 }
 
 // project specific functions

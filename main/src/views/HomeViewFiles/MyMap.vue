@@ -46,10 +46,10 @@ async function createMap() {
     apiKey: import.meta.env.VITE_MAPS_API_KEY as string,
     config: {
       center: {
-        lat: 37.783,
-        lng: -122.408,
+        lat: 40.610199,
+        lng: -74.005980,
       },
-      zoom: 12,
+      zoom: 21,
       disableDefaultUI: true,
       styles: [
         {
