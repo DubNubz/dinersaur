@@ -42,12 +42,15 @@ import { firebaseConfig } from './utils/firebase';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
+import VueKonva from 'vue-konva';
+
 defineCustomElements(window);
 
 const pinia = createPinia();
 const app = createApp(App)
   .use(IonicVue)
-  .use(router);
+  .use(router)
+  .use(VueKonva);
 
 const firebaseApp = initializeApp(firebaseConfig);
 getAuth(firebaseApp);
