@@ -45,6 +45,14 @@ export type smProfile = {
     posts: Video[];
 }
 
+export type MenuItem = {
+    id: number,
+    name: string,
+    category: string,
+    description: string,
+    price: number
+}
+
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ();
     
@@ -70,5 +78,20 @@ export const userStore = defineStore('userStore', () => {
     const currentVideo = ref<Video> ();
     const videoQueue = ref<Video[]> ([]);
 
-    return { userData, reservations, pastReservations, currentAllergies, currentVideo, billing, language, name, rating, smProfile, videoQueue };
+    // Restaurant Layout Side
+
+    const floorLayouts = ref<{ [key: number]: Array<Array<{ type: string }>> }>({});
+
+    function saveLayout(floorIndex: number, layout: Array<Array<{ type: string }>>) {
+        floorLayouts.value[floorIndex] = layout;
+    }
+
+    function loadLayout(floorIndex: number) {
+        return floorLayouts.value[floorIndex] || [];
+    }
+
+    const menu = ref<MenuItem[]>([]);
+    const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
+
+    return { userData, reservations, pastReservations, currentAllergies, currentVideo, billing, language, name, rating, smProfile, videoQueue, floorLayouts, saveLayout, loadLayout, menu, categories };
 });

@@ -13,7 +13,7 @@ type Props = {
     fill: number;
 }
 
-const props = defineProps<Props> ();
+const props = defineProps<Props>();
 
 const roundedFill = Math.round(props.fill * 10) / 10;
 
