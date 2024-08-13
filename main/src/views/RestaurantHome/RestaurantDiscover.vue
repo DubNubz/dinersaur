@@ -8,8 +8,11 @@
 
     <ion-content>
       <ion-list>
-        <ion-item v-for="(category, index) in categories" :key="index" class="category-item">
+        <ion-item v-for="(category, index) in categories" :key="index" class="category-item" @click="filterByCategory(category)">
           <ion-label>{{ category }}</ion-label>
+        </ion-item>
+        <ion-item @click="filterByCategory(null)">
+          <ion-label>Show All</ion-label>
         </ion-item>
       </ion-list>
     </ion-content>
@@ -32,7 +35,10 @@
 
     <ion-content>
       <ion-modal :is-open="isIonModalOpen" :initial-breakpoint="0.5" :breakpoints="[0, 0.5, 0.75]" @didDismiss="closeModal">
+        <ion-content>
         <ion-list>
+          <div class="section-title">Menu Item Information</div>
+          <div class="divider"></div>
           <ion-item>
             <ion-label position="stacked">Item Name</ion-label>
             <ion-input v-model="newItem.name"></ion-input>
@@ -51,12 +57,72 @@
             <ion-label position="stacked">Description</ion-label>
             <ion-textarea v-model="newItem.description"></ion-textarea>
           </ion-item>
-          <ion-button v-if="!isButtonHidden" expand="full" :disabled="!isNewItemValid()" @click="addItem">Add Item</ion-button>
+
+          <div class="section-title">Nutritional Information [Additional]</div>
+          <div class="divider"></div>
+          
+          <ion-item>
+            <ion-label position="stacked">Calories</ion-label>
+            <ion-input type="number" v-model="newItem.calories"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Saturated Fat (g)</ion-label>
+            <ion-input type="number" v-model="newItem.saturatedFat"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Trans Fat (g)</ion-label>
+            <ion-input type="number" v-model="newItem.transFat"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Cholesterol (mg)</ion-label>
+            <ion-input type="number" v-model="newItem.cholesterol"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Sodium (mg)</ion-label>
+            <ion-input type="number" v-model="newItem.sodium"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Total Carbohydrates (g)</ion-label>
+            <ion-input type="number" v-model="newItem.carbohydrates"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Dietary Fiber (g)</ion-label>
+            <ion-input type="number" v-model="newItem.fiber"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Sugars (g)</ion-label>
+            <ion-input type="number" v-model="newItem.sugars"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Protein (g)</ion-label>
+            <ion-input type="number" v-model="newItem.protein"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Vitamin D (%)</ion-label>
+            <ion-input type="number" v-model="newItem.vitaminD"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Calcium (%)</ion-label>
+            <ion-input type="number" v-model="newItem.calcium"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Iron (%)</ion-label>
+            <ion-input type="number" v-model="newItem.iron"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">Potassium (%)</ion-label>
+            <ion-input type="number" v-model="newItem.potassium"></ion-input>
+          </ion-item>
+          <div class="addItemButton">
+            <ion-button v-if="!isButtonHidden" :disabled="!isNewItemValid()" @click="addItem">Add Item</ion-button>
+          </div>
         </ion-list>
+        <div class="spacer"></div>
+      </ion-content>
       </ion-modal>
 
       <ion-list>
-        <ion-card v-for="item in menu" :key="item.id" class="menu-card">
+        <ion-card v-for="item in filteredMenu" :key="item.id" id="item.category" class="menu-card" @click="">
           <ion-card-header>
             <ion-card-title>{{ item.name }} - ${{ item.price }}</ion-card-title>
             <ion-card-subtitle>{{ item.category }}</ion-card-subtitle>
@@ -123,16 +189,29 @@
 import { userStore } from '@/stores/userStore';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonCard, IonCardContent, IonIcon, IonCardHeader, IonCardSubtitle, IonCardTitle, IonItem, IonInput, IonSelectOption, IonLabel, IonSelect, IonButton, IonTextarea, IonModal, IonMenu, IonFab, IonFabButton, IonReorder, IonReorderGroup, IonButtons, IonItemSliding, IonItemOption, IonMenuButton, IonItemOptions } from '@ionic/vue';
 import { add, pencil, trash } from 'ionicons/icons';
-import { ref, onUnmounted, onMounted, watch } from 'vue';
+import { ref, onUnmounted, onMounted, watch, computed } from 'vue';
 
 const isIonModalOpen = ref(false);
 const blankItem = {
-  id: 0,
-  name: "",
-  category: "",
-  description: "",
-  price: 0
-}
+    id: 0,
+    name: "",
+    category: "",
+    description: "",
+    price: 0,
+    calories: 0,
+    saturatedFat: 0,
+    transFat: 0,
+    cholesterol: 0,
+    sodium: 0,
+    carbohydrates: 0,
+    fiber: 0,
+    sugars: 0,
+    protein: 0,
+    vitaminD: 0,
+    calcium: 0,
+    iron: 0,
+    potassium: 0
+  }
 const newItem = ref<MenuItem>({...blankItem});
 const menu = ref<MenuItem[]>([]);
 const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
@@ -144,19 +223,45 @@ const addingCategory = ref(false);
 const newCategory = ref('');
 
 const isButtonHidden = ref(false);
+const selectedCategory = ref<string | null>(null);
+
+const filteredMenu = computed(() => {
+  return selectedCategory.value ? menu.value.filter(item => item.category === selectedCategory.value) : menu.value;
+});
 
 type MenuItem = {
   id: number, 
   name: string, 
   category: string, 
   description: string,
-  price: number
+  price: number,
+  calories: number,
+  saturatedFat: number,
+  transFat: number,
+  cholesterol: number,
+  sodium: number,
+  carbohydrates: number,
+  fiber: number,
+  sugars: number,
+  protein: number,
+  vitaminD: number,
+  calcium: number,
+  iron: number,
+  potassium: number
 }
 
 function addNewMenuItem(){
   newItem.value = {...blankItem}; 
   isIonModalOpen.value = true;
   isButtonHidden.value = false;
+}
+
+function sortMenu() {
+  menu.value.sort((a, b) => {
+    const indexA = categories.value.indexOf(a.category);
+    const indexB = categories.value.indexOf(b.category);
+    return indexA - indexB;
+  });
 }
 
 function closeModal() {
@@ -171,6 +276,7 @@ function isNewItemValid(){
 function addItem(){
   newItem.value.id = menu.value.length + 1;
   menu.value.push({...newItem.value});  
+  sortMenu();
   closeModal();
 } 
 
@@ -197,7 +303,11 @@ function toggleAddCategory() {
 }
 
 function deleteCategory(index: number) {
+  const deletedCategory = categories.value[index];
   categories.value.splice(index, 1);
+
+  menu.value = menu.value.filter(item => item.category !== deletedCategory);
+  sortMenu();
 }
 
 function reorderCategories(event: any) {
@@ -206,6 +316,7 @@ function reorderCategories(event: any) {
   categories.value.splice(event.detail.to, 0, localVar);
   categoriesKey.value += 1;
   event.detail.complete();
+  sortMenu();
 }
 
 function saveCategories() {
@@ -215,6 +326,10 @@ function saveCategories() {
 
 function openCategoryModal() {
   isCategoryModalOpen.value = true;
+}
+
+function filterByCategory(category: string | null){
+  selectedCategory.value = category;
 }
 
 onUnmounted(() => {
@@ -270,5 +385,24 @@ onMounted(() => {
 
 .ion-page, ion-modal {
   transition: all 0.3s ease;
+}
+
+.section-title {
+  font-size: 1.5em;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.spacer {
+  height: 15em;
+}
+
+.addItemButton {
+  width: 95vw;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  align-items: center
 }
 </style>
