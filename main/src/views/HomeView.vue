@@ -3,12 +3,15 @@
     <Header/>
     <ion-content :fullscreen="true">
       <div class="divOne">
-        <ion-title>Upcoming Reservations</ion-title>
+        <h1>{{ $t("welcome", { name: userStore().name }) }}</h1>
+      </div>
+      <div class="divOne">
+        <ion-title>{{ $t("upcoming") }}</ion-title>
       </div>
       <div class="divTwo">
-        <p v-if="arrayOfReservations.length == 0">No Upcoming Reservations!</p>
-        <p v-else-if="arrayOfReservations.length == 1">You have 1 upcoming reservation!</p>
-        <p v-else>You have {{ arrayOfReservations.length }} upcoming reservations!</p>
+        <p v-if="arrayOfReservations.length == 0">{{ $t("none") }}</p>
+        <p v-else-if="arrayOfReservations.length == 1">{{ $t("one") }}!</p>
+        <p v-else>{{ $t("many", { count: arrayOfReservations.length }) }}!</p>
       </div>
       <div class="divThree">
         <div class="subDivThree">
@@ -24,7 +27,7 @@
       </div>
       <div class="divider"></div>
       <div class="divFour">
-        <ion-title>Past Reservations</ion-title>
+        <ion-title>{{ $t("past") }}</ion-title>
         <ion-card v-for="reservation in arrayOfPastReservations" :key="reservation.id">
           <ion-card-header>
             <ion-card-title>{{ reservation.title }}</ion-card-title>

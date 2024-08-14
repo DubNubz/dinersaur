@@ -2,12 +2,12 @@
   <ion-page>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Account Settings</ion-title>
+        <ion-title>{{ $t("accountSettings") }}</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content :fullscreen="true">
       <div class="divOne">
-        <ion-label class="profile-label">Profile</ion-label>
+        <ion-label class="profile-label">{{ $t("profile") }}</ion-label>
       </div>
       <div class="divTwo">
         <div class="avatarContainer">
@@ -20,38 +20,38 @@
         </div>
       </div>
       <div class="divThree">
-        <IonLabel>Name:<br>{{ userName }}</IonLabel>
+        <IonLabel>{{ $t("name") }}:<br>{{ userName }}</IonLabel>
         <StarRating :rating="userStore().rating"/>
       </div>
       <div class="divFour"></div>
       <div class="divFive">
-        <ion-label>Preferences</ion-label>
+        <ion-label>{{ $t("preferences") }}</ion-label>
       </div>
       <div class="divSix">
         <ion-nav-link router-direction="forward" :component="AllergiesView">
           <ion-button class="allergyButton">
-            <ion-label >Allergies</ion-label>
+            <ion-label >{{ $t("allergies") }}</ion-label>
             <ion-icon :icon="medkit" color="secondary"></ion-icon>
           </ion-button>
         </ion-nav-link>
 
         <ion-nav-link router-direction="forward" :component="BillingView">
           <ion-button class="billingButton">
-            <ion-label >Billing</ion-label>
+            <ion-label >{{ $t("billing") }}</ion-label>
             <ion-icon :icon="card" color="secondary"></ion-icon>
           </ion-button>
         </ion-nav-link>
         
         <ion-nav-link router-direction="forward" :component="LanguageView">
           <ion-button class="languageButton">
-            <ion-label>Language</ion-label>
+            <ion-label>{{ $t("language") }}</ion-label>
             <ion-icon :icon="language" color="secondary"></ion-icon>
           </ion-button>
         </ion-nav-link>
 
         <ion-nav-link router-direction="forward" :component="AccountSettingsView">
           <ion-button class="accountButton">
-            <ion-label>Account</ion-label>
+            <ion-label>{{ $t("account") }}</ion-label>
             <ion-icon :icon="key" color="secondary"></ion-icon>
           </ion-button>
         </ion-nav-link>

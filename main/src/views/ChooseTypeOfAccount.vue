@@ -3,7 +3,7 @@
         <ion-content>
         <div class="divOne">
         <ion-img class="dinersaur" src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
-            <ion-label class="text">Welcome To Dinersaur!<br>Select Your Type Of Account:</ion-label>
+            <ion-label class="text">{{ $t("welcomeDinersaur") }}!<br>{{ $t("selectAccount") }}:</ion-label>
         </div>
         <div class="divTwo">
             <ion-button class="button" @click="customerAccount">

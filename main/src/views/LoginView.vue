@@ -13,17 +13,17 @@
                                 <img src="/icons/apple.svg" alt="Sign in with Apple">
                             </ion-button>
                         </div>
-                        <input label="Email" placeholder="Email" v-model="email" required>
-                        <input label="Password" placeholder="Password" v-model="password" type="password" required>
+                        <input label="Email" :placeholder="$t('email')" v-model="email" required>
+                        <input label="Password" :placeholder="$t('password')" v-model="password" type="password" required>
                         <p class="errorMessage" v-if="showError">{{ errorMessage }}</p>
                         <div class="signUpDiv">
-                            <ion-button class="signup" @click="signUp">Sign Up</ion-button>
-                            <ion-button class="signup" @click="login">Login</ion-button>
+                            <ion-button class="signup" @click="signUp">{{ $t("signUp") }}</ion-button>
+                            <ion-button class="signup" @click="login">{{ $t("login") }}</ion-button>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="tos">By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.</p>
+            <p class="tos">{{ $t("disclaimer") }}.</p>
 
         </ion-content>
     </ion-page>
@@ -36,8 +36,11 @@ import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, Ion
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider  } from "firebase/auth";
 import { userStore } from '@/stores/userStore';
 import router from '@/router';
-import { setDoc, doc, getDoc } from "firebase/firestore"; 
+import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from '@/utils/firebase';
+import { useI18n } from 'vue-i18n';
+
+const { locale } = useI18n();
 
 const email = ref("");
 const password = ref("");
@@ -87,7 +90,7 @@ async function signUp () {
         await setDoc(doc(db, "users", user.uid), {
             name: "",
             allergies: [],
-            language: "English",
+            language: "en",
             rating: 5,
             currentReservations: [],
             pastReservations: [],
@@ -118,21 +121,33 @@ async function login () {
         const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
         userStore().userData = user;
+        localStorage.setItem("user", JSON.stringify(user));
         access.value = true;
 
         const store = userStore();
         const docData = await getDoc(doc(db, "users", user.uid));
         const userData = docData.data();
         if (!userData) return;
+        localStorage.setItem("userData", JSON.stringify(userData));
 
         store.currentAllergies = userData.allergies;
         store.billing = userData.billing;
         store.reservations = userData.currentReservations;
-        store.language = userData.language;
         store.name = userData.name;
         store.pastReservations = userData.pastReservations;
         store.rating = userData.rating;
         store.smProfile = userData.smProfile;
+
+        if (store.language != "en") {
+            try {
+                await updateDoc(doc(db, "users", userData.uid), { language: store.language });
+
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        if (userData.language !== "en") locale.value = userData.language;
         
     } catch (error: any) {
         console.log(error.message)
@@ -149,6 +164,7 @@ async function signinWIthGoogle () {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         userStore().userData = user;
+        localStorage.setItem("user", JSON.stringify(user));
         access.value = true;
 
         const store = userStore();
@@ -156,14 +172,27 @@ async function signinWIthGoogle () {
         const userData = docData.data();
         if (!userData) return;
 
+        if (userData.name == "" && user.displayName) {
+            userData.name = user.displayName;
+            await updateDoc(doc(db, "users", user.uid), { name: user.displayName });
+        };
+
+        localStorage.setItem("userData", JSON.stringify(userData));
+
         store.currentAllergies = userData.allergies;
         store.billing = userData.billing;
         store.reservations = userData.currentReservations;
-        store.language = userData.language;
         store.name = userData.name;
         store.pastReservations = userData.pastReservations;
         store.rating = userData.rating;
         store.smProfile = userData.smProfile;
+
+        if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
+        else {
+            store.language = userData.language;
+            locale.value = userData.language;
+        }
+
         
     } catch (error: any) {
         console.log(error.message)

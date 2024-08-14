@@ -64,7 +64,7 @@ export const userStore = defineStore('userStore', () => {
         name: ""
     });
     const reservations = ref<Reservation[]> ([]);
-    const language = ref("English");
+    const language = ref("en");
     const name = ref("");
     const pastReservations = ref<Reservation[]> ([]);
     const rating = ref(5);

@@ -321,7 +321,7 @@ async function createVideo () {
 function* getComments () {
   let i = 0;
   while (true) {
-    if (i % 10) yield;
+    if (i % 10 == 0 && i != 0) yield;
     if (!currentVideo.value?.comments[i]) {
       yield;
       continue;
@@ -335,7 +335,7 @@ function* getComments () {
 let replyIndex = 0;
 function* getReplies () {
   while (true) {
-    if (replyIndex % 10) yield;
+    if (replyIndex % 10 == 0 && replyIndex != 0) yield;
     if (!currentComment.value?.replies[replyIndex]) {
       yield;
       continue;
