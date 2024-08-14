@@ -5,14 +5,14 @@ export const ja: Record<string, string> = {
     welcomeDinersaur: "Dinersaurへようこそ",
     selectAccount: "アカウントの種類を選択してください",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "メール",
+    password: "パスワード",
+    signUp: "サインアップ",
+    login: "ログイン",
+    disclaimer: "Dinersaurにサインアップすると、利用規約とプライバシーポリシーに同意したことになります",
     
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "{name}さん、おかえりなさい！",
     upcoming: "今後の予約",
     none: "今後の予約はありません",
     one: "今後の予約が 1 件あります",

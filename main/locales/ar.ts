@@ -5,14 +5,14 @@ export const ar: Record<string, string> = {
     welcomeDinersaur: "مرحباً بكم في Dinersaur",
     selectAccount: "حدد نوع حسابك",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "بريد إلكتروني",
+    password: "كلمة المرور",
+    signUp: "اشتراك",
+    login: "تسجيل الدخول",
+    disclaimer: "من خلال التسجيل في Dinersaur، فإنك توافق على شروط الخدمة وسياسة الخصوصية الخاصة بنا",
 
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "مرحبًا بك مرة أخرى، {name}!",
     upcoming: "الحجوزات القادمة",
     none: "لا يوجد حجوزات قادمة",
     one: "لديك حجز واحد قادم",

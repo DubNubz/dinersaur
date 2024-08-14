@@ -5,14 +5,14 @@ export const vi: Record<string, string> = {
     welcomeDinersaur: "Chào mừng đến với Dinersaur",
     selectAccount: "Chọn loại tài khoản của bạn",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "E-mail",
+    password: "Mật khẩu",
+    signUp: "Đăng ký",
+    login: "Đăng nhập",
+    disclaimer: "Bằng cách đăng ký với Dinersaur, bạn chấp nhận Điều khoản dịch vụ và Chính sách bảo mật của chúng tôi",
     
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "Chào mừng trở lại, {name}!",
     upcoming: "Đặt chỗ sắp tới",
     none: "Không có đặt chỗ sắp tới",
     one: "Bạn có 1 đặt chỗ sắp tới",

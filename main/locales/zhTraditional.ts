@@ -5,14 +5,14 @@ export const zhTraditional: Record<string, string> = {
     welcomeDinersaur: "歡迎來到 Dinersaur",
     selectAccount: "選擇您的帳戶類型",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "電子郵件",
+    password: "密碼",
+    signUp: "報名",
+    login: "登入",
+    disclaimer: "註冊 Dinersaur 即表示您接受我們的服務條款和隱私權政策",
     
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "歡迎回來, {name}!",
     upcoming: "即將預訂",
     none: "沒有即將到來的預訂",
     one: "您有 1 個即將進行的預訂",

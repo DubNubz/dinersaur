@@ -5,14 +5,14 @@ export const fr: Record<string, string> = {
     welcomeDinersaur: "Bienvenue à Dinersaur",
     selectAccount: "Sélectionnez votre type de compte",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "E-mail",
+    password: "Mot de passe",
+    signUp: "S'inscrire",
+    login: "Se connecter",
+    disclaimer: "En vous inscrivant sur Dinersaur, vous acceptez nos conditions d'utilisation et notre politique de confidentialité",
 
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "Bienvenue, {name}",
     upcoming: "Réservations à venir",
     none: "Aucune réservation à venir",
     one: "Vous avez 1 réservation à venir",

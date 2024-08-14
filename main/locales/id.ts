@@ -5,14 +5,14 @@ export const id: Record<string, string> = {
     welcomeDinersaur: "Selamat datang di Dinersaur",
     selectAccount: "Pilih jenis akun Anda",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
+    email: "E-mail",
+    password: "Kata sandi",
+    signUp: "Mendaftar",
     login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    disclaimer: "Dengan mendaftar di Dinersaur, Anda menerima Ketentuan Layanan dan Kebijakan Privasi kami",
     
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "Selamat datang kembali, {name}!",
     upcoming: "Reservasi Mendatang",
     none: "Tidak ada reservasi yang akan datang",
     one: "Anda memiliki 1 reservasi yang akan datang",

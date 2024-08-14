@@ -3,6 +3,9 @@
         <ion-content :fullscreen="true">
             <div class="page">
                 <div class="content">
+                    <button class="backButton" @click="router.push('/chooseAccount')">
+                        <ion-icon :icon="chevronBack"></ion-icon>
+                    </button>
                     <ion-img class="dinersaur" src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
                     <div class="inputs">
                         <div class="buttons">
@@ -32,13 +35,14 @@
 <script setup lang="ts">
 
 import { ref, onMounted, watch } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonInput, IonButton } from '@ionic/vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonInput, IonButton, IonIcon } from '@ionic/vue';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider  } from "firebase/auth";
 import { userStore } from '@/stores/userStore';
 import router from '@/router';
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from '@/utils/firebase';
 import { useI18n } from 'vue-i18n';
+import { chevronBack } from 'ionicons/icons';
 
 const { locale } = useI18n();
 
@@ -220,6 +224,19 @@ async function signinWIthGoogle () {
     align-items: center;
     justify-content: center;
     margin-bottom: 6.5em;
+}
+
+.backButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 1em;
+    background-color: transparent;
+
+    ion-icon {
+        width: 3em;
+        height: 3em;
+    }
 }
 
 .dinersaur {

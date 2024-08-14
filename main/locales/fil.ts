@@ -7,12 +7,12 @@ export const fil: Record<string, string> = {
 
     email: "Email",
     password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    signUp: "Mag-sign Up",
+    login: "Mag-login",
+    disclaimer: "Sa pamamagitan ng pag-sign up sa Dinersaur, tinatanggap mo ang aming Mga Tuntunin ng Serbisyo at Patakaran sa Privacy",
     
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "Maligayang pagbabalik, {name}!",
     upcoming: "Mga Paparating na Pagpapareserba",
     none: "Walang paparating na reserbasyon",
     one: "Mayroon kang 1 paparating na reserbasyon",

@@ -5,14 +5,14 @@ export const bn: Record<string, string> = {
     welcomeDinersaur: "Dinersaur স্বাগতম",
     selectAccount: "আপনার অ্যাকাউন্টের ধরন নির্বাচন করুন",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "ইমেইল",
+    password: "পাসওয়ার্ড",
+    signUp: "সাইন আপ করুন",
+    login: "লগইন করুন",
+    disclaimer: "Dinersaur-এর সাথে সাইন আপ করে, আপনি আমাদের পরিষেবার শর্তাবলী এবং গোপনীয়তা নীতি গ্রহণ করেন",
     
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "আবার স্বাগতম, {name}!",
     upcoming: "আসন্ন রিজার্ভেশন",
     none: "কোনও আসন্ন সংরক্ষণ নেই",
     one: "আপনার কাছে 1 আসন্ন রিজার্ভেশন রয়েছে",

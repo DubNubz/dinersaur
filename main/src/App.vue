@@ -14,7 +14,6 @@
     <ion-modal :is-open="showModal" :initial-breakpoint="1" :breakpoints="[0, 1]" @didDismiss="closeModal">
       <ion-header>
         <ion-toolbar>
-          <ion-title>{{ $t("language") }}</ion-title>
           <ion-buttons slot="end">
             <ion-button @click="closeModal">{{ $t("done") }}</ion-button>
           </ion-buttons>

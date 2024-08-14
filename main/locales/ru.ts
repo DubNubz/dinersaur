@@ -5,14 +5,14 @@ export const ru: Record<string, string> = {
     welcomeDinersaur: "Добро пожаловать в Dinersaur",
     selectAccount: "Выберите тип вашего аккаунта",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "Электронная почта",
+    password: "Пароль",
+    signUp: "Зарегистрироваться",
+    login: "Авторизоваться",
+    disclaimer: "Регистрируясь в Dinersaur, вы принимаете наши Условия обслуживания и Политику конфиденциальности",
 
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "Добро пожаловать обратно, {name}!",
     upcoming: "Предстоящие бронирования",
     none: "Нет предстоящих бронирований",
     one: "У вас есть 1 предстоящее бронирование",

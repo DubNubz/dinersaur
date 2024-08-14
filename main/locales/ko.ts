@@ -5,14 +5,14 @@ export const ko: Record<string, string> = {
     welcomeDinersaur: "Dinersaur에 오신 것을 환영합니다",
     selectAccount: "계정 유형을 선택하세요",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "이메일",
+    password: "비밀번호",
+    signUp: "가입하기",
+    login: "로그인",
+    disclaimer: "Dinersaur에 가입하면 당사의 서비스 약관 및 개인정보 보호정책에 동의하는 것입니다",
     
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "환영합니다, {name}!",
     upcoming: "예정된 예약",
     none: "예정된 예약이 없습니다",
     one: "예정된 예약이 1개 있습니다",

@@ -5,14 +5,14 @@ export const hi: Record<string, string> = {
     welcomeDinersaur: "Dinersaur में आपका स्वागत है",
     selectAccount: "अपने खाते का प्रकार चुनें",
 
-    email: "Email",
-    password: "Password",
-    signUp: "Sign Up",
-    login: "Login",
-    disclaimer: "By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.",
+    email: "ईमेल",
+    password: "पासवर्ड",
+    signUp: "साइन अप करें",
+    login: "लॉग इन करें",
+    disclaimer: "डाइनर्सॉर के साथ साइन अप करके, आप हमारी सेवा की शर्तों और गोपनीयता नीति को स्वीकार करते हैं",
     
     // home
-    welcome: "Welcome back, {name}!",
+    welcome: "आपका पुनः स्वागत है, {name}!",
     upcoming: "आगामी आरक्षण",
     none: "कोई आगामी आरक्षण नहीं",
     one: "आपके पास 1 आगामी आरक्षण है",
