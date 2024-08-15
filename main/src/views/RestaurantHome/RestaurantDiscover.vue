@@ -189,7 +189,7 @@
 import { userStore } from '@/stores/userStore';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonCard, IonCardContent, IonIcon, IonCardHeader, IonCardSubtitle, IonCardTitle, IonItem, IonInput, IonSelectOption, IonLabel, IonSelect, IonButton, IonTextarea, IonModal, IonMenu, IonFab, IonFabButton, IonReorder, IonReorderGroup, IonButtons, IonItemSliding, IonItemOption, IonMenuButton, IonItemOptions } from '@ionic/vue';
 import { add, pencil, trash } from 'ionicons/icons';
-import { ref, onUnmounted, onMounted, watch, computed } from 'vue';
+import { ref, onUnmounted, onMounted, watch, computed, onBeforeUnmount } from 'vue';
 
 const isIonModalOpen = ref(false);
 const blankItem = {
@@ -332,7 +332,7 @@ function filterByCategory(category: string | null){
   selectedCategory.value = category;
 }
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   userStore().menu = menu.value;
   userStore().categories = categories.value;
 })

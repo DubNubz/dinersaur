@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="divThree">
-        <IonLabel>{{ $t("name") }}:<br>{{ userName }}</IonLabel>
+        <IonLabel>{{ $t("name") }}:<br>{{ userStore().name }}</IonLabel>
         <StarRating :rating="userStore().rating"/>
       </div>
       <div class="divFour"></div>
@@ -74,11 +74,6 @@ import AllergiesView from './AccountViewFiles/AllergiesView.vue';
 import BillingView from './AccountViewFiles/BillingView.vue';
 import LanguageView from './AccountViewFiles/LanguageView.vue';
 
-onIonViewWillEnter(async () => {
-  userName.value = localStorage.getItem('userName') ?? "";
-  
-});
-
 // Change Profile Picture
 
 const image = ref("https://ionicframework.com/docs/img/demos/avatar.svg");
@@ -92,9 +87,6 @@ async function changeProfile() {
   )
   image.value = profilePic.webPath ?? "";
 }
-
-// Name
-const userName = ref('');
 
 </script>
 

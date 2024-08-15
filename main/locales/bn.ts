@@ -19,6 +19,27 @@ export const bn: Record<string, string> = {
     many: "আপনার {count}টি আসন্ন রিজার্ভেশন আছে",
     past: "অতীত সংরক্ষণ",
 
+    // create
+    create: "Create Video",
+    title: "Title",
+    upload: "Upload",
+    uploadSuccess: "Your video has been uploaded!",
+
+    // discovery
+    comments: "Comments",
+    replies: "Replies",
+    addBookmark: "Added video to your bookmarks!",
+    removeBookmark: "Removed video from your bookmarks",
+
+    report: "Report Video",
+    submit: "Submit a report?",
+    review: "Our team will manually review your report and take all appropriate actions as necessary.",
+    abuse: "Abuse of the report system will result in a suspension or ban of your account.",
+    selectReport: "This video is...",
+    submitReport: "Submit Report",
+    thanksMessage: "Thank you for your report!",
+    thanksDescription: "Our team will look into it as soon as possible.",
+
     // account
     accountSettings: "অ্যাকাউন্ট সেটিংস",
     profile: "প্রোফাইল",
@@ -50,6 +71,7 @@ export const bn: Record<string, string> = {
     german: "জার্মান",
     hindi: "হিন্দি",
     indonesian: "ইন্দোনেশিয়ান",
+    italian: "Italian",
     japanese: "জাপানিজ",
     korean: "কোরিয়ান",
     polish: "পোলিশ",

@@ -36,13 +36,13 @@
 
 import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonInput, IonButton, IonIcon } from '@ionic/vue';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider  } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, setPersistence, browserLocalPersistence  } from "firebase/auth";
 import { userStore } from '@/stores/userStore';
 import router from '@/router';
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from '@/utils/firebase';
 import { useI18n } from 'vue-i18n';
-import { chevronBack } from 'ionicons/icons';
+import { chevronBack, notifications } from 'ionicons/icons';
 
 const { locale } = useI18n();
 
@@ -89,6 +89,9 @@ async function signUp () {
         const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
         userStore().userData = user;
+        localStorage.setItem("uid", user.uid);
+        localStorage.setItem("lang", "en");
+        localStorage.setItem("name", user.displayName ?? "");
         access.value = true;
 
         await setDoc(doc(db, "users", user.uid), {
@@ -109,7 +112,22 @@ async function signUp () {
                 following: [],
                 bookmarkedVideos: [],
                 posts: []
-            }
+            },
+            notifications: [{
+                title: "Welcome to Dinersaur!",
+                text: "Welcome to Dinersaur. Thanks for signing up!",
+                date: new Date(),
+                read: false
+            }],
+            subscribed: false,
+            points: 0
+        });
+
+        userStore().notifications.push({
+            title: "Welcome to Dinersaur!",
+            text: "Welcome to Dinersaur. Thanks for signing up!",
+            date: new Date().getTime(),
+            read: false
         });
 
     } catch (error: any) {
@@ -125,14 +143,13 @@ async function login () {
         const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
         userStore().userData = user;
-        localStorage.setItem("user", JSON.stringify(user));
-        access.value = true;
-
+        localStorage.setItem("uid", user.uid);
+        
         const store = userStore();
         const docData = await getDoc(doc(db, "users", user.uid));
         const userData = docData.data();
+        access.value = true;
         if (!userData) return;
-        localStorage.setItem("userData", JSON.stringify(userData));
 
         store.currentAllergies = userData.allergies;
         store.billing = userData.billing;
@@ -141,17 +158,18 @@ async function login () {
         store.pastReservations = userData.pastReservations;
         store.rating = userData.rating;
         store.smProfile = userData.smProfile;
+        store.notifications = userData.notifications;
+        store.points = userData.points;
+        store.subscribed = userData.subscribed;
 
-        if (store.language != "en") {
-            try {
-                await updateDoc(doc(db, "users", userData.uid), { language: store.language });
-
-            } catch (error) {
-                console.error(error);
-            }
+        if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
+        else {
+            store.language = userData.language;
+            locale.value = userData.language;
         }
 
-        if (userData.language !== "en") locale.value = userData.language;
+        localStorage.setItem("lang", store.language);
+        localStorage.setItem("name", store.name);
         
     } catch (error: any) {
         console.log(error.message)
@@ -168,20 +186,18 @@ async function signinWIthGoogle () {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         userStore().userData = user;
-        localStorage.setItem("user", JSON.stringify(user));
-        access.value = true;
-
+        localStorage.setItem("uid", user.uid);
+        
         const store = userStore();
         const docData = await getDoc(doc(db, "users", user.uid));
         const userData = docData.data();
+        access.value = true;
         if (!userData) return;
 
         if (userData.name == "" && user.displayName) {
             userData.name = user.displayName;
             await updateDoc(doc(db, "users", user.uid), { name: user.displayName });
-        };
-
-        localStorage.setItem("userData", JSON.stringify(userData));
+        }
 
         store.currentAllergies = userData.allergies;
         store.billing = userData.billing;
@@ -190,12 +206,18 @@ async function signinWIthGoogle () {
         store.pastReservations = userData.pastReservations;
         store.rating = userData.rating;
         store.smProfile = userData.smProfile;
+        store.notifications = userData.notifications;
+        store.points = userData.points;
+        store.subscribed = userData.subscribed;
 
         if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
         else {
             store.language = userData.language;
             locale.value = userData.language;
         }
+
+        localStorage.setItem("lang", store.language);
+        localStorage.setItem("name", store.name);
 
         
     } catch (error: any) {

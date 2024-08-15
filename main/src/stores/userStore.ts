@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { defineStore } from 'pinia';
 import type { User } from 'firebase/auth';
+import { Timestamp } from 'firebase/firestore';
 
 export type Reservation = {
     title: string;
@@ -11,6 +12,7 @@ export type Reservation = {
 
 export type Video = {
     id: string;
+    title: string;
     author: string;
     url: string;
     likes: number;
@@ -39,10 +41,26 @@ export type BillingInfo = {
 }
 
 export type smProfile = {
-    bookmarkedVideos: Video[];
+    /** Array of video IDs as strings. */
+    bookmarkedVideos: string[];
+    /** Array of video IDs as strings. */
+    likedVideos: string[];
+    /** Array of UIDs as strings. */
     followers: string[];
+    /** Array of UIDs as strings. */
     following: string[];
-    posts: Video[];
+    /** Array of video IDs as strings. */
+    posts: string[];
+}
+
+export type ReportReason = "Animal abuse" | "Child abuse" | "Copyright infringement" | "Harrassment" | "Hateful content" | "Misinformation" | "Promotes terrorism" | "Sexual content" | "Spam" | "Other";
+export type VideoReport = {
+    reportId: string;
+    videoId: string;
+    reason: ReportReason;
+    customReason: string;
+    reporterId: string;
+    date: Date;
 }
 
 export type MenuItem = {
@@ -51,6 +69,14 @@ export type MenuItem = {
     category: string,
     description: string,
     price: number
+}
+
+export type Notification = {
+    title: string;
+    text: string;
+    /** Milliseconds since epoch. */
+    date: number;
+    read: boolean;
 }
 
 export const userStore = defineStore('userStore', () => {
@@ -70,19 +96,23 @@ export const userStore = defineStore('userStore', () => {
     const rating = ref(5);
     const smProfile = ref<smProfile> ({
         bookmarkedVideos: [],
+        likedVideos: [],
         followers: [],
         following: [],
         posts: []
     });
+    const notifications = ref<Notification[]> ([]);
+    const points = ref(0);
+    const subscribed = ref(false);
 
     const currentVideo = ref<Video> ();
     const videoQueue = ref<Video[]> ([]);
 
     // Restaurant Layout Side
 
-    const floorLayouts = ref<{ [key: number]: Array<Array<{ type: string }>> }>({});
+    const floorLayouts = ref<{ [key: number]: { type: string }[][] }>({});
 
-    function saveLayout(floorIndex: number, layout: Array<Array<{ type: string }>>) {
+    function saveLayout(floorIndex: number, layout: { type: string }[][]) {
         floorLayouts.value[floorIndex] = layout;
     }
 
@@ -93,5 +123,5 @@ export const userStore = defineStore('userStore', () => {
     const menu = ref<MenuItem[]>([]);
     const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
 
-    return { userData, reservations, pastReservations, currentAllergies, currentVideo, billing, language, name, rating, smProfile, videoQueue, floorLayouts, saveLayout, loadLayout, menu, categories };
+    return { userData, reservations, pastReservations, currentAllergies, notifications, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscribed, floorLayouts, saveLayout, loadLayout, menu, categories };
 });

@@ -55,6 +55,7 @@ import DinersaurLoad from './components/DinersaurLoad.vue';
 import { allergies } from './utils/allergies';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './utils/firebase';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const loadingBarPercentage = ref(10);
 const showDinersaur = ref(false);
@@ -64,30 +65,23 @@ const { locale } = useI18n();
 
 onBeforeMount(async () => {
   const store = userStore();
-  const storedUser = localStorage.getItem("user");
-  const storedUserData = localStorage.getItem("userData");
 
-  if (storedUserData) {
-    const userData = JSON.parse(storedUserData);
+  const storedLang = localStorage.getItem("lang");
+  const storedName = localStorage.getItem("name");
 
-    store.currentAllergies = userData.allergies;
-    store.billing = userData.billing;
-    store.reservations = userData.currentReservations;
-    store.language = userData.language;
-    store.name = userData.name;
-    store.pastReservations = userData.pastReservations;
-    store.rating = userData.rating;
-    store.smProfile = userData.smProfile;
+  if (storedLang) store.language = storedLang;
+  if (storedName) store.name = storedName;
+});
 
-    locale.value = store.language;
-  }
-
-  if (storedUser) {
-    store.userData = JSON.parse(storedUser);
-    const docData = await getDoc(doc(db, "users", JSON.parse(storedUser).uid));
+onAuthStateChanged(getAuth(), async (user) => {
+  if (user) {
+    const store = userStore();
+    store.userData = user;
+    const docData = await getDoc(doc(db, "users", user.uid));
     const userData = docData.data();
     if (!userData) return;
-    localStorage.setItem("userData", JSON.stringify(userData));
+    localStorage.setItem("lang", userData.language);
+    localStorage.setItem("name", userData.name);
   
     store.currentAllergies = userData.allergies;
     store.billing = userData.billing;
@@ -97,6 +91,7 @@ onBeforeMount(async () => {
     store.pastReservations = userData.pastReservations;
     store.rating = userData.rating;
     store.smProfile = userData.smProfile;
+    store.notifications = userData.notifications;
 
     locale.value = store.language;
   }

@@ -55,6 +55,7 @@ import { zhTraditional } from '../locales/zhTraditional';
 import { de } from '../locales/de';
 import { hi } from '../locales/hi';
 import { id } from '../locales/id';
+import { it } from '../locales/it';
 import { ja } from '../locales/ja';
 import { fil } from '../locales/fil';
 import { ko } from '../locales/ko';
@@ -68,7 +69,7 @@ const i18n = createI18n({
   legacy: false,
   locale: "en",
   fallbackLocale: "en",
-  messages: { en, fr, ar, ru, bn, zhSimplified, zhTraditional, de, hi, id, ja, fil, ko, pt, es, vi }
+  messages: { en, fr, ar, ru, bn, zhSimplified, zhTraditional, de, hi, id, it, ja, fil, ko, pt, es, vi }
 });
 const pinia = createPinia();
 const app = createApp(App)

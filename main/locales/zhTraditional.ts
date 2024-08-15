@@ -19,6 +19,27 @@ export const zhTraditional: Record<string, string> = {
     many: "您有 {count} 個即將進行的預訂",
     past: "過去的預訂",
 
+    // create
+    create: "Create Video",
+    title: "Title",
+    upload: "Upload",
+    uploadSuccess: "Your video has been uploaded!",
+
+    // discovery
+    comments: "Comments",
+    replies: "Replies",
+    addBookmark: "Added video to your bookmarks!",
+    removeBookmark: "Removed video from your bookmarks",
+
+    report: "Report Video",
+    submit: "Submit a report?",
+    review: "Our team will manually review your report and take all appropriate actions as necessary.",
+    abuse: "Abuse of the report system will result in a suspension or ban of your account.",
+    selectReport: "This video is...",
+    submitReport: "Submit Report",
+    thanksMessage: "Thank you for your report!",
+    thanksDescription: "Our team will look into it as soon as possible.",
+
     // account
     accountSettings: "帳戶設定",
     profile: "輪廓",
@@ -50,6 +71,7 @@ export const zhTraditional: Record<string, string> = {
     german: "德文",
     hindi: "印地語",
     indonesian: "印尼",
+    italian: "Italian",
     japanese: "日本人",
     korean: "韓國人",
     polish: "拋光",

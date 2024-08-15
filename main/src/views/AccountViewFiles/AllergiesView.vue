@@ -29,7 +29,7 @@
           <ion-toolbar>
             <ion-title>{{ $t("editAllergies") }}</ion-title>
             <ion-buttons slot="end">
-              <ion-button @click="closeModal">{{ $t("done") }}</ion-button>
+              <ion-button @click="editAllergiesMenu = false">{{ $t("done") }}</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
@@ -135,7 +135,6 @@ async function closeModal () {
   } catch (error) {
     console.error(error);
   }
-
 }
 
 function addAllergyToList (newAllergy: string) {

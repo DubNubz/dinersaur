@@ -19,6 +19,27 @@ export const ko: Record<string, string> = {
     many: "예정된 예약이 {count}개 있습니다.",
     past: "지난 예약",
 
+    // create
+    create: "Create Video",
+    title: "Title",
+    upload: "Upload",
+    uploadSuccess: "Your video has been uploaded!",
+
+    // discovery
+    comments: "Comments",
+    replies: "Replies",
+    addBookmark: "Added video to your bookmarks!",
+    removeBookmark: "Removed video from your bookmarks",
+
+    report: "Report Video",
+    submit: "Submit a report?",
+    review: "Our team will manually review your report and take all appropriate actions as necessary.",
+    abuse: "Abuse of the report system will result in a suspension or ban of your account.",
+    selectReport: "This video is...",
+    submitReport: "Submit Report",
+    thanksMessage: "Thank you for your report!",
+    thanksDescription: "Our team will look into it as soon as possible.",
+
     // account
     accountSettings: "계정 설정",
     profile: "윤곽",
@@ -50,6 +71,7 @@ export const ko: Record<string, string> = {
     german: "독일 사람",
     hindi: "힌디 어",
     indonesian: "인도네시아 인",
+    italian: "Italian",
     japanese: "일본어",
     korean: "한국인",
     polish: "광택",

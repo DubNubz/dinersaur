@@ -50,6 +50,10 @@ export const languages: Language[] = [{
     code: "ru",
     flag: "/flags/ru.svg"
 }, {
+    name: "italian",
+    code: "it",
+    flag: "/flags/it.svg"
+}, {
     name: "filipino",
     code: "fil",
     flag: "/flags/ph.svg"

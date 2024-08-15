@@ -1,29 +1,87 @@
 <template>
-    <ion-header :class="{ enabledHeader: searchBarActive }">
+    <ion-header>
         <ion-toolbar class="title">
           <div class="logo">
             <ion-img src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
-            <ion-title class="dinersaurText sequel" :class="{ disabled: searchBarActive }">Dinersaur</ion-title>
+            <ion-title class="dinersaurText sequel">Dinersaur</ion-title>
           </div>
         </ion-toolbar>
-        <ion-toolbar class="search" :class="{ enabled: searchBarActive }">
-          <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" show-clear-button="focus" @ion-focus="searchBarActive = true;" @ion-blur="searchBarActive = false" class="searchbar"></ion-searchbar>
+        <ion-toolbar>
+          <div class="statusBar">
+            <button class="notifications" @click="openNotifications = !openNotifications">
+              <ion-icon :icon="userStore().notifications.filter((notif) => !notif.read).length == 0 ? notificationsOutline : notifications"></ion-icon>
+              <ion-badge v-if="userStore().notifications.filter((notif) => !notif.read).length != 0" slot="end">{{ userStore().notifications.filter((notif) => !notif.read).length }}</ion-badge>
+            </button>
+          </div>
         </ion-toolbar>
     </ion-header>
+
+    <ion-modal :is-open="openNotifications" :initial-breakpoint="0.9" :breakpoints="[0, 0.65, 0.9, 1]" @didDismiss="closeNotifications">
+      <ion-content>
+        <h1>Notifications</h1>
+        <ion-list>
+          <ion-card class="notification" :class="{ new: notification.read }" v-for="notification in userStore().notifications">
+            <h3><ion-badge v-if="!notification.read" slot="start">New</ion-badge>{{ notification.title }}</h3>
+            <ion-card-subtitle>{{ timeSince(notification.date) }}</ion-card-subtitle>
+            <p><span v-for="text in notification.text.split('\\n')">{{ text }}</span></p>
+            <ion-button @click="dismissNotification(notification)" fill="clear">Dismiss</ion-button>
+          </ion-card>
+          <h3 v-if="userStore().notifications.length == 0">No new notifications! Check back later.</h3>
+        </ion-list>
+      </ion-content>
+    </ion-modal>
 </template>
 
 <script setup lang="ts">
 
 import { ref, onMounted, watch, defineEmits } from 'vue';
-import { IonHeader, IonToolbar, IonTitle, IonSearchbar, IonImg } from '@ionic/vue';
+import { IonHeader, IonToolbar, IonTitle, IonSearchbar, IonImg, IonIcon, IonBadge, IonContent, IonModal, IonLabel, IonButtons, IonButton, IonList, IonCard, IonCardSubtitle } from '@ionic/vue';
+import { notifications, notificationsOutline } from 'ionicons/icons';
+import { Notification, userStore } from '@/stores/userStore';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/utils/firebase';
 
-const searchBarActive = ref(false);
-const currentSearch = ref("");
+const openNotifications = ref(false);
 
-watch(() => currentSearch.value, () => search());
+function timeSince (time: number) {
+  const currentTime = new Date().getTime();
+  
+  const secondsSince = (currentTime - time) / 1000;
 
-function search () {
+  if (secondsSince < 60) {
+    return Math.floor(secondsSince) + ` second${secondsSince == 1 ? '' : 's'} ago`;
 
+  } else if (secondsSince < 60 * 60) {
+    return Math.floor(secondsSince / 60) + ` minute${Math.floor(secondsSince / 60) == 1 ? '' : 's'} ago`;
+
+  } else if (secondsSince < 60 * 60 * 24) {
+    return Math.floor(secondsSince / 60 / 60) + ` hour${Math.floor(secondsSince / 60 / 60) == 1 ? '' : 's'} ago`;
+
+  } else if (secondsSince < 60 * 60 * 24 * 30) {
+    return Math.floor(secondsSince / 60 / 60 / 24) + ` day${Math.floor(secondsSince / 60 / 60 / 24) == 1 ? '' : 's'} ago`;
+
+  } else if (secondsSince < 60 * 60 * 24 * 30 * 12) {
+    return Math.floor(secondsSince / 60 / 60 / 24 / 30) + ` month${Math.floor(secondsSince / 60 / 60 / 24 / 30) == 1 ? '' : 's'} ago`;
+
+  } else {
+    return Math.floor(secondsSince / 60 / 60 / 24 / 30 / 12) + ` year${Math.floor(secondsSince / 60 / 60 / 24 / 30 / 12) == 1 ? '' : 's'} ago`;
+  }
+
+}
+
+async function closeNotifications () {
+  openNotifications.value = false;
+  for (let notification of userStore().notifications) {
+    notification.read = true;
+  }
+
+  await updateDoc(doc(db, "users", userStore().userData?.uid ?? ""), { notifications: userStore().notifications });
+}
+
+async function dismissNotification (notification: Notification) {
+  const index = userStore().notifications.indexOf(notification);
+  userStore().notifications.splice(index, 1);
+  await updateDoc(doc(db, "users", userStore().userData?.uid ?? ""), { notifications: userStore().notifications });
 }
 
 /* const searchResults = ref<any[]>([]);
@@ -103,17 +161,50 @@ ion-title.disabled {
   width: 0px;
 }
 
-.search {
-  width: 50%;
-  transition: all 0.25s;
+.statusBar {
+  width: 100%;
+  height: 100%;
+  padding-right: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-.enabled {
-  width: 75%;
+.notifications {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+  background-color: transparent;
+
+  ion-icon {
+    width: 2.5em;
+    height: 2.5em;
+  }
 }
 
-ion-searchbar.searchbar {
-  transition: all 0.25s;
+ion-card.notification {
+  h3 {
+    display: flex;
+    gap: 0.25em;
+    align-items: center;
+    justify-content: flex-start;
+    color: black;
+  }
+
+  ion-card-subtitle {
+    color: black;
+  }
+
+  p {
+    display: flex;
+    flex-direction: column;
+    color: black;
+  }
+}
+
+ion-card.new {
+  --background: var(--ion-color-light-shade);
 }
 
 </style>

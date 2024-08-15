@@ -5,6 +5,10 @@
       <div class="divOne">
         <h1>{{ $t("welcome", { name: userStore().name }) }}</h1>
       </div>
+      <div class="points">
+        <div class="bar" :style="{ width: Math.floor(((userStore().points / (userStore().points * 1.5)) || 0.15) * 100) + '%' }"></div>
+      </div>
+      <h4>You have {{ userStore().points }} points!</h4>
       <div class="divOne">
         <ion-title>{{ $t("upcoming") }}</ion-title>
       </div>
@@ -62,6 +66,22 @@ watch(() => userStore().pastReservations, () => arrayOfPastReservations.value = 
 </script>
 
 <style lang="scss" scoped>
+
+.points {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 90vw;
+  height: 1.65em;
+  background-color: var(--ion-color-light-contrast);
+  border-radius: 2em;
+
+  .bar {
+    height: 100%;
+    border-radius: 2em;
+    background-color: var(--ion-color-secondary);
+  }
+}
 
 .divOne{
   display: flex;

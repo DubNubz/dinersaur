@@ -19,6 +19,27 @@ export const es: Record<string, string> = {
     many: "Tienes {count} próximas reservas",
     past: "Reservaciones pasadas",
 
+    // create
+    create: "Create Video",
+    title: "Title",
+    upload: "Upload",
+    uploadSuccess: "Your video has been uploaded!",
+
+    // discovery
+    comments: "Comments",
+    replies: "Replies",
+    addBookmark: "Added video to your bookmarks!",
+    removeBookmark: "Removed video from your bookmarks",
+
+    report: "Report Video",
+    submit: "Submit a report?",
+    review: "Our team will manually review your report and take all appropriate actions as necessary.",
+    abuse: "Abuse of the report system will result in a suspension or ban of your account.",
+    selectReport: "This video is...",
+    submitReport: "Submit Report",
+    thanksMessage: "Thank you for your report!",
+    thanksDescription: "Our team will look into it as soon as possible.",
+
     // account
     accountSettings: "Configuraciones de la cuenta",
     profile: "Perfil",
@@ -50,6 +71,7 @@ export const es: Record<string, string> = {
     german: "Alemán",
     hindi: "Hindi",
     indonesian: "Indonesio",
+    italian: "Italian",
     japanese: "Japonés",
     korean: "Coreano",
     polish: "Polaco",

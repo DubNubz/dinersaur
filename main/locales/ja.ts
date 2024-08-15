@@ -19,6 +19,27 @@ export const ja: Record<string, string> = {
     many: "今後の予約は{count}件あります",
     past: "過去の予約",
 
+    // create
+    create: "Create Video",
+    title: "Title",
+    upload: "Upload",
+    uploadSuccess: "Your video has been uploaded!",
+
+    // discovery
+    comments: "Comments",
+    replies: "Replies",
+    addBookmark: "Added video to your bookmarks!",
+    removeBookmark: "Removed video from your bookmarks",
+
+    report: "Report Video",
+    submit: "Submit a report?",
+    review: "Our team will manually review your report and take all appropriate actions as necessary.",
+    abuse: "Abuse of the report system will result in a suspension or ban of your account.",
+    selectReport: "This video is...",
+    submitReport: "Submit Report",
+    thanksMessage: "Thank you for your report!",
+    thanksDescription: "Our team will look into it as soon as possible.",
+
     // account
     accountSettings: "アカウント設定",
     profile: "プロフィール",
@@ -50,6 +71,7 @@ export const ja: Record<string, string> = {
     german: "ドイツ語",
     hindi: "ヒンディー語",
     indonesian: "インドネシア語",
+    italian: "Italian",
     japanese: "日本語",
     korean: "韓国語",
     polish: "研磨",

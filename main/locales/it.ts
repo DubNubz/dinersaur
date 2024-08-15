@@ -1,5 +1,5 @@
 
-export const en: Record<string, string> = {
+export const it: Record<string, string> = {
     done: "Done",
 
     welcomeDinersaur: "Welcome to Dinersaur",
@@ -35,7 +35,7 @@ export const en: Record<string, string> = {
     submit: "Submit a report?",
     review: "Our team will manually review your report and take all appropriate actions as necessary.",
     abuse: "Abuse of the report system will result in a suspension or ban of your account.",
-    selectReport: "This video contains...",
+    selectReport: "This video is...",
     submitReport: "Submit Report",
     thanksMessage: "Thank you for your report!",
     thanksDescription: "Our team will look into it as soon as possible.",
