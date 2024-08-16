@@ -5,8 +5,13 @@ import type { User } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
 
 export type Reservation = {
-    title: string;
-    content: string;
+    restaurantName: string;
+    address: string;
+    /** Milliseconds since epoch. */
+    time: number;
+    people: number;
+    price: number;
+    paid: boolean;
     id: string;
 }
 

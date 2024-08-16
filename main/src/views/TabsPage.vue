@@ -5,9 +5,9 @@
 
       <ion-router-outlet></ion-router-outlet>
 
-      <ion-fab vertical="bottom" horizontal="center" slot="fixed" style="margin-bottom: 1em;">
+      <ion-fab v-if="router.currentRoute.value.path === '/pages/discover'" vertical="bottom" horizontal="center" slot="fixed" style="margin-bottom: 1em;">
         <ion-fab-button @click="openModal = true">
-          <ion-icon :icon="add"></ion-icon>
+          <ion-icon :icon="videocamOutline"></ion-icon>
         </ion-fab-button>
       </ion-fab>
 
@@ -52,6 +52,7 @@
 
 <script setup lang="ts">
 
+import router from '@/router';
 import { userStore } from '@/stores/userStore';
 import { db } from '@/utils/firebase';
 import { getRandomItemFromArray } from '@/utils/functions';
@@ -60,7 +61,7 @@ import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle
   InfiniteScrollCustomEvent, IonAvatar, IonInput, onIonViewWillEnter, createAnimation, IonRippleEffect, IonCheckbox, IonTabBar, IonTabButton, IonRouterOutlet, IonTabs } from '@ionic/vue';
 import { doc, setDoc } from 'firebase/firestore';
 import { getStorage, ref as firebaseRef, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { homeOutline, compassOutline, personCircleOutline, mapOutline, bookmarks, addCircle, addCircleOutline, add } from 'ionicons/icons';
+import { homeOutline, compassOutline, personCircleOutline, mapOutline, bookmarks, addCircle, addCircleOutline, add, videocamOutline, videocamOffOutline } from 'ionicons/icons';
 import { ref } from 'vue';
 
 const fileInput = ref();

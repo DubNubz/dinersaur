@@ -92,6 +92,8 @@ onAuthStateChanged(getAuth(), async (user) => {
     store.rating = userData.rating;
     store.smProfile = userData.smProfile;
     store.notifications = userData.notifications;
+    store.points = userData.points;
+    store.subscribed = userData.subscribed;
 
     locale.value = store.language;
   }

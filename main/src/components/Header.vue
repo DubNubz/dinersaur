@@ -40,34 +40,9 @@ import { notifications, notificationsOutline } from 'ionicons/icons';
 import { Notification, userStore } from '@/stores/userStore';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
+import { timeSince } from '@/utils/functions';
 
 const openNotifications = ref(false);
-
-function timeSince (time: number) {
-  const currentTime = new Date().getTime();
-  
-  const secondsSince = (currentTime - time) / 1000;
-
-  if (secondsSince < 60) {
-    return Math.floor(secondsSince) + ` second${secondsSince == 1 ? '' : 's'} ago`;
-
-  } else if (secondsSince < 60 * 60) {
-    return Math.floor(secondsSince / 60) + ` minute${Math.floor(secondsSince / 60) == 1 ? '' : 's'} ago`;
-
-  } else if (secondsSince < 60 * 60 * 24) {
-    return Math.floor(secondsSince / 60 / 60) + ` hour${Math.floor(secondsSince / 60 / 60) == 1 ? '' : 's'} ago`;
-
-  } else if (secondsSince < 60 * 60 * 24 * 30) {
-    return Math.floor(secondsSince / 60 / 60 / 24) + ` day${Math.floor(secondsSince / 60 / 60 / 24) == 1 ? '' : 's'} ago`;
-
-  } else if (secondsSince < 60 * 60 * 24 * 30 * 12) {
-    return Math.floor(secondsSince / 60 / 60 / 24 / 30) + ` month${Math.floor(secondsSince / 60 / 60 / 24 / 30) == 1 ? '' : 's'} ago`;
-
-  } else {
-    return Math.floor(secondsSince / 60 / 60 / 24 / 30 / 12) + ` year${Math.floor(secondsSince / 60 / 60 / 24 / 30 / 12) == 1 ? '' : 's'} ago`;
-  }
-
-}
 
 async function closeNotifications () {
   openNotifications.value = false;
@@ -125,6 +100,7 @@ ion-header {
   transition: all 0.25s;
   width: 100vw;
   height: 5.5em;
+  background-color: var(--ion-color-light);
 }
 
 ion-header.enabledHeader {
