@@ -1,0 +1,76 @@
+
+export type Language = {
+    name: string;
+    code: string;
+    flag: string;
+}
+
+export const languages: Language[] = [{
+    name: 'english',
+    code: 'en',
+    flag: "/flags/us.svg"
+}, {
+    name: "spanish",
+    code: "es",
+    flag: "/flags/es.svg"
+}, {
+    name: "chineseSimplified",
+    code: "zhSimplified",
+    flag: "/flags/cn.svg"
+}, {
+    name: "chineseTraditional",
+    code: "zhTraditional",
+    flag: "/flags/cn.svg"
+}, {
+    name: "french",
+    code: "fr",
+    flag: "/flags/fr.svg"
+}, {
+    name: "korean",
+    code: "ko",
+    flag: "/flags/kr.svg"
+}, {
+    name: "german",
+    code: "de",
+    flag: "/flags/de.svg"
+}, {
+    name: "japanese",
+    code: "ja",
+    flag: "/flags/jp.svg"
+}, {
+    name: "arabic",
+    code: "ar",
+    flag: "/flags/sa.svg"
+}, {
+    name: "portuguese",
+    code: "pt",
+    flag: "/flags/br.svg"
+}, {
+    name: "russian",
+    code: "ru",
+    flag: "/flags/ru.svg"
+}, {
+    name: "italian",
+    code: "it",
+    flag: "/flags/it.svg"
+}, {
+    name: "filipino",
+    code: "fil",
+    flag: "/flags/ph.svg"
+}, {
+    name: "bengali",
+    code: "bn",
+    flag: "/flags/bd.svg"
+}, {
+    name: "vietnamese",
+    code: "vi",
+    flag: "/flags/vn.svg"
+}, {
+    name: "indonesian",
+    code: "id",
+    flag: "/flags/id.svg"
+}, {
+    name: "hindi",
+    code: "hi",
+    flag: "/flags/in.svg"
+}];

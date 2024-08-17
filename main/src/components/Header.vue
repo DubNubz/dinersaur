@@ -1,29 +1,64 @@
 <template>
-    <ion-header :class="{ enabledHeader: searchBarActive }">
+    <ion-header>
         <ion-toolbar class="title">
           <div class="logo">
-            <ion-img src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
-            <ion-title class="dinersaurText sequel" :class="{ disabled: searchBarActive }">Dinersaur</ion-title>
+            <ion-img v-if="!userStore().subscribed" src="/icons/dinersaurWithShadow.svg"></ion-img>
+            <ion-img v-else src="/icons/steakosaurusRight.svg"></ion-img>
+            <ion-title v-if="!userStore().subscribed" class="dinersaurText sequel">Dinersaur</ion-title>
+            <ion-title v-else class="dinersaurText subscribed sequel">Steakosaur</ion-title>
           </div>
         </ion-toolbar>
-        <ion-toolbar class="search" :class="{ enabled: searchBarActive }">
-          <ion-searchbar v-model="currentSearch" inputmode="search" enterkeyhint="search" show-clear-button="focus" @ion-focus="searchBarActive = true;" @ion-blur="searchBarActive = false" class="searchbar"></ion-searchbar>
+        <ion-toolbar>
+          <div class="statusBar">
+            <button class="notifications" @click="openNotifications = !openNotifications">
+              <ion-icon :icon="userStore().notifications.filter((notif) => !notif.read).length == 0 ? notificationsOutline : notifications"></ion-icon>
+              <ion-badge v-if="userStore().notifications.filter((notif) => !notif.read).length != 0" slot="end">{{ userStore().notifications.filter((notif) => !notif.read).length }}</ion-badge>
+            </button>
+          </div>
         </ion-toolbar>
     </ion-header>
+
+    <ion-modal :is-open="openNotifications" :initial-breakpoint="0.9" :breakpoints="[0, 0.65, 0.9, 1]" @didDismiss="closeNotifications">
+      <ion-content>
+        <h1>Notifications</h1>
+        <ion-list>
+          <ion-card class="notification" :class="{ new: notification.read }" v-for="notification in userStore().notifications">
+            <h3><ion-badge v-if="!notification.read" slot="start">New</ion-badge>{{ notification.title }}</h3>
+            <ion-card-subtitle>{{ timeSince(notification.date) }}</ion-card-subtitle>
+            <p><span v-for="text in notification.text.split('\\n')">{{ text }}</span></p>
+            <ion-button @click="dismissNotification(notification)" fill="clear">Dismiss</ion-button>
+          </ion-card>
+          <h3 v-if="userStore().notifications.length == 0">No new notifications! Check back later.</h3>
+        </ion-list>
+      </ion-content>
+    </ion-modal>
 </template>
 
 <script setup lang="ts">
 
 import { ref, onMounted, watch, defineEmits } from 'vue';
-import { IonHeader, IonToolbar, IonTitle, IonSearchbar, IonImg } from '@ionic/vue';
+import { IonHeader, IonToolbar, IonTitle, IonSearchbar, IonImg, IonIcon, IonBadge, IonContent, IonModal, IonLabel, IonButtons, IonButton, IonList, IonCard, IonCardSubtitle } from '@ionic/vue';
+import { notifications, notificationsOutline } from 'ionicons/icons';
+import { Notification, userStore } from '@/stores/userStore';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '@/utils/firebase';
+import { timeSince } from '@/utils/functions';
 
-const searchBarActive = ref(false);
-const currentSearch = ref("");
+const openNotifications = ref(false);
 
-watch(() => currentSearch.value, () => search());
+async function closeNotifications () {
+  openNotifications.value = false;
+  for (let notification of userStore().notifications) {
+    notification.read = true;
+  }
 
-function search () {
+  await updateDoc(doc(db, "users", userStore().userData?.uid ?? ""), { notifications: userStore().notifications });
+}
 
+async function dismissNotification (notification: Notification) {
+  const index = userStore().notifications.indexOf(notification);
+  userStore().notifications.splice(index, 1);
+  await updateDoc(doc(db, "users", userStore().userData?.uid ?? ""), { notifications: userStore().notifications });
 }
 
 /* const searchResults = ref<any[]>([]);
@@ -67,6 +102,7 @@ ion-header {
   transition: all 0.25s;
   width: 100vw;
   height: 5.5em;
+  background-color: var(--ion-color-light);
 }
 
 ion-header.enabledHeader {
@@ -95,25 +131,62 @@ ion-header.enabledHeader {
 }
 
 ion-title.dinersaurText {
-  width: 110px;
+  width: 100%;
   transition: all 0.15s;
+}
+
+ion-title.subscribed {
+  --color: var(--ion-color-primary-shade);
 }
 
 ion-title.disabled {
   width: 0px;
 }
 
-.search {
-  width: 50%;
-  transition: all 0.25s;
+.statusBar {
+  width: 100%;
+  height: 100%;
+  padding-right: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
-.enabled {
-  width: 75%;
+.notifications {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+  background-color: transparent;
+
+  ion-icon {
+    width: 2.5em;
+    height: 2.5em;
+  }
 }
 
-ion-searchbar.searchbar {
-  transition: all 0.25s;
+ion-card.notification {
+  h3 {
+    display: flex;
+    gap: 0.25em;
+    align-items: center;
+    justify-content: flex-start;
+    color: black;
+  }
+
+  ion-card-subtitle {
+    color: black;
+  }
+
+  p {
+    display: flex;
+    flex-direction: column;
+    color: black;
+  }
+}
+
+ion-card.new {
+  --background: var(--ion-color-light-shade);
 }
 
 </style>

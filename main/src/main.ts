@@ -44,10 +44,36 @@ import { getFirestore } from 'firebase/firestore';
 
 import VueKonva from 'vue-konva';
 
+import { createI18n } from 'vue-i18n'
+import { en } from '../locales/en';
+import { fr } from '../locales/fr';
+import { ar } from '../locales/ar';
+import { ru } from '../locales/ru';
+import { bn } from '../locales/bn';
+import { zhSimplified } from '../locales/zhSimplified';
+import { zhTraditional } from '../locales/zhTraditional';
+import { de } from '../locales/de';
+import { hi } from '../locales/hi';
+import { id } from '../locales/id';
+import { it } from '../locales/it';
+import { ja } from '../locales/ja';
+import { fil } from '../locales/fil';
+import { ko } from '../locales/ko';
+import { pt } from '../locales/pt';
+import { es } from '../locales/es';
+import { vi } from '../locales/vi';
+
 defineCustomElements(window);
 
+const i18n = createI18n({
+  legacy: false,
+  locale: "en",
+  fallbackLocale: "en",
+  messages: { en, fr, ar, ru, bn, zhSimplified, zhTraditional, de, hi, id, it, ja, fil, ko, pt, es, vi }
+});
 const pinia = createPinia();
 const app = createApp(App)
+  .use(i18n)
   .use(IonicVue)
   .use(router)
   .use(VueKonva);

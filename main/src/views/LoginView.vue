@@ -3,6 +3,9 @@
         <ion-content :fullscreen="true">
             <div class="page">
                 <div class="content">
+                    <button class="backButton" @click="router.push('/chooseAccount')">
+                        <ion-icon :icon="chevronBack"></ion-icon>
+                    </button>
                     <ion-img class="dinersaur" src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
                     <div class="inputs">
                         <div class="buttons">
@@ -13,17 +16,17 @@
                                 <img src="/icons/apple.svg" alt="Sign in with Apple">
                             </ion-button>
                         </div>
-                        <input label="Email" placeholder="Email" v-model="email" required>
-                        <input label="Password" placeholder="Password" v-model="password" type="password" required>
+                        <input label="Email" :placeholder="$t('email')" v-model="email" required>
+                        <input label="Password" :placeholder="$t('password')" v-model="password" type="password" required>
                         <p class="errorMessage" v-if="showError">{{ errorMessage }}</p>
                         <div class="signUpDiv">
-                            <ion-button class="signup" @click="signUp">Sign Up</ion-button>
-                            <ion-button class="signup" @click="login">Login</ion-button>
+                            <ion-button class="signup" @click="signUp">{{ $t("signUp") }}</ion-button>
+                            <ion-button class="signup" @click="login">{{ $t("login") }}</ion-button>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="tos">By signing up with Dinersaur, you accept our Terms of Service and Privacy Policy.</p>
+            <p class="tos">{{ $t("disclaimer") }}.</p>
 
         </ion-content>
     </ion-page>
@@ -32,12 +35,16 @@
 <script setup lang="ts">
 
 import { ref, onMounted, watch } from 'vue';
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonInput, IonButton } from '@ionic/vue';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider  } from "firebase/auth";
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonInput, IonButton, IonIcon } from '@ionic/vue';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, setPersistence, browserLocalPersistence  } from "firebase/auth";
 import { userStore } from '@/stores/userStore';
 import router from '@/router';
-import { setDoc, doc, getDoc } from "firebase/firestore"; 
+import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from '@/utils/firebase';
+import { useI18n } from 'vue-i18n';
+import { chevronBack, notifications } from 'ionicons/icons';
+
+const { locale } = useI18n();
 
 const email = ref("");
 const password = ref("");
@@ -82,12 +89,15 @@ async function signUp () {
         const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
         userStore().userData = user;
+        localStorage.setItem("uid", user.uid);
+        localStorage.setItem("lang", "en");
+        localStorage.setItem("name", user.displayName ?? "");
         access.value = true;
 
         await setDoc(doc(db, "users", user.uid), {
             name: "",
             allergies: [],
-            language: "English",
+            language: "en",
             rating: 5,
             currentReservations: [],
             pastReservations: [],
@@ -102,7 +112,22 @@ async function signUp () {
                 following: [],
                 bookmarkedVideos: [],
                 posts: []
-            }
+            },
+            notifications: [{
+                title: "Welcome to Dinersaur!",
+                text: "Welcome to Dinersaur. Thanks for signing up!",
+                date: new Date(),
+                read: false
+            }],
+            subscribed: false,
+            points: 0
+        });
+
+        userStore().notifications.push({
+            title: "Welcome to Dinersaur!",
+            text: "Welcome to Dinersaur. Thanks for signing up!",
+            date: new Date().getTime(),
+            read: false
         });
 
     } catch (error: any) {
@@ -118,21 +143,33 @@ async function login () {
         const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
         userStore().userData = user;
-        access.value = true;
-
+        localStorage.setItem("uid", user.uid);
+        
         const store = userStore();
         const docData = await getDoc(doc(db, "users", user.uid));
         const userData = docData.data();
+        access.value = true;
         if (!userData) return;
 
         store.currentAllergies = userData.allergies;
         store.billing = userData.billing;
         store.reservations = userData.currentReservations;
-        store.language = userData.language;
         store.name = userData.name;
         store.pastReservations = userData.pastReservations;
         store.rating = userData.rating;
         store.smProfile = userData.smProfile;
+        store.notifications = userData.notifications;
+        store.points = userData.points;
+        store.subscribed = userData.subscribed;
+
+        if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
+        else {
+            store.language = userData.language;
+            locale.value = userData.language;
+        }
+
+        localStorage.setItem("lang", store.language);
+        localStorage.setItem("name", store.name);
         
     } catch (error: any) {
         console.log(error.message)
@@ -149,21 +186,39 @@ async function signinWIthGoogle () {
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         userStore().userData = user;
-        access.value = true;
-
+        localStorage.setItem("uid", user.uid);
+        
         const store = userStore();
         const docData = await getDoc(doc(db, "users", user.uid));
         const userData = docData.data();
+        access.value = true;
         if (!userData) return;
+
+        if (userData.name == "" && user.displayName) {
+            userData.name = user.displayName;
+            await updateDoc(doc(db, "users", user.uid), { name: user.displayName });
+        }
 
         store.currentAllergies = userData.allergies;
         store.billing = userData.billing;
         store.reservations = userData.currentReservations;
-        store.language = userData.language;
         store.name = userData.name;
         store.pastReservations = userData.pastReservations;
         store.rating = userData.rating;
         store.smProfile = userData.smProfile;
+        store.notifications = userData.notifications;
+        store.points = userData.points;
+        store.subscribed = userData.subscribed;
+
+        if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
+        else {
+            store.language = userData.language;
+            locale.value = userData.language;
+        }
+
+        localStorage.setItem("lang", store.language);
+        localStorage.setItem("name", store.name);
+
         
     } catch (error: any) {
         console.log(error.message)
@@ -191,6 +246,19 @@ async function signinWIthGoogle () {
     align-items: center;
     justify-content: center;
     margin-bottom: 6.5em;
+}
+
+.backButton {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 1em;
+    background-color: transparent;
+
+    ion-icon {
+        width: 3em;
+        height: 3em;
+    }
 }
 
 .dinersaur {

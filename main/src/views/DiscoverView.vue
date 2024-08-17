@@ -18,9 +18,12 @@
       <video v-if="videoQueue[0]" id="video2" width="1080" height="1920" class="video" disablepictureinpicture disableremoteplayback>
         <source :src="videoQueue[0].url" type="video/mp4" />
       </video>
-      
-      <!--<input ref="fileInput" type="file"></input>-->
-      <!--<button @click="createVideo">uploa</button>-->
+
+      <ion-fab vertical="top" horizontal="end" slot="fixed">
+        <ion-fab-button class="fabButton" @click="activateReport">
+          <ion-icon class="fabButton" :icon="flag"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
       
       <ion-fab vertical="bottom" horizontal="end" slot="fixed" style="margin-bottom: 2em;">
         <ion-fab-button class="fabButton" @click="activateBookmark" :class="{ activeFabButton: bookmarked }">
@@ -43,17 +46,52 @@
           <ion-ripple-effect></ion-ripple-effect>
           <div class="content">
             <ion-icon :icon="heart"></ion-icon>
-            <p v-if="currentVideo">{{ currentVideo.views.concat() }}</p>
+            <p v-if="currentVideo">{{ currentVideo.likes.concat() }}</p>
           </div>
         </div>
       </ion-fab>
 
-      <ion-modal ref="commentsModal" :is-open="openComments" :presenting-element="page">
+      <ion-modal :is-open="openReport" :initial-breakpoint="0.8" :breakpoints="[0, 0.5, 0.8, 1]" @didDismiss="openReport = false">
         <ion-header>
           <ion-toolbar>
-            <ion-title>Comments</ion-title>
+            <ion-title>{{ $t("report") }}</ion-title>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content>
+          <h1>{{ $t("submit") }}</h1>
+          <p>{{ $t("review") }}</p>
+          <p>{{ $t("abuse") }}</p>
+          <h3>{{ $t("selectReport") }}</h3>
+          <ion-list>
+            <ion-item  @click="currentReportReason == reason ? currentReportReason = undefined : currentReportReason = reason" v-for="reason in reportReasons">
+              <ion-checkbox :checked="currentReportReason == reason">{{ reason }}</ion-checkbox>
+            </ion-item>
+            <ion-input v-if="currentReportReason == 'Other'" label="Description" label-placement="floating" counter :maxlength="200" v-model="currentReportDescription"></ion-input>
+          </ion-list>
+          <ion-button :disabled="!currentReportReason" @click="submitReport">{{ $t("submitReport") }}</ion-button>
+        </ion-content>
+      </ion-modal>
+
+      <ion-modal :is-open="showThanks" :initial-breakpoint="0.65" :breakpoints="[0, 0.65]" @didDismiss="() => { showThanks = false; handleScroll(); }">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>{{ $t("report") }}</ion-title>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content>
+          <h1>{{ $t("thanksMessage") }}</h1>
+          <p>{{ $t("thanksDescription") }}</p>
+        </ion-content>
+      </ion-modal>
+
+      <ion-modal ref="commentsModal" :is-open="openComments" :initial-breakpoint="1" :breakpoints="[0, 0.5, 0.8, 1]" @didDismiss="openComments = false">
+        <ion-header>
+          <ion-toolbar>
+            <ion-title>{{ $t("comments") }}</ion-title>
             <ion-buttons slot="end">
-              <ion-button @click="openComments = false">Close</ion-button>
+              <ion-button @click="openComments = false">{{ $t("done") }}</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
@@ -75,7 +113,7 @@
                   <button>
                     <ion-icon :icon="thumbsDownOutline"></ion-icon>
                   </button>
-                  <button @click="openCommentReplies(comment)" v-if="comment.replies.length > 0">Replies</button>
+                  <button @click="openCommentReplies(comment)" v-if="comment.replies.length > 0">{{ $t("replies") }}</button>
                 </div>
               </ion-label>
             </ion-item>
@@ -86,12 +124,12 @@
         </ion-content>
       </ion-modal>
 
-      <ion-modal :is-open="openReplies" :presenting-element="commentsModal">
+      <ion-modal :is-open="openReplies" :initial-breakpoint="0.8" :breakpoints="[0, 0.5, 0.8, 1]" @didDismiss="openComments = false">
         <ion-header>
           <ion-toolbar>
-            <ion-title>Replies</ion-title>
+            <ion-title>{{ $t("replies") }}</ion-title>
             <ion-buttons slot="end">
-              <ion-button @click="openReplies = false">Close</ion-button>
+              <ion-button @click="openReplies = false">{{ $t("done") }}</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
@@ -152,14 +190,15 @@
 import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { IonPage, IonHeader, IonFab, IonFabButton, IonIcon, IonToolbar, IonTitle, IonContent, onIonViewDidLeave, onIonViewDidEnter, IonButton,
   IonButtons, IonModal, IonToast, IonList, IonItem, IonLabel, IonInfiniteScroll, IonInfiniteScrollContent, 
-  InfiniteScrollCustomEvent, IonAvatar, IonInput, onIonViewWillEnter, createAnimation, IonRippleEffect } from '@ionic/vue';
-import { heart, chatboxEllipses, bookmarks, heartOutline, bookmarksOutline, thumbsUpOutline, thumbsDownOutline, thumbsUp, thumbsDown, pauseCircleOutline, playCircleOutline } from 'ionicons/icons';
-import { userStore, Video, VideoCommentReply, type VideoComment } from '@/stores/userStore';
+  InfiniteScrollCustomEvent, IonAvatar, IonInput, onIonViewWillEnter, createAnimation, IonRippleEffect, IonCheckbox } from '@ionic/vue';
+import { heart, chatboxEllipses, bookmarks, heartOutline, bookmarksOutline, thumbsUpOutline, thumbsDownOutline, thumbsUp, thumbsDown, pauseCircleOutline, playCircleOutline, flag } from 'ionicons/icons';
+import { ReportReason, userStore, Video, VideoCommentReply, type VideoComment } from '@/stores/userStore';
 import { compareObjectsSingle, addCustomMethods, delay, getRandomIntInclusive, getRandomItemFromArray, getVideo, loopUntil } from '@/utils/functions';
-import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, startAfter } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, startAfter, updateDoc } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 import { getStorage, ref as firebaseRef, uploadBytes, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import router from '@/router';
+import { useI18n } from 'vue-i18n';
 
 addCustomMethods();
 
@@ -167,7 +206,6 @@ const videoRef = ref<HTMLVideoElement> ();
 const page = ref();
 const content = ref();
 const commentsModal = ref();
-const fileInput = ref();
 const pauseIconRef = ref();
 
 const liked = ref(false);
@@ -178,6 +216,8 @@ const showPausedImg = ref(false);
 const bookmarked = ref(false);
 const openComments = ref(false);
 const openReplies = ref(false);
+const openReport = ref(false);
+const showThanks = ref(false);
 const scrollOnCooldown = ref(false);
 const hideBottomVideo = ref(false);
 
@@ -187,14 +227,17 @@ const loadedComments = ref<VideoComment[]> ([]);
 const loadedReplies = ref<VideoCommentReply[]> ([]);
 const currentComment = ref<VideoComment> ();
 const toastIcon = ref<string> ();
-const toastMessage = ref<'Added video to your bookmarks!' | 'Removed video from your bookmarks'> ();
+const toastMessage = ref<string> ();
 const pauseIcon = ref<"pause" | "play"> ("pause");
 
 const commentLoader = getComments();
 const replyLoader = getReplies();
+const reportReasons: ReportReason[] = ["Animal abuse", "Child abuse", "Copyright infringement", "Harrassment", "Hateful content", "Misinformation", "Promotes terrorism", "Sexual content", "Spam", "Other"];
+const currentReportReason = ref<ReportReason> ();
+watch(() => currentReportReason.value, (value) => console.log(value));
+const currentReportDescription = ref("");
 
-// when next video is played or if page/app is left:
-//   if liked = true, send to firebase
+const { t } = useI18n();
 
 onIonViewDidEnter(async () => {
   currentVideo.value = userStore().currentVideo ?? await getVideo();
@@ -225,13 +268,25 @@ onIonViewDidLeave(async () => {
 });
 
 async function pushToFirebase () {
-  const thingsToPush = {
-    liked: false,
-    bookmarked: false,
-  }
+  if (!currentVideo.value) return;
 
-  if (liked.value) thingsToPush.liked = true;
-  if (bookmarked.value) thingsToPush.bookmarked = true;
+  const likedVideos = userStore().smProfile.likedVideos;
+  const bookmarkedVideos = userStore().smProfile.bookmarkedVideos;
+  
+  await updateDoc(doc(db, "videos", currentVideo.value.id), {
+    views: currentVideo.value.views + 1,
+    likes: currentVideo.value.likes
+  });
+  
+  if (liked.value && !likedVideos.includes(currentVideo.value.id)) likedVideos.push(currentVideo.value.id);
+  if (bookmarked.value && !bookmarkedVideos.includes(currentVideo.value.id)) bookmarkedVideos.push(currentVideo.value.id);
+  
+  if (!liked.value && likedVideos.includes(currentVideo.value.id)) userStore().smProfile.likedVideos = likedVideos.filter((video) => video != currentVideo.value?.id);
+  if (!bookmarked.value && bookmarkedVideos.includes(currentVideo.value.id)) userStore().smProfile.bookmarkedVideos = bookmarkedVideos.filter((video) => video != currentVideo.value?.id);
+  
+  await updateDoc(doc(db, "users", userStore().userData?.uid ?? ""), {
+    smProfile: userStore().smProfile
+  });
 }
 
 function handleScroll () {
@@ -266,8 +321,11 @@ async function scrollVideo () {
     videoRef.value.currentTime = 0;
   }
   videoIsPaused.value = false;
-  liked.value = false;
-  bookmarked.value = false;
+
+  if (userStore().smProfile.likedVideos.includes(currentVideo.value.id)) liked.value = true;
+  else liked.value = false;
+  if (userStore().smProfile.bookmarkedVideos.includes(currentVideo.value.id)) bookmarked.value = true;
+  else bookmarked.value = false;
   
   const copyOfQueue = [...videoQueue.value];
   videoQueue.value.length = 0;
@@ -279,49 +337,10 @@ async function scrollVideo () {
   pushVideoToQueue();
 }
 
-async function createVideo () {
-  const base64Characters = [
-    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
-    'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
-    '4', '5', '6', '7', '8', '9', '-', '_'];
-    
-    let videoID = "";
-    for (let i = 0; i < 10; i++) {
-      videoID += getRandomItemFromArray(base64Characters);
-    }
-    
-    const storage = getStorage();
-    const file = fileInput.value.files[0];
-    const video = firebaseRef(storage, "videos/" + videoID);
-
-  try {
-    const user = userStore().userData;
-    if (!user) throw Error;
-
-    const uploadTask = uploadBytesResumable(video, file);
-    uploadTask.on('state_changed', () => {}, () => {}, async () => {
-      const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-      console.log(downloadURL)
-    
-      await setDoc(doc(db, "videos", videoID), {
-        id: videoID,
-        author: user.uid,
-        views: 0,
-        likes: 0,
-        comments: [],
-        url: downloadURL,
-        created: new Date()
-      });
-    })
-  } catch (error) {
-    console.error(error)
-  }
-}
-
 function* getComments () {
   let i = 0;
   while (true) {
-    if (i % 10) yield;
+    if (i % 10 == 0 && i != 0) yield;
     if (!currentVideo.value?.comments[i]) {
       yield;
       continue;
@@ -335,7 +354,7 @@ function* getComments () {
 let replyIndex = 0;
 function* getReplies () {
   while (true) {
-    if (replyIndex % 10) yield;
+    if (replyIndex % 10 == 0 && replyIndex != 0) yield;
     if (!currentComment.value?.replies[replyIndex]) {
       yield;
       continue;
@@ -383,18 +402,53 @@ async function pauseVideo () {
   showPausedImg.value = false;
 }
 
+async function submitReport () {
+  openReport.value = false;
+  showThanks.value = true;
+
+  const base64Characters = [
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b',
+    'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3',
+    '4', '5', '6', '7', '8', '9', '-', '_'];
+    
+  let reportId = "";
+  for (let i = 0; i < 12; i++) {
+    reportId += getRandomItemFromArray(base64Characters);
+  }
+
+  await setDoc(doc(db, "videoReports", reportId), {
+    reportId,
+    videoId: currentVideo.value?.id,
+    reason: currentReportReason.value,
+    customReason: currentReportDescription.value,
+    reporterId: userStore().userData?.uid,
+    created: new Date()
+  });
+
+  currentReportReason.value = undefined;
+  currentReportDescription.value = "";
+}
+
+async function activateReport () {
+  openReport.value = true;
+}
+
 async function activateBookmark () {
   bookmarked.value = !bookmarked.value;
 
   if (showBookmarkedImg.value) return;
 
-  toastMessage.value = bookmarked.value ? 'Added video to your bookmarks!' : 'Removed video from your bookmarks';
+  toastMessage.value = bookmarked.value ? t("addBookmark") : t("removeBookmark");
   toastIcon.value = bookmarked.value ? bookmarks : bookmarksOutline;
   showBookmarkedImg.value = true;
 }
 
 async function activateLike () {
+  if (!currentVideo.value) return;
   liked.value = !liked.value;
+
+  if (liked.value) currentVideo.value.likes++;
+  else currentVideo.value.likes--;
 
   if (!liked.value || showLikedImg.value) return;
 

@@ -1,5 +1,5 @@
 
-export const allergies = [...new Set([
+export const allergies = [
     "Albumin",
     "Emulsifier",
     "Ovamucin",
@@ -304,4 +304,4 @@ export const allergies = [...new Set([
     "Trout",
     "Tuna",
     "Worcestershire sauce"
-])]
+]

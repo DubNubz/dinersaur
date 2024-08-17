@@ -186,10 +186,10 @@
 </template>
 
 <script setup lang="ts">
-import { userStore } from '@/stores/userStore';
+import { MenuItem, userStore } from '@/stores/userStore';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonList, IonCard, IonCardContent, IonIcon, IonCardHeader, IonCardSubtitle, IonCardTitle, IonItem, IonInput, IonSelectOption, IonLabel, IonSelect, IonButton, IonTextarea, IonModal, IonMenu, IonFab, IonFabButton, IonReorder, IonReorderGroup, IonButtons, IonItemSliding, IonItemOption, IonMenuButton, IonItemOptions } from '@ionic/vue';
 import { add, pencil, trash } from 'ionicons/icons';
-import { ref, onUnmounted, onMounted, watch, computed } from 'vue';
+import { ref, onUnmounted, onMounted, watch, computed, onBeforeUnmount } from 'vue';
 
 const isIonModalOpen = ref(false);
 const blankItem = {
@@ -228,27 +228,6 @@ const selectedCategory = ref<string | null>(null);
 const filteredMenu = computed(() => {
   return selectedCategory.value ? menu.value.filter(item => item.category === selectedCategory.value) : menu.value;
 });
-
-type MenuItem = {
-  id: number, 
-  name: string, 
-  category: string, 
-  description: string,
-  price: number,
-  calories: number,
-  saturatedFat: number,
-  transFat: number,
-  cholesterol: number,
-  sodium: number,
-  carbohydrates: number,
-  fiber: number,
-  sugars: number,
-  protein: number,
-  vitaminD: number,
-  calcium: number,
-  iron: number,
-  potassium: number
-}
 
 function addNewMenuItem(){
   newItem.value = {...blankItem}; 
@@ -332,7 +311,7 @@ function filterByCategory(category: string | null){
   selectedCategory.value = category;
 }
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   userStore().menu = menu.value;
   userStore().categories = categories.value;
 })
