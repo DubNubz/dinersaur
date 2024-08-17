@@ -5,7 +5,7 @@
       <div class="container">
 
         <div class="pointsCounter">
-          <h4><strong>{{ points.toLocaleString() }}</strong> pts</h4>
+          <h4><span v-if="userStore().subscribed">(+50% activated)</span> <strong>{{ points.toLocaleString() }}</strong> pts</h4>
           <div class="points">
             <div class="circle" :style="{ left: calculateCirclePosition(points) }">
               <div class="innerCircle"></div>
@@ -21,15 +21,22 @@
           <ion-card class="subscription" v-if="showSubscriptionAd">
             <img src="/icons/steakosaurusRight.svg" alt="">
             <ion-card-header>
-              <ion-card-subtitle>50% more points + 10% off by becoming a</ion-card-subtitle>
+              <ion-card-subtitle>50% more points +<ion-badge color="secondary">FREE</ion-badge> drinks by becoming a</ion-card-subtitle>
               <ion-card-title>Steakosaurus Supreme</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              Upgrade today and gain 50% more points on every purchase!
+              Upgrade today and gain 50% more points on every purchase, a free drink at every reservation*, and more Steakosaurus-exclusive benefits!
             </ion-card-content>
-            <ion-button>Try now</ion-button>
+            <ion-button @click="openSubscriptionModal = true">Try now</ion-button>
           </ion-card>
         </Transition>
+
+        <ion-modal :is-open="openSubscriptionModal" :initial-breakpoint="1" :breakpoints="[0, 1]" @didDismiss="openSubscriptionModal = false">
+          <ion-content>
+            <div style="margin-top: 1.5em;"></div>
+            <SubscriberAd />
+          </ion-content>
+        </ion-modal>
 
         <div class="reservations" v-if="userStore().reservations.length != 0">
           <h2>{{ $t("upcoming") }}</h2>
@@ -84,21 +91,24 @@
 
 import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
-  IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, 
+  IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, IonModal, IonBadge, 
   onIonViewWillEnter} from '@ionic/vue';
 import Header from '@/components/Header.vue';
 import { Reservation, userStore } from '@/stores/userStore';
 import { addCustomMethods, delay } from '@/utils/functions';
 import { time } from 'console';
 import { ellipsisHorizontalCircle, ellipsisHorizontalCircleOutline, peopleOutline, pricetagsOutline, timeOutline } from 'ionicons/icons';
+import SubscriberAd from '@/components/SubscriberAd.vue';
 
 addCustomMethods();
 
 const points = ref(0);
+
+const openSubscriptionModal = ref(false);
 const showSubscriptionAd = ref(false);
 
 onIonViewDidEnter(async () => {
-  await delay(500);
+  await delay(750);
   points.value = userStore().points;
   await delay(500);
   if (!userStore().subscribed) showSubscriptionAd.value = true;
@@ -147,6 +157,11 @@ function formatTime (time: number) {
 
   h4 {
     margin: 0;
+
+    span {
+      color: var(--ion-color-primary-shade);
+      font-size: 60%;
+    }
   }
 }
 
@@ -214,6 +229,9 @@ ion-card.subscription {
 
     ion-card-subtitle {
       --color: var(--ion-color-tertiary);
+      display: flex;
+      align-items: center;
+      gap: 0.25em;
     }
   }
 

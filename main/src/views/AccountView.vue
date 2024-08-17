@@ -1,60 +1,30 @@
 <template>
   <ion-page>
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>{{ $t("accountSettings") }}</ion-title>
-      </ion-toolbar>
-    </ion-header>
+    <Header />
+
     <ion-content :fullscreen="true">
-      <div class="divOne">
-        <ion-label class="profile-label">{{ $t("profile") }}</ion-label>
-      </div>
-      <div class="divTwo">
-        <div class="avatarContainer">
-          <ion-avatar class="avatar">
-            <img v-if="image" :src="image" class="avatarimage"/>
-          </ion-avatar>
-          <ion-button class="avatarButton" @clicked="changeProfile">
-            <ion-icon :icon="add"></ion-icon>
-          </ion-button>
+      <div class="account">
+
+        <div class="name">
+          <h2 class="sequel">{{ userStore().name }}</h2>
+          <StarRating :rating="userStore().rating"/>
         </div>
-      </div>
-      <div class="divThree">
-        <IonLabel>{{ $t("name") }}:<br>{{ userStore().name }}</IonLabel>
-        <StarRating :rating="userStore().rating"/>
-      </div>
-      <div class="divFour"></div>
-      <div class="divFive">
-        <ion-label>{{ $t("preferences") }}</ion-label>
-      </div>
-      <div class="divSix">
-        <ion-nav-link router-direction="forward" :component="AllergiesView">
-          <ion-button class="allergyButton">
-            <ion-label >{{ $t("allergies") }}</ion-label>
-            <ion-icon :icon="medkit" color="secondary"></ion-icon>
-          </ion-button>
-        </ion-nav-link>
 
-        <ion-nav-link router-direction="forward" :component="BillingView">
-          <ion-button class="billingButton">
-            <ion-label >{{ $t("billing") }}</ion-label>
-            <ion-icon :icon="card" color="secondary"></ion-icon>
-          </ion-button>
-        </ion-nav-link>
-        
-        <ion-nav-link router-direction="forward" :component="LanguageView">
-          <ion-button class="languageButton">
-            <ion-label>{{ $t("language") }}</ion-label>
-            <ion-icon :icon="language" color="secondary"></ion-icon>
-          </ion-button>
-        </ion-nav-link>
+        <div class="divider"></div>
 
-        <ion-nav-link router-direction="forward" :component="AccountSettingsView">
-          <ion-button class="accountButton">
-            <ion-label>{{ $t("account") }}</ion-label>
-            <ion-icon :icon="key" color="secondary"></ion-icon>
-          </ion-button>
-        </ion-nav-link>
+        <ion-list inset lines="none" class="menu">
+          <ion-nav-link v-for="page in pages" router-direction="forward" :component="page.component">
+            <ion-item button class="menuButton">
+              <ion-icon size="medium" aria-hidden="true" :icon="page.img" slot="start"></ion-icon>
+              <div class="pageName">
+                <h4>{{ page.name }}</h4>
+                <p v-if="page.flavor">{{ page.flavor }}</p>
+              </div>
+            </ion-item>
+          </ion-nav-link>
+        </ion-list>
+
+
       </div>
     </ion-content>
   </ion-page>
@@ -62,121 +32,137 @@
 
 <script setup lang="ts">
 
-import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonAvatar, IonNavLink, IonNav, onIonViewWillEnter } from '@ionic/vue';
-import { add, medkit, language, card, key } from 'ionicons/icons';
-import { defineComponent, ref, onMounted } from 'vue';
+import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
+  IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, IonModal, IonBadge, IonNavLink, IonLabel, IonItem, 
+  onIonViewWillEnter} from '@ionic/vue';
+import { add, medkit, language, card, key, medkitOutline, languageOutline, cardOutline, keyOutline, cafeOutline, ribbonOutline, informationCircleOutline, calendarOutline, settingsOutline, idCardOutline, happyOutline, sadOutline } from 'ionicons/icons';
+import { defineComponent, ref, onMounted, Component, markRaw } from 'vue';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import StarRating from '../components/StarRating.vue';
 import { userStore } from '@/stores/userStore';
+import Header from '@/components/Header.vue';
 
 import AccountSettingsView from './AccountViewFiles/AccountSettingsView.vue';
 import AllergiesView from './AccountViewFiles/AllergiesView.vue';
 import BillingView from './AccountViewFiles/BillingView.vue';
 import LanguageView from './AccountViewFiles/LanguageView.vue';
+import router from '@/router';
+import SubscriptionView from './AccountViewFiles/SubscriptionView.vue';
+import PointsView from './AccountViewFiles/PointsView.vue';
+import AboutView from './AccountViewFiles/AboutView.vue';
+import ReservationsView from './AccountViewFiles/ReservationsView.vue';
+import version from '@/utils/version';
 
-// Change Profile Picture
-
-const image = ref("https://ionicframework.com/docs/img/demos/avatar.svg");
-
-async function changeProfile() {
-  const profilePic = await Camera.getPhoto( {
-      quality: 90,
-      source: CameraSource.Photos, 
-      resultType: CameraResultType.Uri 
-    } 
-  )
-  image.value = profilePic.webPath ?? "";
+type Page = {
+  name: string;
+  flavor?: string;
+  component: any;
+  img: string;
 }
+
+const pages = ref<Page[]> ([{
+  name: "Allergies",
+  component: markRaw(AllergiesView),
+  img: medkitOutline
+}, {
+  name: userStore().subscribed ? "Manage Subscription" : "Discover Steakosaurus",
+  component: markRaw(SubscriptionView),
+  img: cafeOutline,
+  flavor: userStore().subscribed ? "Manage Steakosaurus subscription" : "+50% points, free drinks, and more"
+}, {
+  name: "Points",
+  component: markRaw(PointsView),
+  img: ribbonOutline,
+  flavor: "Spend your reward points"
+}, {
+  name: "Reservations",
+  component: markRaw(ReservationsView),
+  img: calendarOutline,
+  flavor: "View all of your reservations"
+}, {
+  name: "Reviews",
+  component: markRaw(ReservationsView),
+  img: userStore().rating < 2.5 ? sadOutline : happyOutline
+}, {
+  name: "Billing",
+  component: markRaw(BillingView),
+  img: cardOutline
+}, {
+  name: "Manage Account",
+  component: markRaw(AccountSettingsView),
+  img: settingsOutline
+}, {
+  name: "Language",
+  component: markRaw(LanguageView),
+  img: languageOutline
+}, {
+  name: "About",
+  component: markRaw(AboutView),
+  img: informationCircleOutline,
+  flavor: `v${version}`
+}]);
 
 </script>
 
 <style lang="scss" scoped>
 
-.divOne {
-  display: flex;
-  align-items: flex-start;
-  justify-content: left;
-}
-
-.divTwo {
+.account {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: auto;
-  height: 30%;
+  flex-direction: column;
 }
 
-.profile-label {
-  padding-top: 10px;
-  padding-left: 10px;
-  align-items: flex-start;
-}
-
-.avatarContainer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.avatar {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  z-index: 1;
-}
-
-.avatarButton {
-  position: absolute;
-  padding-top: 45%;
-  z-index: 2;
-}
-
-.divThree {
-  padding-top: 20px;
-  padding-left: 10px;
-  padding-right: 10px;
+.name {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
+  width: 92.5%;
+  margin-top: 1em;
 
-.divFour {
-  width: 95vw;
-  height: 1px;
-  margin: 10px;
-  background-color: black;
-}
-
-.divFive {
-  display: flex;
-  justify-content: center;
-  padding-bottom: 10px;
-}
-
-.divSix {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.accountButton,
-.billingButton,
-.languageButton,
-.allergyButton {
-  flex: 1 1 40%;
-  margin: 5px;
-  width: 45vw;
-  min-width: 120px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  ion-label{
-    padding-right: 5px;
-  }
-  
-  ion-icon{
-    padding-left: 5px;
+  h2 {
+    margin: 0;
   }
 }
+
+.divider {
+  width: 92.5%;
+  height: 0.35em;
+  border-radius: 1em;
+  background-color: var(--ion-color-light-shade);
+  margin-top: 0.75em;
+}
+
+ion-list.menu {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+
+  ion-item.menuButton {
+    width: 100%;
+
+    ion-icon {
+      margin-right: 0.5em;
+      color: black;
+    }
+
+    .pageName {
+      h4 {
+        font-weight: 700;
+      }
+
+      h4, p {
+        margin: 0;
+      }
+    }
+  }
+}
+
+.version {
+  display: flex;
+  width: 100%;
+  align-items: flex-start;
+}
+
 </style>

@@ -157,6 +157,5 @@ export function timeSince (time: number) {
   } else {
     return Math.floor(secondsSince / 60 / 60 / 24 / 30 / 12) + ` year${Math.floor(secondsSince / 60 / 60 / 24 / 30 / 12) == 1 ? '' : 's'} ago`;
   }
-
 }
   

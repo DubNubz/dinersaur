@@ -69,12 +69,25 @@ export type VideoReport = {
 }
 
 export type MenuItem = {
-    id: number,
-    name: string,
-    category: string,
+    id: number, 
+    name: string, 
+    category: string, 
     description: string,
-    price: number
-}
+    price: number,
+    calories: number,
+    saturatedFat: number,
+    transFat: number,
+    cholesterol: number,
+    sodium: number,
+    carbohydrates: number,
+    fiber: number,
+    sugars: number,
+    protein: number,
+    vitaminD: number,
+    calcium: number,
+    iron: number,
+    potassium: number
+  }
 
 export type Notification = {
     title: string;

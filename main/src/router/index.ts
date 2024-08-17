@@ -12,7 +12,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: '', redirect: '/pages/home'},
       { path: 'home', component: () => import('@/views/HomeView.vue') },
       { path: 'discover', component: () => import('@/views/DiscoverView.vue') },
-      { path: 'account/', component: () => import('@/views/InitialAccountView.vue') },
+      { path: 'account', component: () => import('@/views/InitialAccountView.vue') },
       { path: 'map', component: () => import('@/views/HomeViewFiles/GoogleMapsView.vue')}
     ]
   }, {
@@ -22,7 +22,7 @@ const routes: Array<RouteRecordRaw> = [
       { path: '', redirect: '/restaurant/home' },
       { path: 'home', component: () => import('@/views/RestaurantHome/RestaurantHome.vue') },
       { path: 'discover', component: () => import('@/views/RestaurantHome/RestaurantDiscover.vue') },
-      { path: 'account/', component: () => import('@/views/RestaurantHome/InitialRestaurantAccountView.vue') },
+      { path: 'account', component: () => import('@/views/RestaurantHome/InitialRestaurantAccountView.vue') },
       { path: 'map', component: () => import('@/views/RestaurantHome/RestaurantMap.vue') }
     ]
   }

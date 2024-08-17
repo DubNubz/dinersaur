@@ -2,8 +2,10 @@
     <ion-header>
         <ion-toolbar class="title">
           <div class="logo">
-            <ion-img src="/icons/dinersaurWithShadow.svg" alt="Dinersaur"></ion-img>
-            <ion-title class="dinersaurText sequel">Dinersaur</ion-title>
+            <ion-img v-if="!userStore().subscribed" src="/icons/dinersaurWithShadow.svg"></ion-img>
+            <ion-img v-else src="/icons/steakosaurusRight.svg"></ion-img>
+            <ion-title v-if="!userStore().subscribed" class="dinersaurText sequel">Dinersaur</ion-title>
+            <ion-title v-else class="dinersaurText subscribed sequel">Steakosaur</ion-title>
           </div>
         </ion-toolbar>
         <ion-toolbar>
@@ -129,8 +131,12 @@ ion-header.enabledHeader {
 }
 
 ion-title.dinersaurText {
-  width: 110px;
+  width: 100%;
   transition: all 0.15s;
+}
+
+ion-title.subscribed {
+  --color: var(--ion-color-primary-shade);
 }
 
 ion-title.disabled {
