@@ -15,7 +15,7 @@
             <img v-if="image" :src="image" class="avatarimage"/>
           </ion-avatar>
           <ion-button class="avatarButton" @clicked="changeProfile">
-            <ion-icon :icon="add"></ion-icon>
+            <ion-icon :icon="profileIcon"></ion-icon>
           </ion-button>
         </div>
       </div>
@@ -63,8 +63,8 @@
 <script setup lang="ts">
 
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonAvatar, IonNavLink, IonNav } from '@ionic/vue';
-import { add, medkit, language, card, key } from 'ionicons/icons';
-import { defineComponent, ref, onMounted } from 'vue';
+import { add, medkit, language, card, key, create } from 'ionicons/icons';
+import { defineComponent, ref, onMounted, computed } from 'vue';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import StarRating from '@/components/StarRating.vue';
 
@@ -72,23 +72,36 @@ import AccountSettingsView from '../RestaurantHome/RestaurantAccountFiles/Accoun
 import BillingView from '../RestaurantHome/RestaurantAccountFiles/Billing.vue';
 import CustomizeView from '../RestaurantHome/RestaurantAccountFiles/Customize.vue';
 import LanguageView from '../RestaurantHome/RestaurantAccountFiles/Language.vue';
+import { userStore } from '@/stores/userStore';
 
 onMounted(() => {
-  userName.value = localStorage.getItem('userName') ?? "";
+  userName.value = userStore().name;
+  image.value = userStore().profileImage;
 });
 
-// Change Profile Picture
+// Change Profile Picture 
 
-const image = ref("https://ionicframework.com/docs/img/demos/avatar.svg");
+const image = ref<string | null>();
+
+const profileIcon = computed(() => {
+  return image.value ? create : add;
+});
 
 async function changeProfile() {
-  const profilePic = await Camera.getPhoto( {
+  try {
+    const profilePic = await Camera.getPhoto({
       quality: 90,
       source: CameraSource.Photos, 
-      resultType: CameraResultType.Uri 
-    } 
-  )
-  image.value = profilePic.webPath ?? "";
+      resultType: CameraResultType.Uri
+    });
+    image.value = profilePic.webPath ?? null;
+
+    if (image.value) {
+      localStorage.setItem('profileImage', image.value);
+    }
+  } catch (error) {
+    console.error('Error accessing camera:', error);
+  }
 }
 
 // Name

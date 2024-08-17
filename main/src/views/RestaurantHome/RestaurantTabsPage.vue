@@ -25,8 +25,8 @@
 
 <script setup lang="ts">
 
-import { IonTabBar, IonTabButton, IonTabs, IonLabel, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { homeOutline, compassOutline, personCircleOutline, buildOutline, gridOutline } from 'ionicons/icons';
+import { IonTabBar, IonTabButton, IonTabs, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
+import { homeOutline, personCircleOutline, buildOutline, gridOutline } from 'ionicons/icons';
 
 </script>
 

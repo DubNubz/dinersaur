@@ -50,12 +50,25 @@ export type MenuItem = {
     name: string,
     category: string,
     description: string,
-    price: number
+    price: number,
+    calories: number,
+    saturatedFat: number,
+    transFat: number,
+    cholesterol: number,
+    sodium: number,
+    carbohydrates: number,
+    fiber: number,
+    sugars: number,
+    protein: number,
+    vitaminD: number,
+    calcium: number,
+    iron: number,
+    potassium: number
 }
 
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ();
-    
+
     const currentAllergies = ref<string[]> ([]);
     const billing = ref<BillingInfo> ({
         address: "",
@@ -74,6 +87,7 @@ export const userStore = defineStore('userStore', () => {
         following: [],
         posts: []
     });
+    const profileImage = ref("https://ionicframework.com/docs/img/demos/avatar.svg");
 
     const currentVideo = ref<Video> ();
     const videoQueue = ref<Video[]> ([]);
@@ -93,5 +107,5 @@ export const userStore = defineStore('userStore', () => {
     const menu = ref<MenuItem[]>([]);
     const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
 
-    return { userData, reservations, pastReservations, currentAllergies, currentVideo, billing, language, name, rating, smProfile, videoQueue, floorLayouts, saveLayout, loadLayout, menu, categories };
+    return { userData, reservations, pastReservations, currentAllergies, currentVideo, billing, language, name, rating, smProfile, videoQueue, floorLayouts, saveLayout, loadLayout, menu, categories, profileImage };
 });
