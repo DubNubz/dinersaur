@@ -1,23 +1,4 @@
 <template>
-    <ion-menu side="start" menu-id="first" content-id="main-content">
-        <ion-header>
-            <ion-toolbar>
-                <ion-title>Floors</ion-title>
-            </ion-toolbar>
-        </ion-header>
-        <ion-content>
-            <ion-list>
-                <ion-item 
-                    v-for="(floor, index) in floors" 
-                    :key="index" 
-                    @click="selectFloor(index)" 
-                    :class="{ selected: index === selectedFloorIndex }">
-                    <ion-label>{{ floor.name }}</ion-label>
-                </ion-item>
-            </ion-list>
-        </ion-content>
-    </ion-menu>
-
     <ion-page id="main-content">
         <ion-header class="config">
             <ion-toolbar>
@@ -41,7 +22,7 @@
                 <ToggleSwitch/>
             </div>
             <div class="divider"></div>
-            <RestaurantLayout :length="selectedFloor.length" :width="selectedFloor.width" :selected-item="selectedItem" :selected-floor-index="selectedFloorIndex"/>
+            <RestaurantLayout :length="selectedFloor.length" :width="selectedFloor.width" :selected-item="selectedItem" :selected-floor-index="userStore().selectedFloorIndex"/>
         </ion-content>
 
         <ion-modal :is-open="isModalOpen" :initial-breakpoint="0.5" :breakpoints="[0, 0.5, 0.75]" @didDismiss="isModalOpen = false">
@@ -54,9 +35,9 @@
                 <ion-list>
                     <ion-item>
                         <ion-label position="floating">Number of Floors</ion-label>
-                        <ion-input class="input" type="number" v-model.number="numFloors"></ion-input>
+                        <ion-input class="input" type="number" v-model.number="userStore().numFloors"></ion-input>
                     </ion-item>
-                    <ion-item-group v-for="(floor, index) in floors" :key="index">
+                    <ion-item-group v-for="(floor, index) in userStore().floors" :key="index">
                         <ion-item-divider>
                             <ion-label>{{ floor.name }}</ion-label>
                             <ion-button slot='end' @click="openEditAlert(index)">
@@ -105,23 +86,14 @@ import { create, pencil, settings } from 'ionicons/icons';
 import { ref, computed } from 'vue';
 import RestaurantLayout from '@/components/RestaurantLayout.vue';
 import ToggleSwitch from '@/components/ToggleSwitch.vue';
+import { userStore } from '@/stores/userStore';
 
 const selectedItem = ref<string>('');
 
 const isModalOpen = ref(false);
 const isAlertOpen = ref(false);
-const numFloors = ref(1);
 const alertInputs = ref([{ name: 'name', type: 'text', placeholder: 'Enter Floor Name' }]);
 const currentEdit = ref(-1);
-const selectedFloorIndex = ref(0);
-
-const floors = computed(() => {
-    return Array.from({ length: numFloors.value }, (_, index) => ({
-        name: `Floor ${index + 1}`,
-        width: 7,
-        length: 7
-    }));
-});
 
 const alertButtons = [
     { text: 'Cancel', role: 'cancel' }, 
@@ -129,7 +101,11 @@ const alertButtons = [
 ];
 
 const selectedFloor = computed(() => {
-    return floors.value[selectedFloorIndex.value];
+    if (userStore().floors.length > 0 && userStore().selectedFloorIndex >= 0 && userStore().selectedFloorIndex < userStore().floors.length) {
+        return userStore().floors[userStore().selectedFloorIndex];
+    } else {
+        return { name: '', width: 0, length: 0 }; 
+    }
 });
 
 function openIonModel() {
@@ -143,14 +119,11 @@ function openEditAlert(index: number) {
 
 function handleAlertOk(data: any) {
     if (currentEdit.value !== -1 && data.name) {
-        floors.value[currentEdit.value].name = data.name;
+        userStore().floors[currentEdit.value].name = data.name;
         currentEdit.value = -1;
     }
 }
 
-function selectFloor(index: number) {
-    selectedFloorIndex.value = index;
-}
 </script>
 
 <style scoped>
@@ -168,9 +141,6 @@ function selectFloor(index: number) {
 .modalContent {
     height: 100%;
     overflow-y: auto;
-}
-.selected {
-    color: var(--ion-color-primary, #fff);
 }
 .text {
     margin: 15px;
@@ -197,3 +167,4 @@ function selectFloor(index: number) {
 }
 
 </style>
+

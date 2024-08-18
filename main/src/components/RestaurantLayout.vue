@@ -20,15 +20,19 @@
 import { userStore } from '@/stores/userStore';
 import { ref, defineProps, watch, onMounted } from 'vue';
 
-const props = defineProps<{
-  length: number;
-  width: number;
-  selectedItem: string;
-  selectedFloorIndex: number;
-}>();
+type Props = {
+    length: number;
+    width: number;
+    selectedItem: string;
+    selectedFloorIndex: number;
+}
+
+const props = defineProps<Props> ();
+
 
 onMounted(() => {
   loadLayout();
+  console.log(props)
 });
 
 watch(() => props.selectedFloorIndex, loadLayout);
@@ -71,7 +75,6 @@ function getCellClass(type: string) {
 function saveLayout() {
   userStore().saveLayout(props.selectedFloorIndex, grid.value);
 }
-
 function loadLayout() {
   const savedLayout = userStore().loadLayout(props.selectedFloorIndex);
   if (savedLayout.length > 0) {

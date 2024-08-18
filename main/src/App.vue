@@ -1,5 +1,7 @@
 <template>
   <ion-app>
+    <RestaurantMapMenu/>
+    <RestaurantDiscoverMenu/>
 
     <Transition name="fade">
       <DinersaurLoad v-if="showDinersaur" :barPercent="loadingBarPercentage" :destination="null" />
@@ -41,7 +43,7 @@
 <script setup lang="ts">
 
 import { IonApp, IonRouterOutlet, IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonLabel, IonIcon, IonSearchbar, IonList,
-  IonItem, IonCheckbox, IonModal, onIonViewDidEnter, IonInfiniteScroll, IonInfiniteScrollContent, IonInput, IonFab, IonFabButton,
+  IonItem, IonCheckbox, IonModal, onIonViewDidEnter, IonInfiniteScroll, IonInfiniteScrollContent, IonInput, IonFab, IonFabButton, IonMenu, 
   InfiniteScrollCustomEvent,
   onIonViewWillEnter} from '@ionic/vue';
 import { language } from 'ionicons/icons';
@@ -56,6 +58,8 @@ import { allergies } from './utils/allergies';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './utils/firebase';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import RestaurantMapMenu from '@/components/RestaurantMapMenu.vue';
+import RestaurantDiscoverMenu from './components/RestaurantDiscoverMenu.vue';
 
 const loadingBarPercentage = ref(10);
 const showDinersaur = ref(false);

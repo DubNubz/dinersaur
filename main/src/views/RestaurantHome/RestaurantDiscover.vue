@@ -1,23 +1,4 @@
 <template>
-  <ion-menu side="start" menu-id="second" content-id="discover">
-    <ion-header>
-      <ion-toolbar>
-        <ion-title>Menu Categories</ion-title>
-      </ion-toolbar>
-    </ion-header>
-
-    <ion-content>
-      <ion-list>
-        <ion-item v-for="(category, index) in categories" :key="index" class="category-item" @click="filterByCategory(category)">
-          <ion-label>{{ category }}</ion-label>
-        </ion-item>
-        <ion-item @click="filterByCategory(null)">
-          <ion-label>Show All</ion-label>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
-
   <ion-page id="discover">
     <ion-header>
       <ion-toolbar>
@@ -46,7 +27,7 @@
           <ion-item>
             <ion-label position="stacked">Category</ion-label>
             <ion-select placeholder="Select One" v-model="newItem.category">
-              <ion-select-option v-for="(category, index) in categories" :key="index">{{ category }}</ion-select-option>
+              <ion-select-option v-for="(category, index) in userStore().categories" :key="index">{{ category }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-item>
@@ -155,7 +136,7 @@
         <ion-content>
           <ion-list>
             <ion-reorder-group v-if="isEditing" @ionItemReorder="reorderCategories($event)" :disabled="false" :key="categoriesKey">
-              <ion-item-sliding v-for="(category, index) in categories" :key="index">
+              <ion-item-sliding v-for="(category, index) in userStore().categories" :key="index">
                 <ion-item>
                   <ion-label>{{ category }}</ion-label>
                   <ion-reorder slot="end"></ion-reorder>
@@ -167,7 +148,7 @@
                 </ion-item-options>
               </ion-item-sliding>
             </ion-reorder-group>
-            <ion-item v-else v-for="(category, index) in categories" :key="index" class="category-item">
+            <ion-item v-else v-for="(category, index) in userStore().categories" :key="index" class="category-item">
               <ion-label>{{ category }}</ion-label>
             </ion-item>
             <div v-if="isButtonHidden" class="divider"></div>
@@ -213,8 +194,6 @@ const blankItem = {
     potassium: 0
   }
 const newItem = ref<MenuItem>({...blankItem});
-const menu = ref<MenuItem[]>([]);
-const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
 const categoriesKey = ref(0); 
 
 const isCategoryModalOpen = ref(false);
@@ -223,10 +202,9 @@ const addingCategory = ref(false);
 const newCategory = ref('');
 
 const isButtonHidden = ref(false);
-const selectedCategory = ref<string | null>(null);
 
 const filteredMenu = computed(() => {
-  return selectedCategory.value ? menu.value.filter(item => item.category === selectedCategory.value) : menu.value;
+  return userStore().selectedCategory ? userStore().menu.filter(item => item.category === userStore().selectedCategory) : userStore().menu;
 });
 
 function addNewMenuItem(){
@@ -236,9 +214,9 @@ function addNewMenuItem(){
 }
 
 function sortMenu() {
-  menu.value.sort((a, b) => {
-    const indexA = categories.value.indexOf(a.category);
-    const indexB = categories.value.indexOf(b.category);
+  userStore().menu.sort((a, b) => {
+    const indexA = userStore().categories.indexOf(a.category);
+    const indexB = userStore().categories.indexOf(b.category);
     return indexA - indexB;
   });
 }
@@ -253,8 +231,8 @@ function isNewItemValid(){
 }
 
 function addItem(){
-  newItem.value.id = menu.value.length + 1;
-  menu.value.push({...newItem.value});  
+  newItem.value.id = userStore().menu.length + 1;
+  userStore().menu.push({...newItem.value});  
   sortMenu();
   closeModal();
 } 
@@ -266,7 +244,7 @@ function editItem(item: MenuItem) {
 }
 
 function deleteItem(itemId: number) {
-  menu.value = menu.value.filter(item => item.id !== itemId);
+  userStore().menu = userStore().menu.filter(item => item.id !== itemId);
 }
 
 function toggleEditing() {
@@ -275,24 +253,24 @@ function toggleEditing() {
 
 function toggleAddCategory() {
   if (addingCategory.value && newCategory.value.trim() !== '') {
-    categories.value.push(newCategory.value);
+    userStore().categories.push(newCategory.value);
     newCategory.value = '';
   }
   addingCategory.value = !addingCategory.value;
 }
 
 function deleteCategory(index: number) {
-  const deletedCategory = categories.value[index];
-  categories.value.splice(index, 1);
+  const deletedCategory = userStore().categories[index];
+  userStore().categories.splice(index, 1);
 
-  menu.value = menu.value.filter(item => item.category !== deletedCategory);
+  userStore().menu = userStore().menu.filter(item => item.category !== deletedCategory);
   sortMenu();
 }
 
 function reorderCategories(event: any) {
-  const localVar = categories.value[event.detail.from];
-  categories.value.splice(event.detail.from, 1);
-  categories.value.splice(event.detail.to, 0, localVar);
+  const localVar = userStore().categories[event.detail.from];
+  userStore().categories.splice(event.detail.from, 1);
+  userStore().categories.splice(event.detail.to, 0, localVar);
   categoriesKey.value += 1;
   event.detail.complete();
   sortMenu();
@@ -307,19 +285,6 @@ function openCategoryModal() {
   isCategoryModalOpen.value = true;
 }
 
-function filterByCategory(category: string | null){
-  selectedCategory.value = category;
-}
-
-onBeforeUnmount(() => {
-  userStore().menu = menu.value;
-  userStore().categories = categories.value;
-})
-
-onMounted(() => {
-  menu.value = userStore().menu;
-  categories.value = userStore().categories;
-})
 </script>
 
 <style scoped>
@@ -328,7 +293,7 @@ onMounted(() => {
 }
 
 .category-item:hover {
-  background-color: var(--ion-color-primary-shade);
+  color: var(--ion-color-primary-shade);
 }
 
 .edit-icon, .delete-icon {

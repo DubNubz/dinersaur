@@ -1,8 +1,9 @@
 
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { defineStore } from 'pinia';
 import type { User } from 'firebase/auth';
 import { Timestamp } from 'firebase/firestore';
+import { profile } from 'console';
 
 export type Reservation = {
     restaurantName: string;
@@ -97,6 +98,12 @@ export type Notification = {
     read: boolean;
 }
 
+export type Floor = {
+    name: string;
+    width: number;
+    length: number;
+};
+
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ();
 
@@ -129,6 +136,18 @@ export const userStore = defineStore('userStore', () => {
 
     // Restaurant Layout Side
 
+    const numFloors = ref<number>(1);
+
+    const floors = computed<Floor[]>(() => {
+        return Array.from({ length: numFloors.value }, (_, index) => ({
+            name: `Floor ${index + 1}`,
+            width: 7,
+            length: 7
+        }));
+    });
+
+    const selectedFloorIndex = ref(0);
+
     const floorLayouts = ref<{ [key: number]: { type: string }[][] }>({});
 
     function saveLayout(floorIndex: number, layout: { type: string }[][]) {
@@ -139,8 +158,11 @@ export const userStore = defineStore('userStore', () => {
         return floorLayouts.value[floorIndex] || [];
     }
 
+    // Restaurant Discover
+
     const menu = ref<MenuItem[]>([]);
     const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
+    const selectedCategory = ref<string | null>(null);
 
-    return { userData, reservations, pastReservations, currentAllergies, notifications, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscribed, floorLayouts, saveLayout, loadLayout, menu, categories };
+    return { userData, reservations, pastReservations, currentAllergies, notifications, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscribed, floorLayouts, saveLayout, loadLayout, menu, categories, profileImage, numFloors, floors, selectedFloorIndex, selectedCategory };
 });
