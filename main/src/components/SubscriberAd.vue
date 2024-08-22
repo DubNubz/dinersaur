@@ -3,8 +3,9 @@
         <div class="title">
             <div class="titleText">
                 <h1><strong>Steakosaurus</strong></h1>
-                <p><strong style="color: var(--ion-color-tertiary-shade);">$6.99/mo</strong> <span>(+700 pts)</span></p>
-                <p><span style="color: red; text-decoration: line-through;">$10.00/mo</span></p>
+                <p v-if="type == 'money'"><strong style="color: var(--ion-color-tertiary-shade);">$6.99/mo</strong> <span>(+700 pts)</span></p>
+                <p v-if="type == 'money'"><span style="color: red; text-decoration: line-through;">$10.00/mo</span></p>
+                <p v-else><strong style="color: var(--ion-color-tertiary-shade);">{{ Number(10000).toLocaleString() }} pts</strong> <span>(1 week)</span></p>
             </div>
             <img class="steakosaurus" src="/icons/steakosaurusLeft.svg">
         </div>
@@ -25,18 +26,27 @@
             </div>
         </div>
 
-        <ion-button>Claim Offer</ion-button>
+        <ion-button v-if="type == 'money'">Claim Offer</ion-button>
+        <ion-button @click="subscribeWithPoints" v-else>Purchase</ion-button>
     </div>
 </template>
 
 <script setup lang="ts">
 
-import { delay } from '@/utils/functions';
+import { userStore } from '@/stores/userStore';
+import { delay, fetchFromNuxt } from '@/utils/functions';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
   IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, IonModal, IonBadge,
   onIonViewWillEnter} from '@ionic/vue';
 import { cashOutline } from 'ionicons/icons';
 import { onMounted, ref } from 'vue';
+
+type Props = {
+    type: "money" | "points";
+}
+
+const props = defineProps<Props> ();
+const emit = defineEmits(["processing", "success", "failed"]);
 
 const cards = ref([{
     img: "/icons/drink.svg",
@@ -73,6 +83,20 @@ onMounted(async () => {
         cards.value[i].show = true;
     }
 });
+
+async function subscribeWithPoints () {
+    emit("processing");
+    const { success, message } = await fetchFromNuxt("/api/points-subscription", JSON.stringify({ uid: userStore().userData?.uid }));
+    if (success) {
+        userStore().subscribed = true;
+        userStore().points = userStore().points - 10000;
+        await delay(3000);
+        emit("success");
+    } else {
+        await delay(3000);
+        emit("failed", `Error: ${message} Your points were not deducted.`);
+    }
+}
 
 </script>
 

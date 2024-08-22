@@ -1,26 +1,29 @@
 <template>
-    <ion-page>
-      <ion-header>
-        <ion-toolbar>
-          <ion-buttons slot="start">
-            <ion-back-button default-href="/pages/account"></ion-back-button>
-          </ion-buttons>
-          <ion-title>Back Button</ion-title>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content class="ion-padding">
-        <h1>Page Two</h1>
-        <p>Use the back button to navigate to the previous page.</p>
-      </ion-content>
-    </ion-page>
-  </template>
-  
-  <script setup lang="ts">
-  
-  import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/vue';
-  
-  </script>
-  
-  <style lang="scss" scoped>
-  
-  </style>
+  <ion-page>
+    <ion-header>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-back-button default-href="/pages/account"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Points</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding">
+
+      <PointsShop />
+
+    </ion-content>
+  </ion-page>
+</template>
+
+<script setup lang="ts">
+
+import PointsShop from '@/components/PointsShop.vue';
+import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, onIonViewDidEnter, IonModal } from '@ionic/vue';
+import { ref } from 'vue';
+
+</script>
+
+<style lang="scss" scoped>
+
+</style>

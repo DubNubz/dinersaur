@@ -12,7 +12,7 @@
       
       <ion-content class="ion-padding">
 
-        <SubscriberAd v-if="!userStore().subscribed" />
+        <SubscriberAd :type="'money'" v-if="!userStore().subscribed" />
 
         <div v-else class="page">
           <h1>Page Two</h1>

@@ -21,7 +21,7 @@
         <ion-content>
 
           <input ref="fileInput" type="file"></input>
-          <ion-input :label="$t('title')" placeholder="Untilted Video" counter :maxlength="100"></ion-input>
+          <ion-input :label="$t('title')" placeholder="Untilted Video" counter :maxlength="100" v-model="title"></ion-input>
           <ion-button @click="createVideo">{{ $t("upload") }}</ion-button>
 
         </ion-content>
@@ -95,7 +95,7 @@ async function createVideo () {
     
       await setDoc(doc(db, "videos", videoID), {
         id: videoID,
-        title: title.value.length == 0 ? "Untitled Video" : title.value,
+        title: title.value == "" ? "Untitled Video" : title.value,
         author: user.uid,
         views: 0,
         likes: 0,

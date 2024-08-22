@@ -158,4 +158,38 @@ export function timeSince (time: number) {
     return Math.floor(secondsSince / 60 / 60 / 24 / 30 / 12) + ` year${Math.floor(secondsSince / 60 / 60 / 24 / 30 / 12) == 1 ? '' : 's'} ago`;
   }
 }
+
+export async function fetchFromNuxt (path: string, body?: string) {
+  const fullPath = "http://localhost:3000" + path;
+  
+  const response = body ? await fetch(fullPath, {
+    method: "POST",
+    headers: { 'CONTENT-TYPE': 'application/json' },
+    body
+  }) : await fetch(fullPath);
+  const data = await response.json() as Record<any, any>;
+  return data;
+}
+
+export function formatTime (time: number, omitHour?: boolean) {
+  let hour = new Date(time).getHours();
+  if (hour > 12) hour = hour - 12;
+  else if (hour == 0) hour = 12;
+  const minutes = new Date(time).getMinutes();
+
+  let date: string;
+  if (new Date(time).getDate() == new Date().getDate()) date = 'Today';
+  else if (new Date(time).getDate() == new Date().getDate() + 1) date = 'Tomorrow';
+  else if (new Date(time).getDate() == new Date().getDate() - 1) date = 'Yesterday';
+  else date = new Date(time).toLocaleDateString();
+
+  if (omitHour && !["Today", "Tomorrow"].includes(date)) return date;
+  return `${date} at ${hour}:${minutes < 10 ? '0' + minutes : minutes} ${hour < 12 ? 'AM' : 'PM'}`;
+}
+
+export async function getRestaurants () {
+  const docs = await getDocs(collection(db, "restaurants"));
+  const data = docs.docs.map((doc) => doc.data());
+  return data;
+}
   

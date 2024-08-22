@@ -6,8 +6,7 @@ import { Timestamp } from 'firebase/firestore';
 import { profile } from 'console';
 
 export type Reservation = {
-    restaurantName: string;
-    address: string;
+    restaurant: RestaurantInfo;
     /** Milliseconds since epoch. */
     time: number;
     people: number;
@@ -102,7 +101,26 @@ export type Floor = {
     name: string;
     width: number;
     length: number;
-};
+}
+
+export type RestaurantInfo = {
+    name: string;
+    address: string;
+    phone: number | null;
+    email: number | null;
+    menu: MenuItem[];
+    id: string;
+    offers: PointOffer[];
+}
+
+export type PointOffer = {
+    /** Milliseconds since epoch. */
+    expires: number | null;
+    cost: number;
+    description: string;
+    title: string;
+    code: string;
+}
 
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ();
@@ -134,6 +152,8 @@ export const userStore = defineStore('userStore', () => {
     const currentVideo = ref<Video> ();
     const videoQueue = ref<Video[]> ([]);
 
+    const nearbyRestaurants = ref<RestaurantInfo[]> ([]);
+
     // Restaurant Layout Side
 
     const numFloors = ref<number>(1);
@@ -164,5 +184,5 @@ export const userStore = defineStore('userStore', () => {
     const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
     const selectedCategory = ref<string | null>(null);
 
-    return { userData, reservations, pastReservations, currentAllergies, notifications, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscribed, floorLayouts, saveLayout, loadLayout, menu, categories, profileImage, numFloors, floors, selectedFloorIndex, selectedCategory };
+    return { userData, reservations, pastReservations, currentAllergies, notifications, nearbyRestaurants, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscribed, floorLayouts, saveLayout, loadLayout, menu, categories, profileImage, numFloors, floors, selectedFloorIndex, selectedCategory };
 });

@@ -116,7 +116,7 @@ async function signUp () {
             notifications: [{
                 title: "Welcome to Dinersaur!",
                 text: "Welcome to Dinersaur. Thanks for signing up!",
-                date: new Date(),
+                date: new Date().getTime(),
                 read: false
             }],
             subscribed: false,
