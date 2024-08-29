@@ -26,20 +26,20 @@
             </div>
         </div>
 
-        <ion-button v-if="type == 'money'" @click="openSubscription">Claim Offer</ion-button>
+        <ion-button v-if="type == 'money'" @click="openSubscription" :disabled="loading">Claim Offer</ion-button>
         <ion-button @click="subscribeWithPoints" v-else>Purchase</ion-button>
 
-        <ion-modal :is-open="openSubscriptionModal" :initial-breakpoint="0.9" :breakpoints="[0, 0.9]" @didDismiss="openSubscriptionModal = false">
+        <ion-modal :is-open="openSubscriptionModal" :initial-breakpoint="1" :breakpoints="[0, 1]" @didDismiss="openSubscriptionModal = false">
           <ion-content>
             <div style="margin-top: 1.5em;"></div>
             <div class="container">
-                <h1>Subscribe</h1>
-
-                <form id="subscribe-form">
-                    <label>Full name <input type="text" id="name" v-model="name" placeholder="Name"></label>
-                    <div ref="cardElementPage"></div>
-                </form>
-                <button @click="handleSubmit">Subscribe</button>
+                <h1>Continue</h1>
+                
+                <div style="width: 92.5%; margin-bottom: 10em;" ref="cardElementPage"></div>
+                <div class="buttons">
+                    <p v-if="errorMessage != ''">{{ errorMessage }}</p>
+                    <ion-button @click="handleSubmit" :color="errorMessage != '' ? 'danger' : 'primary'" :disabled="errorMessage != ''">$6.99/mo</ion-button>
+                </div>
                 <!--<h1>Payment</h1>
 
                 <p>Enable more payment method types <a href="https://dashboard.stripe.com/settings/payment_methods" target="_blank">in your dashboard</a>.</p>
@@ -51,6 +51,8 @@
                     <sr-messages :messages="messages" />
                 </form>-->
             </div>
+            
+            <div style="margin-bottom: 1.5em;"></div>
           </ion-content>
         </ion-modal>
     </div>
@@ -59,12 +61,15 @@
 <script setup lang="ts">
 
 import { userStore } from '@/stores/userStore';
+import { db } from '@/utils/firebase';
 import { delay, fetchFromNuxt } from '@/utils/functions';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
   IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, IonModal, IonBadge,
   onIonViewWillEnter} from '@ionic/vue';
-import { loadStripe, Stripe, StripeCardElement, StripeElements } from '@stripe/stripe-js';
+import { loadStripe, Stripe, StripeCardElement, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
+import { doc, getDoc } from 'firebase/firestore';
 import { cashOutline } from 'ionicons/icons';
+import { watch } from 'vue';
 import { onMounted, ref } from 'vue';
 
 const openSubscriptionModal = ref(false);
@@ -72,11 +77,19 @@ const isLoading = ref(false);
 const messages = ref<string[]> ([]);
 
 const name = ref("");
+const clientSecretSave = ref<string> ();
 
 const stripe = ref<Stripe | null> ();
 const elements = ref<StripeElements> ();
-const cardElement = ref<StripeCardElement> ();
+const cardElement = ref<StripePaymentElement> ();
 const cardElementPage = ref<HTMLElement> ();
+
+const loading = ref(true);
+const errorMessage = ref("");
+watch(() => errorMessage.value, async () => {
+    await delay(2000);
+    errorMessage.value = "";
+});
 
 type Props = {
     type: "money" | "points";
@@ -113,30 +126,53 @@ const cards = ref([{
 }]);
 
 onMounted(async () => {
+    loading.value = true;
+
     for (let i in cards.value) {
         if (i == "0") await delay(250);
         else if (i == "1") await delay(200);
         else await delay(600 / Number(i));
         cards.value[i].show = true;
     }
+
+    try {
+        const { publishableKey } = await fetchFromNuxt("/api/config");
+        stripe.value = await loadStripe(publishableKey);
+        
+        const { success, message, subscription, clientSecret } = await fetchFromNuxt("/api/create-subscription", JSON.stringify({ uid: userStore().userData?.uid }));
+        if (!success) throw new Error(message);
+
+        clientSecretSave.value = clientSecret;
+        
+        let tries = 0;
+        while (tries < 10) {
+            if (stripe.value) {
+                elements.value = stripe.value.elements({ clientSecret });
+                cardElement.value = elements.value.create("payment");
+                break;
+            }
+            tries++;
+            await delay(150);
+        }
+
+        loading.value = false;
+
+    } catch (error) {
+        console.error(error)
+    }
 });
 
 async function openSubscription () {
     openSubscriptionModal.value = true;
-    
-    const { publishableKey } = await fetchFromNuxt("/api/config");
-    stripe.value = await loadStripe(publishableKey);
-    
+
     let tries = 0;
     while (tries < 10) {
-        if (stripe.value) {
-            elements.value = stripe.value?.elements();
-            cardElement.value = elements.value?.create("card");
-            if (cardElementPage.value && cardElement.value) cardElement.value.mount(cardElementPage.value);
+        if (cardElementPage.value && cardElement.value) {
+            cardElement.value.mount(cardElementPage.value);
             break;
         }
         tries++;
-        await delay(50);
+        await delay(150);
     }
 
     /*const { publishableKey } = await fetchFromNuxt("/api/config");
@@ -158,26 +194,49 @@ async function openSubscription () {
 }
 
 async function handleSubmit () {
-    
     try {
-        const { success, message, subscription, clientSecret } = await fetchFromNuxt("/api/create-subscription", JSON.stringify({ uid: userStore().userData?.uid }));
-        if (!success) throw new Error(message);
-        console.log(success, message, subscription, clientSecret)
+        if (!elements.value) throw new Error("Elements not initialized");
 
-        const result = await stripe.value?.confirmCardPayment(clientSecret, {
-            payment_method: {
-                card: (cardElement.value as StripeCardElement),
-                billing_details: {
-                    name: name.value
-                }
-            }
+        const { error } = await elements.value?.submit();
+        if (error) throw new Error(error.message);
+
+        const result = await stripe.value?.confirmPayment({
+            elements: elements.value,
+            clientSecret: clientSecretSave.value ?? "",
+            confirmParams: {
+                return_url: `${window.location.origin}`
+            },
+            redirect: "if_required"
         });
 
-        if (result && result.error) throw new Error(result.error.message);
-        console.log(result)
+        if (!result) throw new Error();
+        if (result.error) throw new Error(result.error.message);
+        
+        // check firestore
+        emit("processing");
+        await delay(3000);
+
+        const docData = await getDoc(doc(db, "users", userStore().userData?.uid ?? ""));
+        const userData = docData.data();
+
+        if (!userData || !userData.subscription) {
+            emit("failed", `Error: User not found.`);
+            openSubscriptionModal.value = false;
+            return;
+        }
+
+        if (userData.subscription.currentlySubscribed) {
+            userStore().subscription = userData.subscription;
+            userStore().points = userData.points;
+            emit("success");
+            openSubscriptionModal.value = false;
+        } else {
+            emit("failed", `Error: Transaction failed.`);
+            openSubscriptionModal.value = false;
+        }
     
     } catch (error: any) {
-        console.error(error)
+        errorMessage.value = error.message ?? "Something went wrong. Try again.";
     }
 
   /*if (isLoading.value || !stripe.value) return;
@@ -334,6 +393,27 @@ ion-button {
     position: fixed;
     bottom: 1vh;
     width: 92.5%;
+}
+
+.buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    position: fixed;
+    bottom: 1vh;
+    width: 92.5%;
+
+    p {
+        margin: 0;
+        margin-bottom: 0.25vh;
+        text-align: center;
+    }
+
+    ion-button {
+        position: static;
+        bottom: unset;
+    }
 }
 
 </style>

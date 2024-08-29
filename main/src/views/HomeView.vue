@@ -25,7 +25,38 @@
         <ion-modal :is-open="openSubscriptionModal" :initial-breakpoint="1" :breakpoints="[0, 1]" @didDismiss="openSubscriptionModal = false">
           <ion-content>
             <div style="margin-top: 1.5em;"></div>
-            <SubscriberAd :type="'money'" />
+            <SubscriberAd :type="'money'" @processing="handleProcessing" @success="handleSuccess" @failed="(msg) => handleFail(msg)" />
+          </ion-content>
+        </ion-modal>
+
+        <ion-modal ref="outcomeModal" :is-open="showModal" :initial-breakpoint="0.25" :breakpoints="[0, 0.25, 0.65]" @didDismiss="closeModal">
+          <ion-header>
+            <ion-toolbar>
+              <ion-progress-bar type="indeterminate" v-if="!success && !failed"></ion-progress-bar>
+            </ion-toolbar>
+          </ion-header>
+          
+          <ion-content>
+            <div class="message" v-if="!success && !failed">
+              <h1>Processing...</h1>
+              <p>Please do not close the app.</p>
+            </div>
+            
+            <Transition name="subscriptionAd">
+              <div class="message" v-if="success">
+                <h1>Congratulations!</h1>
+                <h4>Enjoy your new Steakosaurus perks and benefits!</h4>
+                <p>You may now close this window.</p>
+                <img src="/icons/steakosaurusRight.svg">
+              </div>
+            </Transition>
+            
+            <div class="message" v-if="failed">
+              <h1>Transaction failed.</h1>
+              <p>{{ failMessage }}</p>
+              <p>You may now close this window.</p>
+              <img src="/icons/dinersaurWithShadow.svg">
+            </div>
           </ion-content>
         </ion-modal>
 
@@ -63,7 +94,7 @@
 
 import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
-  IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, IonModal, IonBadge, 
+  IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, IonModal, IonBadge, IonProgressBar,
   onIonViewWillEnter} from '@ionic/vue';
 import Header from '@/components/Header.vue';
 import { Reservation, userStore } from '@/stores/userStore';
@@ -80,6 +111,13 @@ import AllReservations from '@/components/AllReservations.vue';
 
 addCustomMethods();
 
+const outcomeModal = ref();
+
+const showModal = ref(false);
+const success = ref(false);
+const failed = ref(false);
+const failMessage = ref("");
+
 const openSubscriptionModal = ref(false);
 const showSubscriptionAd = ref(false);
 const openReservationModal = ref(false);
@@ -93,6 +131,30 @@ onIonViewDidEnter(async () => {
 function openReservation (type: "upcoming" | "past") {
   openReservationModal.value = true;
   typeOfReservation.value = type;
+}
+
+function handleProcessing () {
+  showModal.value = true;
+}
+
+function handleSuccess () {
+  openSubscriptionModal.value = false;
+  outcomeModal.value?.$el.setCurrentBreakpoint(0.65);
+  success.value = true;
+}
+
+function handleFail (message: string) {
+  openSubscriptionModal.value = false;
+  outcomeModal.value?.$el.setCurrentBreakpoint(0.65);
+  failMessage.value = message;
+  failed.value = true;
+}
+
+function closeModal () {
+  showModal.value = false;
+  if (success.value) showSubscriptionAd.value = false;
+  success.value = false;
+  failed.value = false;
 }
 
 </script>
@@ -146,6 +208,22 @@ ion-card.subscription {
 .subscriptionAd-enter-from, .subscriptionAd-leave-to {
   opacity: 0;
   transform: translate(-50vw);
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+
+  h1 {
+    margin-bottom: 0;
+  }
+
+  img {
+    width: 75%;
+  }
 }
 
 .reservations {
