@@ -26,8 +26,33 @@
             </div>
         </div>
 
-        <ion-button v-if="type == 'money'">Claim Offer</ion-button>
+        <ion-button v-if="type == 'money'" @click="openSubscription">Claim Offer</ion-button>
         <ion-button @click="subscribeWithPoints" v-else>Purchase</ion-button>
+
+        <ion-modal :is-open="openSubscriptionModal" :initial-breakpoint="0.9" :breakpoints="[0, 0.9]" @didDismiss="openSubscriptionModal = false">
+          <ion-content>
+            <div style="margin-top: 1.5em;"></div>
+            <div class="container">
+                <h1>Subscribe</h1>
+
+                <form id="subscribe-form">
+                    <label>Full name <input type="text" id="name" v-model="name" placeholder="Name"></label>
+                    <div ref="cardElementPage"></div>
+                </form>
+                <button @click="handleSubmit">Subscribe</button>
+                <!--<h1>Payment</h1>
+
+                <p>Enable more payment method types <a href="https://dashboard.stripe.com/settings/payment_methods" target="_blank">in your dashboard</a>.</p>
+
+                <form id="payment-form" @submit.prevent="handleSubmit">
+                    <div id="link-authentication-element"></div>
+                    <div id="payment-element"></div>
+                    <button id="submit" :disabled="isLoading">Pay now</button>
+                    <sr-messages :messages="messages" />
+                </form>-->
+            </div>
+          </ion-content>
+        </ion-modal>
     </div>
 </template>
 
@@ -38,8 +63,20 @@ import { delay, fetchFromNuxt } from '@/utils/functions';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
   IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, IonModal, IonBadge,
   onIonViewWillEnter} from '@ionic/vue';
+import { loadStripe, Stripe, StripeCardElement, StripeElements } from '@stripe/stripe-js';
 import { cashOutline } from 'ionicons/icons';
 import { onMounted, ref } from 'vue';
+
+const openSubscriptionModal = ref(false);
+const isLoading = ref(false);
+const messages = ref<string[]> ([]);
+
+const name = ref("");
+
+const stripe = ref<Stripe | null> ();
+const elements = ref<StripeElements> ();
+const cardElement = ref<StripeCardElement> ();
+const cardElementPage = ref<HTMLElement> ();
 
 type Props = {
     type: "money" | "points";
@@ -84,23 +121,112 @@ onMounted(async () => {
     }
 });
 
+async function openSubscription () {
+    openSubscriptionModal.value = true;
+    
+    const { publishableKey } = await fetchFromNuxt("/api/config");
+    stripe.value = await loadStripe(publishableKey);
+    
+    let tries = 0;
+    while (tries < 10) {
+        if (stripe.value) {
+            elements.value = stripe.value?.elements();
+            cardElement.value = elements.value?.create("card");
+            if (cardElementPage.value && cardElement.value) cardElement.value.mount(cardElementPage.value);
+            break;
+        }
+        tries++;
+        await delay(50);
+    }
+
+    /*const { publishableKey } = await fetchFromNuxt("/api/config");
+    stripe.value = await loadStripe(publishableKey);
+
+    const { clientSecret, error: backendError } = await fetchFromNuxt("/api/create-payment-intent");
+
+    if (backendError) messages.value.push(backendError.message);
+    messages.value.push(`Client secret returned.`);
+
+    if (stripe.value) {
+        elements.value = stripe.value.elements({clientSecret});
+        const paymentElement = elements.value.create('payment');
+        paymentElement.mount("#payment-element");
+        const linkAuthenticationElement = elements.value.create("linkAuthentication");
+        linkAuthenticationElement.mount("#link-authentication-element");
+        isLoading.value = false;
+    }*/
+}
+
+async function handleSubmit () {
+    
+    try {
+        const { success, message, subscription, clientSecret } = await fetchFromNuxt("/api/create-subscription", JSON.stringify({ uid: userStore().userData?.uid }));
+        if (!success) throw new Error(message);
+        console.log(success, message, subscription, clientSecret)
+
+        const result = await stripe.value?.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: (cardElement.value as StripeCardElement),
+                billing_details: {
+                    name: name.value
+                }
+            }
+        });
+
+        if (result && result.error) throw new Error(result.error.message);
+        console.log(result)
+    
+    } catch (error: any) {
+        console.error(error)
+    }
+
+  /*if (isLoading.value || !stripe.value) return;
+
+  const { clientSecret, error: backendError } = await fetchFromNuxt("https://dinersaur.xyz/api/create-payment-intent");
+
+  isLoading.value = true;
+
+  const { error } = await stripe.value.confirmPayment({
+    elements: elements.value,
+    clientSecret,
+    confirmParams: {
+      return_url: `${window.location.origin}`
+    }
+  });
+
+  if (error.type === "card_error" || error.type === "validation_error") {
+    if (error.message) messages.value.push(error.message);
+  } else {
+    messages.value.push("An unexpected error occured.");
+  }
+
+  isLoading.value = false;*/
+}
+
 async function subscribeWithPoints () {
     emit("processing");
     const { success, message } = await fetchFromNuxt("/api/points-subscription", JSON.stringify({ uid: userStore().userData?.uid }));
     if (success) {
-        userStore().subscribed = true;
+        userStore().subscription.currentlySubscribed = true;
         userStore().points = userStore().points - 10000;
         await delay(3000);
         emit("success");
     } else {
         await delay(3000);
-        emit("failed", `Error: ${message} Your points were not deducted.`);
+        emit("failed", `Error: ${message}`);
     }
 }
 
 </script>
 
 <style lang="scss" scoped>
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
 
 .ad {
     display: flex;

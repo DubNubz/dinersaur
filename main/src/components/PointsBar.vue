@@ -1,6 +1,7 @@
 <template>
     <div class="pointsCounter">
-        <h4><span v-if="userStore().subscribed">(+50% activated)</span> <strong>{{ points.toLocaleString() }}</strong> pts</h4>
+        <h4><span v-if="userStore().subscription.currentlySubscribed">(+50% activated)</span> <strong>{{ points.toLocaleString() }}</strong> pts</h4>
+        <p v-if="showLink" @click="openModal = true">Rewards</p>
         <div class="points">
             <div class="circle" :style="{ left: calculateCirclePosition(points) }">
                 <div class="innerCircle"></div>
@@ -9,19 +10,30 @@
         </div>
         <div class="counter"><span :class="{ bold: number <= points }" v-for="number in [1000, 3000, 5000, 7000, 9000]">{{ number }}</span></div>
     </div>
+
+    <ion-modal :is-open="openModal" :initial-breakpoint="1" :breakpoints="[0, 1]" @didDismiss="openModal = false">
+      <ion-content>
+        <div style="margin-top: 1.5em;"></div>
+        <PointsShop />
+      </ion-content>
+    </ion-modal>
 </template>
 
 <script setup lang="ts">
 import { userStore } from '@/stores/userStore';
 import { delay } from '@/utils/functions';
 import { onMounted, ref, watch } from 'vue';
+import { IonModal, IonContent } from '@ionic/vue';
+import PointsShop from './PointsShop.vue';
 
 type Props = {
     /** Delay before loading points, in milliseconds */
     delay: number;
+    showLink?: boolean;
 }
 
 const props = defineProps<Props> ();
+const openModal = ref(false);
 
 const points = ref(0);
 watch(() => userStore().points, (val) => points.value = val);
@@ -64,6 +76,12 @@ function calculateBarWidth (points: number) {
       color: var(--ion-color-primary-shade);
       font-size: 60%;
     }
+  }
+
+  p {
+    margin: 0;
+    text-decoration: underline;
+    color: var(--ion-color-tertiary-shade);
   }
 }
 

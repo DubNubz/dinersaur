@@ -41,8 +41,10 @@ export interface VideoComment extends VideoCommentReply {
 export type BillingInfo = {
     address: string;
     cardNumber: number;
-    expiration: Date;
-    name: string; 
+    /** Milliseconds since epoch. */
+    expiration: number;
+    name: string;
+    stripeId: string;
 }
 
 export type smProfile = {
@@ -106,8 +108,8 @@ export type Floor = {
 export type RestaurantInfo = {
     name: string;
     address: string;
-    phone: number | null;
-    email: number | null;
+    phone: string | null;
+    email: string | null;
     menu: MenuItem[];
     id: string;
     offers: PointOffer[];
@@ -122,6 +124,12 @@ export type PointOffer = {
     code: string;
 }
 
+export type SubscriptionInfo = {
+    currentlySubscribed: boolean;
+    stripeSubscriptionId?: string;
+    currentPeriodEnd?: number;
+}
+
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ();
 
@@ -129,8 +137,9 @@ export const userStore = defineStore('userStore', () => {
     const billing = ref<BillingInfo> ({
         address: "",
         cardNumber: 0,
-        expiration: new Date(),
-        name: ""
+        expiration: new Date().getTime(),
+        name: "",
+        stripeId: ""
     });
     const reservations = ref<Reservation[]> ([]);
     const language = ref("en");
@@ -147,7 +156,9 @@ export const userStore = defineStore('userStore', () => {
     const profileImage = ref("https://ionicframework.com/docs/img/demos/avatar.svg");
     const notifications = ref<Notification[]> ([]);
     const points = ref(0);
-    const subscribed = ref(false);
+    const subscription = ref<SubscriptionInfo> ({
+        currentlySubscribed: false
+    });
 
     const currentVideo = ref<Video> ();
     const videoQueue = ref<Video[]> ([]);
@@ -184,5 +195,5 @@ export const userStore = defineStore('userStore', () => {
     const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
     const selectedCategory = ref<string | null>(null);
 
-    return { userData, reservations, pastReservations, currentAllergies, notifications, nearbyRestaurants, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscribed, floorLayouts, saveLayout, loadLayout, menu, categories, profileImage, numFloors, floors, selectedFloorIndex, selectedCategory };
+    return { userData, reservations, pastReservations, currentAllergies, notifications, nearbyRestaurants, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscription, floorLayouts, saveLayout, loadLayout, menu, categories, profileImage, numFloors, floors, selectedFloorIndex, selectedCategory };
 });
