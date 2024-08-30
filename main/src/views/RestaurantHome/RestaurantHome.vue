@@ -3,7 +3,7 @@
     <Header/>
     <ion-content>
       <div class="heading">
-        <ion-text>{{ restaurantName }}'s Dashboard</ion-text>
+        <ion-text>{{ userStore().restaurantName }}'s Dashboard</ion-text>
       </div>
       <div class="dashboard">
         <ion-card class="metric-card" @click="openModal('Incoming Reservations')">
@@ -102,10 +102,9 @@ import {
   PointElement,
   Filler
 } from 'chart.js';
+import { userStore } from '@/stores/userStore';
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement, Filler);
-
-const restaurantName = localStorage.getItem('restaurantName') ?? "";
 
 const reservationTimes = ref(["12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"]);
 const confirmedReservations = ref('');

@@ -122,6 +122,12 @@ export type PointOffer = {
     code: string;
 }
 
+export type Marker = {
+    coordinate: any,
+    title: string,
+    snippet: string,
+}
+
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ();
 
@@ -153,6 +159,13 @@ export const userStore = defineStore('userStore', () => {
     const videoQueue = ref<Video[]> ([]);
 
     const nearbyRestaurants = ref<RestaurantInfo[]> ([]);
+    // Restaurant
+
+    const restaurantName = ref("")
+
+    // Restaurant Map Design
+
+    const restaurantMarkerData = ref<Marker[]>([]);
 
     // Restaurant Layout Side
 
@@ -184,5 +197,5 @@ export const userStore = defineStore('userStore', () => {
     const categories = ref<string[]>(['Appetizer', 'Main Course', 'Dessert', 'Special Deals']);
     const selectedCategory = ref<string | null>(null);
 
-    return { userData, reservations, pastReservations, currentAllergies, notifications, nearbyRestaurants, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscribed, floorLayouts, saveLayout, loadLayout, menu, categories, profileImage, numFloors, floors, selectedFloorIndex, selectedCategory };
+    return { userData, reservations, pastReservations, currentAllergies, notifications, nearbyRestaurants, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscribed, floorLayouts, saveLayout, loadLayout, menu, categories, profileImage, numFloors, floors, selectedFloorIndex, selectedCategory, restaurantName, restaurantMarkerData };
 });

@@ -41,15 +41,10 @@ import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButto
 
 import { ref } from "vue";
 import MyMap from "./MyMap.vue";
+import { Marker } from "@/stores/userStore";
 
 const selectedMarker = ref<Marker | null>(null);
 const markerIsOpen = ref<boolean>(false);
-
-type Marker = {
-  coordinate: any,
-  title: string,
-  snippet: string, 
-}
 
 const markerData = ref<Marker[]>([
     {

@@ -55,6 +55,13 @@
             <ion-icon :icon="key" color="secondary"></ion-icon>
           </ion-button>
         </ion-nav-link>
+
+        <ion-nav-link router-direction="forward" :component="RestaurantMapDesign">
+          <ion-button class="accountButton">
+            <ion-label>Map</ion-label>
+            <ion-icon :icon="map" color="secondary"></ion-icon>
+          </ion-button>
+        </ion-nav-link>
       </div>
     </ion-content>
   </ion-page>
@@ -63,7 +70,7 @@
 <script setup lang="ts">
 
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonItem, IonLabel, IonButton, IonIcon, IonAvatar, IonNavLink, IonNav } from '@ionic/vue';
-import { add, medkit, language, card, key, create } from 'ionicons/icons';
+import { add, medkit, language, card, key, create, map } from 'ionicons/icons';
 import { defineComponent, ref, onMounted, computed } from 'vue';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import StarRating from '@/components/StarRating.vue';
@@ -73,6 +80,7 @@ import BillingView from '../RestaurantHome/RestaurantAccountFiles/Billing.vue';
 import CustomizeView from '../RestaurantHome/RestaurantAccountFiles/Customize.vue';
 import LanguageView from '../RestaurantHome/RestaurantAccountFiles/Language.vue';
 import { userStore } from '@/stores/userStore';
+import RestaurantMapDesign from './RestaurantMapDesign.vue';
 
 onMounted(() => {
   userName.value = userStore().name;
