@@ -8,9 +8,8 @@
       <Transition name="subscriptionAd">
         <div class="offers" v-if="showSubscriptionAd">
           <ion-card class="subscription">
-            <img src="/icons/steakosaurusRight.svg" alt="">
             <ion-card-header>
-              <ion-card-subtitle>50% more points +<ion-badge color="secondary">FREE</ion-badge> drinks by becoming a</ion-card-subtitle>
+              <ion-card-subtitle>50% more points +<ion-badge color="secondary">FREE</ion-badge> drinks</ion-card-subtitle>
               <ion-card-title>1 Week of Steakosaurus</ion-card-title>
             </ion-card-header>
             <ion-card-content>
@@ -58,6 +57,21 @@
           </ion-modal>
         </div>
       </Transition>
+
+      <Transition name="subscriptionAd">
+        <div class="offers" v-if="showPointsAd">
+          <ion-card class="subscription pointsAd">
+            <ion-card-header>
+              <ion-card-subtitle>Earn <ion-badge color="secondary">DOUBLE</ion-badge> points!</ion-card-subtitle>
+              <ion-card-title>Welcome Gift</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              Welcome to Dinersaur! Earn double points on your first order, for free!
+            </ion-card-content>
+            <ion-button>Shop now</ion-button>
+          </ion-card>
+        </div>
+      </Transition>
       
       <Transition name="subscriptionAd">
         <div class="offers" v-if="restaurantsWithOffers.length > 0">
@@ -103,6 +117,7 @@ const outcomeModal = ref();
 
 const openSubscriptionModal = ref(false);
 const showSubscriptionAd = ref(false);
+const showPointsAd = ref(false);
 
 const showModal = ref(false);
 const success = ref(false);
@@ -113,7 +128,8 @@ const restaurantsWithOffers = ref<RestaurantInfo[]> ([]);
 
 onMounted(async () => {
   await delay(100);
-  if (!userStore().subscribed) showSubscriptionAd.value = true;
+  if (!userStore().subscription.currentlySubscribed) showSubscriptionAd.value = true;
+  if (userStore().reservations.length == 0 && userStore().pastReservations.length == 0) showPointsAd.value = true;
   if (userStore().nearbyRestaurants.length != 0) restaurantsWithOffers.value = userStore().nearbyRestaurants.filter((restaurant) => restaurant.offers);
   else {
     const restaurants = await getRestaurants() as RestaurantInfo[];
@@ -141,7 +157,9 @@ function handleFail (message: string) {
 
 function closeModal () {
   showModal.value = false;
-  showSubscriptionAd.value = false;
+  if (success.value) showSubscriptionAd.value = false;
+  success.value = false;
+  failed.value = false;
 }
 
 </script>
@@ -168,15 +186,19 @@ ion-card.subscription {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  --background: #f6f0ff;
   --color: black;
   width: 100%;
+  background-image: linear-gradient(to bottom, rgba(7, 0, 17, 0.55) 60%, transparent), url("/icons/steakosaurusRight.svg");
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 250%;
 
-  ion-card-header, ion-card-content {
+  ion-card-header, ion-card-content, ion-card-title {
     width: 100%;
+    color: white;
 
     ion-card-subtitle {
-      --color: var(--ion-color-tertiary);
+      --color: var(--ion-color-secondary-tint);
       display: flex;
       align-items: center;
       gap: 0.25em;
@@ -193,6 +215,23 @@ ion-card.subscription {
     background: linear-gradient(to top, transparent, rgba(76, 80, 12, 0.05) 50%);
     padding-left: 12.5%;
     padding-right: 12.5%;
+  }
+}
+
+ion-card.pointsAd {
+  --background: #eee2ff;
+  background-image: url("/icons/dinersaurWithShadow.svg");
+  background-position: top right;
+  background-size: 45%;
+  align-items: flex-start;
+
+  ion-card-header, ion-card-content, ion-card-title {
+    width: 75%;
+    color: black;
+
+    ion-card-subtitle {
+      --color: var(--ion-color-tertiary);
+    }
   }
 }
 

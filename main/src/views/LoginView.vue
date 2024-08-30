@@ -43,6 +43,7 @@ import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from '@/utils/firebase';
 import { useI18n } from 'vue-i18n';
 import { chevronBack, notifications } from 'ionicons/icons';
+import { fetchFromNuxt } from '@/utils/functions';
 
 const { locale } = useI18n();
 
@@ -86,6 +87,7 @@ async function signUp () {
     const auth = getAuth();
 
     try {
+        await setPersistence(auth, browserLocalPersistence);
         const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
         userStore().userData = user;
@@ -93,6 +95,9 @@ async function signUp () {
         localStorage.setItem("lang", "en");
         localStorage.setItem("name", user.displayName ?? "");
         access.value = true;
+
+        const { success, message, customer } = await fetchFromNuxt("/api/create-stripe-customer", JSON.stringify({ uid: user.uid }));
+        if (!success) throw new Error(message);
 
         await setDoc(doc(db, "users", user.uid), {
             name: "",
@@ -104,13 +109,15 @@ async function signUp () {
             billing: {
                 cardNumber: 0,
                 name: "",
-                expiration: new Date(),
-                address: ""
+                expiration: new Date().getTime(),
+                address: "",
+                stripeId: customer.id
             },
             smProfile: {
+                bookmarkedVideos: [],
+                likedVideos: [],
                 followers: [],
                 following: [],
-                bookmarkedVideos: [],
                 posts: []
             },
             notifications: [{
@@ -119,7 +126,9 @@ async function signUp () {
                 date: new Date().getTime(),
                 read: false
             }],
-            subscribed: false,
+            subscription: {
+                currentlySubscribed: false
+            },
             points: 0
         });
 
@@ -130,8 +139,8 @@ async function signUp () {
             read: false
         });
 
-    } catch (error: any) {
-        getErrorMessage(error.message);
+    } catch (error) {
+        if (error instanceof Error) getErrorMessage(error.message);
         showError.value = true;
     }
 }
@@ -140,6 +149,7 @@ async function login () {
     const auth = getAuth();
 
     try {
+        await setPersistence(auth, browserLocalPersistence);
         const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
         const user = userCredential.user;
         userStore().userData = user;
@@ -160,7 +170,7 @@ async function login () {
         store.smProfile = userData.smProfile;
         store.notifications = userData.notifications;
         store.points = userData.points;
-        store.subscribed = userData.subscribed;
+        store.subscription = userData.subscription;
 
         if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
         else {
@@ -171,9 +181,8 @@ async function login () {
         localStorage.setItem("lang", store.language);
         localStorage.setItem("name", store.name);
         
-    } catch (error: any) {
-        console.log(error.message)
-        getErrorMessage(error.message);
+    } catch (error) {
+        if (error instanceof Error) getErrorMessage(error.message);
         showError.value = true;
     }
 }
@@ -183,6 +192,7 @@ async function signinWIthGoogle () {
     const provider = new GoogleAuthProvider();
 
     try {
+        await setPersistence(auth, browserLocalPersistence);
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
         userStore().userData = user;
@@ -192,7 +202,51 @@ async function signinWIthGoogle () {
         const docData = await getDoc(doc(db, "users", user.uid));
         const userData = docData.data();
         access.value = true;
-        if (!userData) return;
+        
+        if (!userData) {
+            const { success, message, customer } = await fetchFromNuxt("/create-stripe-customer", JSON.stringify({ uid: user.uid }));
+            if (!success) throw new Error(message);
+
+            await setDoc(doc(db, "users", user.uid), {
+                name: "",
+                allergies: [],
+                language: "en",
+                rating: 5,
+                currentReservations: [],
+                pastReservations: [],
+                billing: {
+                    cardNumber: 0,
+                    name: "",
+                    expiration: new Date().getTime(),
+                    address: "",
+                    stripeId: customer.id
+                },
+                smProfile: {
+                    bookmarkedVideos: [],
+                    likedVideos: [],
+                    followers: [],
+                    following: [],
+                    posts: []
+                },
+                notifications: [{
+                    title: "Welcome to Dinersaur!",
+                    text: "Welcome to Dinersaur. Thanks for signing up!",
+                    date: new Date().getTime(),
+                    read: false
+                }],
+                subscribed: false,
+                points: 0
+            });
+
+            userStore().notifications.push({
+                title: "Welcome to Dinersaur!",
+                text: "Welcome to Dinersaur. Thanks for signing up!",
+                date: new Date().getTime(),
+                read: false
+            });
+
+            return;
+        }
 
         if (userData.name == "" && user.displayName) {
             userData.name = user.displayName;
@@ -208,7 +262,7 @@ async function signinWIthGoogle () {
         store.smProfile = userData.smProfile;
         store.notifications = userData.notifications;
         store.points = userData.points;
-        store.subscribed = userData.subscribed;
+        store.subscription = userData.subscription;
 
         if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
         else {
@@ -220,9 +274,8 @@ async function signinWIthGoogle () {
         localStorage.setItem("name", store.name);
 
         
-    } catch (error: any) {
-        console.log(error.message)
-        getErrorMessage(error.message);
+    } catch (error) {
+        if (error instanceof Error) getErrorMessage(error.message);
         showError.value = true;
     }
 }

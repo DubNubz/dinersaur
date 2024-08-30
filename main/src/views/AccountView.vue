@@ -65,10 +65,10 @@ const pages = ref<Page[]> ([{
   component: markRaw(AllergiesView),
   img: medkitOutline
 }, {
-  name: userStore().subscribed ? "Manage Subscription" : "Discover Steakosaurus",
+  name: userStore().subscription.currentlySubscribed ? "Manage Subscription" : "Discover Steakosaurus",
   component: markRaw(SubscriptionView),
   img: cafeOutline,
-  flavor: userStore().subscribed ? "Manage Steakosaurus subscription" : "+50% points, free drinks, and more"
+  flavor: userStore().subscription.currentlySubscribed ? "Manage Steakosaurus subscription" : "+50% points, free drinks, and more"
 }, {
   name: "Points",
   component: markRaw(PointsView),

@@ -160,19 +160,29 @@ export function timeSince (time: number) {
 }
 
 export async function fetchFromNuxt (path: string, body?: string) {
-  const fullPath = "http://localhost:3000" + path;
+  const fullPath = "https://dinersaur.xyz" + path;
   
-  const response = body ? await fetch(fullPath, {
-    method: "POST",
-    headers: { 'CONTENT-TYPE': 'application/json' },
-    body
-  }) : await fetch(fullPath);
-  const data = await response.json() as Record<any, any>;
-  return data;
+  try {
+    const response = body ? await fetch(fullPath, {
+      method: "POST",
+      headers: { 'CONTENT-TYPE': 'application/json' },
+      body
+    }) : await fetch(fullPath);
+    console.log(response)
+    const data = await response.json() as Record<any, any>;
+    console.log(data)
+    return data;
+
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Something went wrong. Try again later.";
+    console.log(error)
+    return { success: false, message };
+  }
 }
 
 export function formatTime (time: number, omitHour?: boolean) {
   let hour = new Date(time).getHours();
+  const ampm = hour < 12 ? "AM" : "PM";
   if (hour > 12) hour = hour - 12;
   else if (hour == 0) hour = 12;
   const minutes = new Date(time).getMinutes();
@@ -184,7 +194,7 @@ export function formatTime (time: number, omitHour?: boolean) {
   else date = new Date(time).toLocaleDateString();
 
   if (omitHour && !["Today", "Tomorrow"].includes(date)) return date;
-  return `${date} at ${hour}:${minutes < 10 ? '0' + minutes : minutes} ${hour < 12 ? 'AM' : 'PM'}`;
+  return `${date} at ${hour}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
 }
 
 export async function getRestaurants () {

@@ -86,18 +86,22 @@ onAuthStateChanged(getAuth(), async (user) => {
     if (!userData) return;
     localStorage.setItem("lang", userData.language);
     localStorage.setItem("name", userData.name);
-  
-    store.currentAllergies = userData.allergies;
-    store.billing = userData.billing;
-    store.reservations = userData.currentReservations;
-    store.language = userData.language;
-    store.name = userData.name;
-    store.pastReservations = userData.pastReservations;
-    store.rating = userData.rating;
-    store.smProfile = userData.smProfile;
-    store.notifications = userData.notifications;
-    store.points = userData.points;
-    store.subscribed = userData.subscribed;
+
+    if (userData.allergies != undefined) {
+      store.currentAllergies = userData.allergies;
+      store.billing = userData.billing;
+      store.reservations = userData.currentReservations;
+      store.language = userData.language;
+      store.name = userData.name;
+      store.pastReservations = userData.pastReservations;
+      store.rating = userData.rating;
+      store.smProfile = userData.smProfile;
+      store.notifications = userData.notifications;
+      store.points = userData.points;
+      store.subscription = userData.subscription;
+    } else {
+      
+    }
 
     locale.value = store.language;
   }
