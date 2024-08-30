@@ -6,13 +6,17 @@ import { Timestamp } from 'firebase/firestore';
 import { profile } from 'console';
 
 export type Reservation = {
-    restaurant: RestaurantInfo;
+    /** ID of the restaurant. */
+    restaurant: string;
     /** Milliseconds since epoch. */
     time: number;
     people: number;
     price: number;
     paid: boolean;
+    paymentId?: string;
     id: string;
+    /** Array of menu item IDs in the reservation. */
+    menuItems: string[];
 }
 
 export type Video = {
@@ -113,6 +117,13 @@ export type RestaurantInfo = {
     menu: MenuItem[];
     id: string;
     offers: PointOffer[];
+    /** Milliseconds of refund time.
+     * 
+     * 0 means no refund.
+     * 
+     * -1 means no limit.
+     */
+    refundLimit: number;
 }
 
 export type PointOffer = {

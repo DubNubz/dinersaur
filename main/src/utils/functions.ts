@@ -160,7 +160,7 @@ export function timeSince (time: number) {
 }
 
 export async function fetchFromNuxt (path: string, body?: string) {
-  const fullPath = "https://dinersaur.xyz" + path;
+  const fullPath = "http://localhost:3000" + path;
   
   try {
     const response = body ? await fetch(fullPath, {

@@ -52,6 +52,7 @@ import PointsView from './AccountViewFiles/PointsView.vue';
 import AboutView from './AccountViewFiles/AboutView.vue';
 import ReservationsView from './AccountViewFiles/ReservationsView.vue';
 import version from '@/utils/version';
+import ReviewsView from './AccountViewFiles/ReviewsView.vue';
 
 type Page = {
   name: string;
@@ -81,7 +82,7 @@ const pages = ref<Page[]> ([{
   flavor: "View all of your reservations"
 }, {
   name: "Reviews",
-  component: markRaw(ReservationsView),
+  component: markRaw(ReviewsView),
   img: userStore().rating < 2.5 ? sadOutline : happyOutline
 }, {
   name: "Billing",
