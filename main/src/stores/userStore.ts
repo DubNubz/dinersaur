@@ -148,7 +148,7 @@ export type Marker = {
 }
 
 export const userStore = defineStore('userStore', () => {
-    const userData = ref<User> ();
+    const userData = ref<User> ()
 
     const currentAllergies = ref<string[]> ([]);
     const billing = ref<BillingInfo> ({
