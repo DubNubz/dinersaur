@@ -8,13 +8,13 @@
         <div class="divTwo">
             <ion-button class="button" @click="customerAccount">
                 <div class="button-content">
-                Customer
+                {{$t("customer")}}
                 <img src="/icons/customer.png">
                 </div>
             </ion-button>
             <ion-button class="button" @click="restaurantAccount">
                 <div class="button-content">
-                Restaurant
+                {{$t("restaurant")}}
                 <img src="/icons/restaurant.png">
                 </div>
             </ion-button>

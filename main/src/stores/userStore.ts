@@ -124,6 +124,7 @@ export type RestaurantInfo = {
      * -1 means no limit.
      */
     refundLimit: number;
+    location: Geolocation;
 }
 
 export type PointOffer = {

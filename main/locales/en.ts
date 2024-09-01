@@ -79,4 +79,8 @@ export const en: Record<string, string> = {
     russian: "Russian",
     spanish: "Spanish",
     vietnamese: "Vietnamese",
+
+    //login-buttons
+    customer: "Customer",
+    restaurant: "Restaurant"
 }

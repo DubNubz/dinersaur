@@ -154,6 +154,8 @@ async function clickMarker() {
 }
 
 async function toggleUserLocation() {
+  let userMarkerId: string | null = null;
+
   const watchId = await Geolocation.watchPosition(
     { enableHighAccuracy: true },
     async (position, err) => {
@@ -165,48 +167,36 @@ async function toggleUserLocation() {
       if (position) {
         const { latitude, longitude } = position.coords;
 
-        // If the user marker already exists, update its position
-        if (userMarker) {
-          await userMarker.setPosition({
+        // Remove the previous marker if it exists
+        if (userMarkerId) {
+          await newMap.removeMarker(userMarkerId);
+        }
+
+        // Add the new marker with the updated position
+        userMarkerId = await newMap.addMarker({
+          coordinate: {
             lat: latitude,
             lng: longitude,
-          });
+          },
+          title: "Your Location",
+          snippet: "You are here",
+        });
 
-          // Optionally, recenter the map on the user's new location
-          await newMap.setCamera({
-            coordinate: {
-              lat: latitude,
-              lng: longitude,
-            },
-            zoom: 21,
-          });
-        } else {
-          // Create a new marker for the user's location if it doesn't exist
-          userMarker = await newMap.addMarker({
-            coordinate: {
-              lat: latitude,
-              lng: longitude,
-            },
-            title: "Your Location",
-            snippet: "You are here",
-          });
-
-          // Optionally, center the map on the user's location when first added
-          await newMap.setCamera({
-            coordinate: {
-              lat: latitude,
-              lng: longitude,
-            },
-            zoom: 21,
-          });
-        }
+        // Move the camera to the new position
+        await newMap.setCamera({
+          coordinate: {
+            lat: latitude,
+            lng: longitude,
+          },
+          zoom: 21,
+        });
       }
     }
   );
 
-  // Store the watchId if you need to clear the watch later
   return watchId;
 }
+
 </script>
 
 <style lang="scss">
