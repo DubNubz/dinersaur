@@ -26,30 +26,28 @@
             </div>
         </div>
 
-        <ion-button v-if="type == 'money'" @click="openSubscription" :disabled="loading">Claim Offer</ion-button>
+        <ion-button v-if="type == 'money'" @click="openSubscription">Claim Offer</ion-button>
         <ion-button @click="subscribeWithPoints" v-else>Purchase</ion-button>
 
         <ion-modal :is-open="openSubscriptionModal" :initial-breakpoint="1" :breakpoints="[0, 1]" @didDismiss="openSubscriptionModal = false">
           <ion-content>
+            <p class="powered">Powered by <img src="/icons/stripe.svg"></p>
             <div style="margin-top: 1.5em;"></div>
             <div class="container">
                 <h1>Continue</h1>
                 
-                <div style="width: 92.5%; margin-bottom: 10em;" ref="cardElementPage"></div>
+                <div style="width: 92.5%; margin-bottom: 1em;" ref="cardElementPage"></div>
+                <div style="width: 92.5%; margin-bottom: 10em;" ref="linkAuthenticationPage"></div>
                 <div class="buttons">
                     <p v-if="errorMessage != ''">{{ errorMessage }}</p>
-                    <ion-button @click="handleSubmit" :color="errorMessage != '' ? 'danger' : 'primary'" :disabled="errorMessage != ''">$6.99/mo</ion-button>
+                    <div class="orderSummary">
+                        <p>Subtotal: $9.99</p>
+                        <p>Discount: $3.00 <ion-icon :icon="pricetag"></ion-icon></p>
+                        <div class="divider"></div>
+                        <h4>Total: <strong>$6.99</strong></h4>
+                    </div>
+                    <ion-button @click="handleSubmit" :color="errorMessage != '' ? 'danger' : 'primary'" :disabled="errorMessage != '' || loading">$6.99/mo</ion-button>
                 </div>
-                <!--<h1>Payment</h1>
-
-                <p>Enable more payment method types <a href="https://dashboard.stripe.com/settings/payment_methods" target="_blank">in your dashboard</a>.</p>
-
-                <form id="payment-form" @submit.prevent="handleSubmit">
-                    <div id="link-authentication-element"></div>
-                    <div id="payment-element"></div>
-                    <button id="submit" :disabled="isLoading">Pay now</button>
-                    <sr-messages :messages="messages" />
-                </form>-->
             </div>
             
             <div style="margin-bottom: 1.5em;"></div>
@@ -66,23 +64,22 @@ import { delay, fetchFromNuxt } from '@/utils/functions';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonCard, IonCardContent, IonCardHeader, IonCardTitle, 
   IonButton, IonButtons, IonIcon, IonList, IonCardSubtitle, onIonViewDidEnter, IonModal, IonBadge,
   onIonViewWillEnter} from '@ionic/vue';
-import { loadStripe, Stripe, StripeCardElement, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
+import { loadStripe, Stripe, StripeCardElement, StripeElements, StripeLinkAuthenticationElement, StripePaymentElement } from '@stripe/stripe-js';
 import { doc, getDoc } from 'firebase/firestore';
-import { cashOutline } from 'ionicons/icons';
+import { cashOutline, pricetag } from 'ionicons/icons';
 import { watch } from 'vue';
 import { onMounted, ref } from 'vue';
 
 const openSubscriptionModal = ref(false);
-const isLoading = ref(false);
-const messages = ref<string[]> ([]);
 
-const name = ref("");
 const clientSecretSave = ref<string> ();
 
 const stripe = ref<Stripe | null> ();
 const elements = ref<StripeElements> ();
 const cardElement = ref<StripePaymentElement> ();
+const linkAuthenticationElement = ref<StripeLinkAuthenticationElement> ();
 const cardElementPage = ref<HTMLElement> ();
+const linkAuthenticationPage = ref<HTMLElement> ();
 
 const loading = ref(true);
 const errorMessage = ref("");
@@ -126,21 +123,25 @@ const cards = ref([{
 }]);
 
 onMounted(async () => {
-    loading.value = true;
-
     for (let i in cards.value) {
         if (i == "0") await delay(250);
         else if (i == "1") await delay(200);
         else await delay(600 / Number(i));
         cards.value[i].show = true;
     }
+});
+
+async function openSubscription () {
+    loading.value = true;
+    openSubscriptionModal.value = true;
 
     try {
-        const { publishableKey } = await fetchFromNuxt("/api/config");
+        const { success, publishableKey } = await fetchFromNuxt("/api/config");
+        if (!success) throw new Error;
         stripe.value = await loadStripe(publishableKey);
         
-        const { success, message, subscription, clientSecret } = await fetchFromNuxt("/api/create-subscription", JSON.stringify({ uid: userStore().userData?.uid }));
-        if (!success) throw new Error(message);
+        const { success: success2, message, subscription, clientSecret } = await fetchFromNuxt("/api/create-subscription", JSON.stringify({ uid: userStore().userData?.uid }));
+        if (!success2) throw new Error(message);
 
         clientSecretSave.value = clientSecret;
         
@@ -149,48 +150,29 @@ onMounted(async () => {
             if (stripe.value) {
                 elements.value = stripe.value.elements({ clientSecret });
                 cardElement.value = elements.value.create("payment");
+                linkAuthenticationElement.value = elements.value.create("linkAuthentication");
                 break;
             }
             tries++;
             await delay(150);
         }
 
-        loading.value = false;
-
     } catch (error) {
         console.error(error)
     }
-});
-
-async function openSubscription () {
-    openSubscriptionModal.value = true;
 
     let tries = 0;
     while (tries < 10) {
-        if (cardElementPage.value && cardElement.value) {
+        if (cardElementPage.value && cardElement.value && linkAuthenticationElement.value && linkAuthenticationPage.value) {
             cardElement.value.mount(cardElementPage.value);
+            linkAuthenticationElement.value.mount(linkAuthenticationPage.value);
             break;
         }
         tries++;
         await delay(150);
     }
 
-    /*const { publishableKey } = await fetchFromNuxt("/api/config");
-    stripe.value = await loadStripe(publishableKey);
-
-    const { clientSecret, error: backendError } = await fetchFromNuxt("/api/create-payment-intent");
-
-    if (backendError) messages.value.push(backendError.message);
-    messages.value.push(`Client secret returned.`);
-
-    if (stripe.value) {
-        elements.value = stripe.value.elements({clientSecret});
-        const paymentElement = elements.value.create('payment');
-        paymentElement.mount("#payment-element");
-        const linkAuthenticationElement = elements.value.create("linkAuthentication");
-        linkAuthenticationElement.mount("#link-authentication-element");
-        isLoading.value = false;
-    }*/
+    loading.value = false;
 }
 
 async function handleSubmit () {
@@ -238,28 +220,6 @@ async function handleSubmit () {
     } catch (error: any) {
         errorMessage.value = error.message ?? "Something went wrong. Try again.";
     }
-
-  /*if (isLoading.value || !stripe.value) return;
-
-  const { clientSecret, error: backendError } = await fetchFromNuxt("https://dinersaur.xyz/api/create-payment-intent");
-
-  isLoading.value = true;
-
-  const { error } = await stripe.value.confirmPayment({
-    elements: elements.value,
-    clientSecret,
-    confirmParams: {
-      return_url: `${window.location.origin}`
-    }
-  });
-
-  if (error.type === "card_error" || error.type === "validation_error") {
-    if (error.message) messages.value.push(error.message);
-  } else {
-    messages.value.push("An unexpected error occured.");
-  }
-
-  isLoading.value = false;*/
 }
 
 async function subscribeWithPoints () {
@@ -279,6 +239,22 @@ async function subscribeWithPoints () {
 </script>
 
 <style lang="scss" scoped>
+
+.powered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35em;
+    position: fixed;
+    top: 0;
+    left: 0.5em;
+    margin: 0;
+    color: var(--ion-color-tertiary);
+
+    img {
+        width: 3em;
+    }
+}
 
 .container {
     display: flex;
@@ -413,6 +389,32 @@ ion-button {
     ion-button {
         position: static;
         bottom: unset;
+    }
+
+    .orderSummary {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      flex-direction: column;
+      width: 100%;
+
+      .divider {
+        width: 100%;
+        height: 0.15em;
+        background-color: var(--ion-color-primary-shade);
+        margin-top: 0.5em;
+        margin-bottom: 0.5em;
+      }
+
+      .subscribed {
+        text-decoration: line-through;
+        text-decoration-color: var(--ion-color-danger-tint);
+        text-decoration-thickness: 0.2em;
+      }
+
+      h4 {
+        margin-top: 0;
+      }
     }
 }
 
