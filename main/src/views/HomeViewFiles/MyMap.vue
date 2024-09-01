@@ -6,7 +6,8 @@
 
 <script setup lang="ts">
 import { onMounted, nextTick, ref, watch } from "vue";
-import { GoogleMap } from "@capacitor/google-maps";
+import { GoogleMap, Marker as GoogleMapMarker } from "@capacitor/google-maps";
+import { Geolocation } from "@capacitor/geolocation";
 
 // PROPS
 
@@ -21,12 +22,14 @@ const emits = defineEmits<{
 
 const mapRef = ref<HTMLElement>();
 let newMap: GoogleMap;
+let userMarker: GoogleMapMarker | null = null;
 
 onMounted(async () => {
   await nextTick();
   await createMap();
   await createMarker();
   await clickMarker();
+  await toggleUserLocation();
 });
 
 watch(
@@ -148,6 +151,61 @@ async function clickMarker() {
     newMap.setOnMarkerClickListener((event) => {
         emits("onMarkerClicked", event);
     });
+}
+
+async function toggleUserLocation() {
+  const watchId = await Geolocation.watchPosition(
+    { enableHighAccuracy: true },
+    async (position, err) => {
+      if (err) {
+        console.error("Error getting location: ", err);
+        return;
+      }
+
+      if (position) {
+        const { latitude, longitude } = position.coords;
+
+        // If the user marker already exists, update its position
+        if (userMarker) {
+          await userMarker.setPosition({
+            lat: latitude,
+            lng: longitude,
+          });
+
+          // Optionally, recenter the map on the user's new location
+          await newMap.setCamera({
+            coordinate: {
+              lat: latitude,
+              lng: longitude,
+            },
+            zoom: 21,
+          });
+        } else {
+          // Create a new marker for the user's location if it doesn't exist
+          userMarker = await newMap.addMarker({
+            coordinate: {
+              lat: latitude,
+              lng: longitude,
+            },
+            title: "Your Location",
+            snippet: "You are here",
+          });
+
+          // Optionally, center the map on the user's location when first added
+          await newMap.setCamera({
+            coordinate: {
+              lat: latitude,
+              lng: longitude,
+            },
+            zoom: 21,
+          });
+        }
+      }
+    }
+  );
+
+  // Store the watchId if you need to clear the watch later
+  return watchId;
 }
 </script>
 

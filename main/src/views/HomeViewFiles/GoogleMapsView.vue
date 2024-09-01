@@ -2,8 +2,13 @@
     <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>Discover</ion-title>
+        <ion-title>Map</ion-title>
       </ion-toolbar>
+      <ion-searchbar
+          placeholder="Search location..."
+          @ionInput="onSearch"
+          :debounce="500"
+        ></ion-searchbar>
     </ion-header>
 
     <ion-content>
@@ -37,7 +42,7 @@
 
 <script setup lang="ts">
 
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButtons, IonButton} from "@ionic/vue";
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButtons, IonButton, IonSearchbar } from "@ionic/vue";
 
 import { ref } from "vue";
 import MyMap from "./MyMap.vue";
@@ -62,6 +67,14 @@ function openModel(marker: Marker) {
 function closeModal(){
   selectedMarker.value = null;
   markerIsOpen.value = false;
+}
+
+function onSearch(event: any) {
+  const query = event.target.value;
+
+  if (query) {
+    
+  }
 }
 
 </script>
