@@ -216,11 +216,11 @@ export type SubscriptionInfo = {
 }
 
 export type Marker = {
-    /** */
+    /** Latitude and longitude of restaurant. */
     coordinate: any;
-    /** */
+    /** Name of restaurant. */
     title: string;
-    /** */
+    /** Address of restaurant. */
     snippet: string;
     /** Modal of the restaurant's display. */
     modal: Modal;
@@ -231,10 +231,10 @@ export type Modal = {
     description: string;
     /** Array of Firebase Storage image URLs. */
     images: string[];
-    /**  */
-    openCloseTimes: number[];
-    /** */
-    reservationTimes: number[];
+    /** Array of day, open, and close times of the restaurant. Ex: {Monday, 8:00AM, 8:00PM} */
+    openCloseTimes: {close: string, day: string, open: string}[];
+    /** Array of reservation times of the restaurant. */
+    reservationTimes: string[];
 }
 
 export type Rating = {

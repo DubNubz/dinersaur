@@ -8,11 +8,12 @@
 import { onMounted, nextTick, ref, watch } from "vue";
 import { GoogleMap, Marker } from "@capacitor/google-maps";
 import { Geolocation } from "@capacitor/geolocation";
+import { Modal } from "@/stores/userStore";
 
 // PROPS
 
 const props = defineProps<{
-    markerData: { coordinate: any; title: string; snippet: string }[];
+    markerData: { coordinate: any; title: string; snippet: string; modal: Modal }[];
     querySelect: { lat: number; lng: number; booleanValue: boolean } | undefined; 
 }>();
 
@@ -157,10 +158,11 @@ async function createMap() {
 
 async function createMarker() {
   await newMap.addMarkers(
-    props.markerData.map(({ coordinate, title, snippet }) => ({
+    props.markerData.map(({ coordinate, title, snippet, modal }) => ({
       coordinate,
       title,
       snippet,
+      modal
     }))
   );
 }

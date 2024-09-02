@@ -37,13 +37,59 @@
         <ion-header>
           <ion-toolbar>
             <ion-title>{{ selectedMarker?.title }}</ion-title>
+            <h4>{{ selectedMarker?.snippet }}</h4>
             <ion-buttons slot="end">
               <ion-button @click="closeModal">Close</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
         <ion-content>
-          <p>{{ selectedMarker?.snippet }}</p>
+          <!-- Image Carousel Section -->
+          <div class="section" v-if="selectedMarker">
+            {{ console.log(selectedMarker) }}
+            <div v-if="selectedMarker?.modal.images.length > 0">
+              <img v-for="(photo, index) in selectedMarker?.modal.images" :key="index"
+              :src="photo" alt="Selected Image" class="carousel-image" />
+            </div>
+          </div>  
+
+          <!-- Divider -->
+          <ion-item lines="full" class="divider"></ion-item>
+
+          <!-- Reservation Times Section -->
+          <div class="section">
+            <h2>Reservation Times</h2>
+            <div v-for="(button, index) in selectedMarker?.modal.reservationTimes" :key="index" class="date-time-container">
+              <ion-datetime-button disabled :datetime="button"></ion-datetime-button>
+              <ion-modal :keep-contents-mounted="true">
+                <ion-datetime presentation="time" :id="button"></ion-datetime>
+              </ion-modal>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <ion-item lines="full" class="divider"></ion-item>
+
+          <!-- Description Section -->
+          <div class="section">
+            <h2>Description</h2>
+            <p>{{ selectedMarker?.modal.description }}</p>
+          </div>
+
+          <!-- Divider -->
+          <ion-item lines="full" class="divider"></ion-item>
+
+          <!-- Opening & Closing Hours Section -->
+          <div class="section">
+            <h2>Opening & Closing Hours</h2>
+            <ion-list>
+              <ion-item v-for="(hour, index) in selectedMarker?.modal.openCloseTimes" :key="index" class="hours-item">
+                <ion-label>{{ hour.day }}</ion-label>
+                <ion-label>Open Time: {{ hour.open }}</ion-label>
+                <ion-label>Close Time: {{ hour.close }}</ion-label>
+              </ion-item>
+            </ion-list>          
+          </div>
         </ion-content>
       </ion-modal>
 
@@ -53,7 +99,7 @@
 
 <script setup lang="ts">
 
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButtons, IonButton, IonSearchbar, IonItem, IonList } from "@ionic/vue";
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButtons, IonButton, IonSearchbar, IonItem, IonList, IonLabel, IonDatetime, IonDatetimeButton } from "@ionic/vue";
 
 import { onMounted, ref, watch } from "vue";
 import MyMap from "./MyMap.vue";
@@ -100,13 +146,12 @@ async function onSearch() {
 
     const searchResults: Marker[] = [];
     querySnapshot.forEach((doc) => {
-      console.log(doc)
       const data = doc.data();
-      console.log(data)
       searchResults.push({
         coordinate: { lat: data.location.latitude, lng: data.location.longitude },
         title: data.name,
         snippet: data.address,
+        modal: data.modal
       });
     });
     markerData.value = searchResults;
@@ -144,6 +189,7 @@ async function fetchNearbyMarkers() {
         coordinate: { lat: data.location.latitude, lng: data.location.longitude },
         title: data.name,
         snippet: data.address,
+        modal: data.modal
       });
     }
   });

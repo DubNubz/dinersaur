@@ -27,7 +27,7 @@
           <ion-toolbar>
             <ion-title>{{ userStore().restaurantName }}</ion-title>
             <ion-buttons slot="end">
-              <ion-button @click="allowEdit = true">Edit</ion-button>
+              <ion-button @click="saveAllChanges">Save</ion-button>
             </ion-buttons>
           </ion-toolbar>
         </ion-header>
@@ -103,9 +103,10 @@ import MyMap from '../HomeViewFiles/MyMap.vue';
 import { userStore } from '@/stores/userStore';
 import { ref } from 'vue';
 import { add, settingsOutline } from 'ionicons/icons';
+import { db } from '@/utils/firebase';
+import { updateDoc, doc } from 'firebase/firestore';
 
 const isModalOpen = ref(false);
-const allowEdit = ref(false);
 
 const imageData = ref<string | null>(null);
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -146,6 +147,12 @@ function addDateTimeButton() {
   const id = `datetime-${dateTimeButtons.value.length + 1}`;
   dateTimeButtons.value.push(id);
 }
+
+async function saveAllChanges() {
+  if (userStore().userData) await updateDoc(doc(db, "restaurants", userStore().userData?.uid ?? ""), 
+  { modal: {description: description.value, images: imageData.value, openCloseTimes: hours.value, reservationTimes: dateTimeButtons.value}});
+}
+
 </script>
 
 <style lang="scss" scoped>
