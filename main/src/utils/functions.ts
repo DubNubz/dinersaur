@@ -202,4 +202,3 @@ export async function getRestaurants () {
   const data = docs.docs.map((doc) => doc.data());
   return data;
 }
-  

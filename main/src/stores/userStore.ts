@@ -49,6 +49,7 @@ export type BillingInfo = {
     expiration: number;
     name: string;
     stripeId: string;
+    phoneNumber: number;
 }
 
 export type smProfile = {
@@ -157,7 +158,8 @@ export const userStore = defineStore('userStore', () => {
         cardNumber: 0,
         expiration: new Date().getTime(),
         name: "",
-        stripeId: ""
+        stripeId: "",
+        phoneNumber: 0
     });
     const reservations = ref<Reservation[]> ([]);
     const language = ref("en");

@@ -123,7 +123,7 @@ async function createMap() {
         {
             featureType: "road.highway",
             elementType: "geometry",
-            stylers: [{ color: "#f8c967" }], // yellow
+            stylers: [{ color: "#f8c967" }], // yellow 
         },
         {
             featureType: "road.highway",
