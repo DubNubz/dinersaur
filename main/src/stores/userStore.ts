@@ -126,6 +126,12 @@ export type RestaurantInfo = {
      */
     refundLimit: number;
     location: GeoPoint;
+    modal: {
+        description: string,
+        images: string[],
+        openCloseTimes: number[],
+        reservationTimes: number[]
+    }
 }
 
 export type PointOffer = {
@@ -147,6 +153,12 @@ export type Marker = {
     coordinate: any,
     title: string,
     snippet: string,
+    modal: {
+        description: string,
+        images: string[],
+        openCloseTimes: number[],
+        reservationTimes: number[]
+    }
 }
 
 export type Rating = {
