@@ -21,6 +21,7 @@
                         <p class="errorMessage" v-if="showError">{{ errorMessage }}</p>
                         <ion-button @click="signUp">{{ $t("signUp") }}</ion-button>
                     </div>
+                    <ion-button @click="login">Login</ion-button>
                 </div>
             </div>
             <p class="tos">Please allow 1-2 business days for Dinersaur to reach out to you.</p>
@@ -34,7 +35,7 @@
 import { ref, onMounted, watch } from 'vue';
 import { IonPage, IonHeader, IonToolbar, IonTitle, IonContent, IonSearchbar, IonImg, IonInput, IonButton, IonIcon } from '@ionic/vue';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, setPersistence, browserLocalPersistence  } from "firebase/auth";
-import { userStore } from '@/stores/userStore';
+import { RestaurantInfo, userStore } from '@/stores/userStore';
 import router from '@/router';
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from '@/utils/firebase';
@@ -53,7 +54,7 @@ const phone = ref("");
 const address = ref("");
 
 const access = ref(false);
-watch(() => access.value, () => router.push("/pages/home"));
+watch(() => access.value, () => router.push("/restaurant/home"));
 
 const showError = ref(false);
 const errorMessage = ref<"The email or password you entered is incorrect." | "The email you entered is already in use." |
@@ -107,129 +108,28 @@ async function login () {
 
     try {
         await setPersistence(auth, browserLocalPersistence);
-        const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value);
+        const userCredential = await signInWithEmailAndPassword(auth, "rest@gmail.com", "password");
         const user = userCredential.user;
         userStore().userData = user;
         localStorage.setItem("uid", user.uid);
         
         const store = userStore();
-        const docData = await getDoc(doc(db, "users", user.uid));
+        const docData = await getDoc(doc(db, "restaurants", user.uid));
         const userData = docData.data();
         access.value = true;
         if (!userData) return;
 
-        store.currentAllergies = userData.allergies;
-        store.billing = userData.billing;
-        store.reservations = userData.currentReservations;
-        store.name = userData.name;
-        store.pastReservations = userData.pastReservations;
-        store.rating = userData.rating;
-        store.smProfile = userData.smProfile;
-        store.notifications = userData.notifications;
-        store.points = userData.points;
-        store.subscription = userData.subscription;
-
-        if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
-        else {
-            store.language = userData.language;
-            locale.value = userData.language;
-        }
-
-        localStorage.setItem("lang", store.language);
-        localStorage.setItem("name", store.name);
-        
-    } catch (error) {
-        if (error instanceof Error) getErrorMessage(error.message);
-        showError.value = true;
-    }
-}
-
-async function signinWIthGoogle () {
-    const auth = getAuth();
-    const provider = new GoogleAuthProvider();
-
-    try {
-        await setPersistence(auth, browserLocalPersistence);
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        userStore().userData = user;
-        localStorage.setItem("uid", user.uid);
-        
-        const store = userStore();
-        const docData = await getDoc(doc(db, "users", user.uid));
-        const userData = docData.data();
-        access.value = true;
-        
-        if (!userData) {
-            const { success, message, customer } = await fetchFromNuxt("/create-stripe-customer", JSON.stringify({ uid: user.uid }));
-            if (!success) throw new Error(message);
-
-            await setDoc(doc(db, "users", user.uid), {
-                name: "",
-                allergies: [],
-                language: "en",
-                rating: 5,
-                currentReservations: [],
-                pastReservations: [],
-                billing: {
-                    cardNumber: 0,
-                    name: "",
-                    expiration: new Date().getTime(),
-                    address: "",
-                    stripeId: customer.id
-                },
-                smProfile: {
-                    bookmarkedVideos: [],
-                    likedVideos: [],
-                    followers: [],
-                    following: [],
-                    posts: []
-                },
-                notifications: [{
-                    title: "Welcome to Dinersaur!",
-                    text: "Welcome to Dinersaur. Thanks for signing up!",
-                    date: new Date().getTime(),
-                    read: false
-                }],
-                subscribed: false,
-                points: 0
-            });
-
-            userStore().notifications.push({
-                title: "Welcome to Dinersaur!",
-                text: "Welcome to Dinersaur. Thanks for signing up!",
-                date: new Date().getTime(),
-                read: false
-            });
-
-            return;
-        }
-
-        if (userData.name == "" && user.displayName) {
-            userData.name = user.displayName;
-            await updateDoc(doc(db, "users", user.uid), { name: user.displayName });
-        }
-
-        store.currentAllergies = userData.allergies;
-        store.billing = userData.billing;
-        store.reservations = userData.currentReservations;
-        store.name = userData.name;
-        store.pastReservations = userData.pastReservations;
-        store.rating = userData.rating;
-        store.smProfile = userData.smProfile;
-        store.notifications = userData.notifications;
-        store.points = userData.points;
-        store.subscription = userData.subscription;
-
-        if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
-        else {
-            store.language = userData.language;
-            locale.value = userData.language;
-        }
-
-        localStorage.setItem("lang", store.language);
-        localStorage.setItem("name", store.name);
-
+        store.restaurant = {
+            name: userData.name,
+            address: userData.address,
+            email: userData.email,
+            id: userData.id,
+            location: userData.location,
+            menu: userData.menu,
+            offers: userData.offers,
+            phone: userData.phone,
+            refundLimit: userData.refundLimit
+        };
         
     } catch (error) {
         if (error instanceof Error) getErrorMessage(error.message);

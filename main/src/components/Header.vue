@@ -2,14 +2,14 @@
     <ion-header>
         <ion-toolbar class="title">
           <div class="logo">
-            <ion-img v-if="!userStore().subscription.currentlySubscribed" src="/icons/dinersaurWithShadow.svg"></ion-img>
+            <ion-img v-if="!userStore().subscription.currentlySubscribed || type == 'restaurant'" src="/icons/dinersaurWithShadow.svg"></ion-img>
             <ion-img v-else src="/icons/steakosaurusRight.svg"></ion-img>
-            <ion-title v-if="!userStore().subscription.currentlySubscribed" class="dinersaurText sequel">Dinersaur</ion-title>
+            <ion-title v-if="!userStore().subscription.currentlySubscribed || type == 'restaurant'" class="dinersaurText sequel">Dinersaur</ion-title>
             <ion-title v-else class="dinersaurText subscribed sequel">Steakosaur</ion-title>
           </div>
         </ion-toolbar>
         <ion-toolbar>
-          <div class="statusBar">
+          <div class="statusBar" v-if="!type">
             <button class="notifications" @click="openNotifications = !openNotifications">
               <ion-icon :icon="userStore().notifications.filter((notif) => !notif.read).length == 0 ? notificationsOutline : notifications"></ion-icon>
               <ion-badge v-if="userStore().notifications.filter((notif) => !notif.read).length != 0" slot="end">{{ userStore().notifications.filter((notif) => !notif.read).length }}</ion-badge>
@@ -43,6 +43,12 @@ import { Notification, userStore } from '@/stores/userStore';
 import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
 import { timeSince } from '@/utils/functions';
+
+type Props = {
+  type?: "restaurant";
+}
+
+const props = defineProps<Props> ();
 
 const openNotifications = ref(false);
 

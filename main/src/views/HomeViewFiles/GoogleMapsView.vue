@@ -24,7 +24,7 @@
 
       <my-map v-if="loaded"
         :markerData="markerData"
-        @onMarkerClicked="openModel"
+        @onMarkerClicked="(event, modal) => openModel(event, modal)"
         :querySelect="querySelect">
       </my-map>
 
@@ -45,10 +45,9 @@
         </ion-header>
         <ion-content>
           <!-- Image Carousel Section -->
-          <div class="section" v-if="selectedMarker">
-            {{ console.log(selectedMarker) }}
-            <div v-if="selectedMarker?.modal.images.length > 0">
-              <img v-for="(photo, index) in selectedMarker?.modal.images" :key="index"
+          <div class="section" v-if="selectedModal">
+            <div v-if="selectedModal?.images.length > 0">
+              <img v-for="(photo, index) in selectedModal?.images" :key="index"
               :src="photo" alt="Selected Image" class="carousel-image" />
             </div>
           </div>  
@@ -59,7 +58,7 @@
           <!-- Reservation Times Section -->
           <div class="section">
             <h2>Reservation Times</h2>
-            <div v-for="(button, index) in selectedMarker?.modal.reservationTimes" :key="index" class="date-time-container">
+            <div v-for="(button, index) in selectedModal?.reservationTimes" :key="index" class="date-time-container">
               <ion-datetime-button disabled :datetime="button"></ion-datetime-button>
               <ion-modal :keep-contents-mounted="true">
                 <ion-datetime presentation="time" :id="button"></ion-datetime>
@@ -73,7 +72,7 @@
           <!-- Description Section -->
           <div class="section">
             <h2>Description</h2>
-            <p>{{ selectedMarker?.modal.description }}</p>
+            <p>{{ selectedModal?.description }}</p>
           </div>
 
           <!-- Divider -->
@@ -83,7 +82,7 @@
           <div class="section">
             <h2>Opening & Closing Hours</h2>
             <ion-list>
-              <ion-item v-for="(hour, index) in selectedMarker?.modal.openCloseTimes" :key="index" class="hours-item">
+              <ion-item v-for="(hour, index) in selectedModal?.openCloseTimes" :key="index" class="hours-item">
                 <ion-label>{{ hour.day }}</ion-label>
                 <ion-label>Open Time: {{ hour.open }}</ion-label>
                 <ion-label>Close Time: {{ hour.close }}</ion-label>
@@ -103,7 +102,7 @@ import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButto
 
 import { onMounted, ref, watch } from "vue";
 import MyMap from "./MyMap.vue";
-import { Marker, RestaurantInfo } from "@/stores/userStore";
+import { Marker, Modal, RestaurantInfo } from "@/stores/userStore";
 import { db } from "@/utils/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Geolocation } from "@capacitor/geolocation";
@@ -113,7 +112,8 @@ const loaded = ref(false);
 const search = ref("");
 watch(() => search.value, async () => await onSearch());
 
-const selectedMarker = ref<Marker | null>(null);
+const selectedMarker = ref<Marker> ();
+const selectedModal = ref<Modal> ();
 const markerIsOpen = ref<boolean>(false);
 
 const markerData = ref<Marker[]>([]);
@@ -125,17 +125,19 @@ onMounted(async () => {
   await fetchNearbyMarkers();
 });
 
-function openModel(marker: Marker) {
+function openModel (marker: Marker, modal: Modal) {
   selectedMarker.value = marker;
+  selectedModal.value = modal;
   markerIsOpen.value = true;
 }
 
-function closeModal(){
-  selectedMarker.value = null;
+function closeModal (){
+  selectedMarker.value = undefined;
+  selectedModal.value = undefined;
   markerIsOpen.value = false;
 }
 
-async function onSearch() {
+async function onSearch () {
   const queryText = search.value;
 
   if (queryText) {
@@ -147,6 +149,7 @@ async function onSearch() {
     const searchResults: Marker[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
+      console.log(data, data.modal)
       searchResults.push({
         coordinate: { lat: data.location.latitude, lng: data.location.longitude },
         title: data.name,
@@ -161,7 +164,7 @@ async function onSearch() {
   }
 }
 
-async function chooseWithinList(chosenMarker: Marker) {
+async function chooseWithinList (chosenMarker: Marker) {
   querySelect.value = {
       lat: chosenMarker.coordinate.lat,
       lng: chosenMarker.coordinate.lng,
@@ -171,7 +174,7 @@ async function chooseWithinList(chosenMarker: Marker) {
   results.value = [];
 }
 
-async function fetchNearbyMarkers() {
+async function fetchNearbyMarkers () {
   const position = await Geolocation.getCurrentPosition();
   const userLat = position.coords.latitude;
   const userLng = position.coords.longitude;
@@ -198,7 +201,8 @@ async function fetchNearbyMarkers() {
   loaded.value = true;
 }
 
-function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+
+function calculateDistance (lat1: number, lng1: number, lat2: number, lng2: number): number {
   const earthRadius = 3958.8; // Earth radius in miles
   const dLat = (lat2 - lat1) * (Math.PI / 180);
   const dLng = (lng2 - lng1) * (Math.PI / 180);

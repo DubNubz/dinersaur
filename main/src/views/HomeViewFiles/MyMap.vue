@@ -10,20 +10,27 @@ import { GoogleMap, Marker } from "@capacitor/google-maps";
 import { Geolocation } from "@capacitor/geolocation";
 import { Modal } from "@/stores/userStore";
 
-// PROPS
+type Props = {
+  markerData: {
+    coordinate: any;
+    title: string;
+    snippet: string;
+    modal: Modal;
+  }[];
+  querySelect: {
+    lat: number;
+    lng: number;
+    booleanValue: boolean;
+  } | undefined;
+};
 
-const props = defineProps<{
-    markerData: { coordinate: any; title: string; snippet: string; modal: Modal }[];
-    querySelect: { lat: number; lng: number; booleanValue: boolean } | undefined; 
-}>();
-
-// EVENTS
-const emits = defineEmits<{
-    (event: "onMarkerClicked", marker: any): void;
-}>();
+const props = defineProps<Props> ();
+const emits = defineEmits(["onMarkerClicked"]);
 
 const mapRef = ref<HTMLElement>();
 let newMap: GoogleMap;
+
+const markerInfo = ref<Record<string, Modal>> ({});
 
 onMounted(async () => {
   await nextTick();
@@ -42,20 +49,12 @@ onMounted(async () => {
   });
 });
 
-watch(
-  () => props.markerData,
-  () => {
-    createMarker();
-    clickMarker();
-  }
-);
+watch(() => props.markerData, () => {
+  createMarker();
+  clickMarker();
+});
 
-watch(
-  () => props.querySelect,
-  () => {
-    ifQueryCompletes();
-  }
-)
+watch(() => props.querySelect, () => ifQueryCompletes());
 
 async function createMap() {
   if (!mapRef.value) return;
@@ -157,19 +156,17 @@ async function createMap() {
 }
 
 async function createMarker() {
-  await newMap.addMarkers(
-    props.markerData.map(({ coordinate, title, snippet, modal }) => ({
-      coordinate,
-      title,
-      snippet,
-      modal
-    }))
-  );
+  const number = await newMap.addMarker({
+    coordinate: props.markerData[0].coordinate,
+    title: props.markerData[0].title,
+    snippet: props.markerData[0].snippet
+  });
+  markerInfo.value[number] = props.markerData[0].modal;
 }
 
 async function clickMarker() {
     newMap.setOnMarkerClickListener((event) => {
-        emits("onMarkerClicked", event);
+        emits("onMarkerClicked", event, markerInfo.value[event.markerId]);
     });
 }
 

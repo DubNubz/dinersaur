@@ -57,7 +57,7 @@ import DinersaurLoad from './components/DinersaurLoad.vue';
 import { allergies } from './utils/allergies';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from './utils/firebase';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, User } from 'firebase/auth';
 import RestaurantMapMenu from '@/components/RestaurantMapMenu.vue';
 import RestaurantDiscoverMenu from './components/RestaurantDiscoverMenu.vue';
 
@@ -83,7 +83,10 @@ onAuthStateChanged(getAuth(), async (user) => {
     store.userData = user;
     const docData = await getDoc(doc(db, "users", user.uid));
     const userData = docData.data();
-    if (!userData) return;
+    if (!userData) {
+      getRestaurantDetails(user);
+      return;
+    }
     localStorage.setItem("lang", userData.language);
     localStorage.setItem("name", userData.name);
 
@@ -106,6 +109,24 @@ onAuthStateChanged(getAuth(), async (user) => {
     locale.value = store.language;
   }
 });
+
+async function getRestaurantDetails (user: User) {
+  const docData = await getDoc(doc(db, "restaurants", user.uid));
+  const userData = docData.data();
+  if (!userData) return;
+
+  userStore().restaurant = {
+    name: userData.name,
+    address: userData.address,
+    email: userData.email,
+    id: userData.id,
+    location: userData.location,
+    menu: userData.menu,
+    offers: userData.offers,
+    phone: userData.phone,
+    refundLimit: userData.refundLimit
+  };
+}
 
 async function changeLanguage (language: string) {
   if (locale.value === language) return;

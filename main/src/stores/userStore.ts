@@ -27,6 +27,8 @@ export type Reservation = {
     customer: string;
     /** ID of the reservation. */
     id: string;
+    /** If the reservation has been accepted by the restaurant or not. */
+    accepted: boolean;
 }
 
 export type Video = {
