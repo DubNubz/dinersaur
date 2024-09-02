@@ -7,7 +7,7 @@
 
         <div class="name">
           <h2 class="sequel">{{ userStore().name }}</h2>
-          <StarRating :rating="userStore().rating"/>
+          <StarRating :rating="userStore().rating.averageRating"/>
         </div>
 
         <div class="divider"></div>
@@ -83,7 +83,7 @@ const pages = ref<Page[]> ([{
 }, {
   name: "Reviews",
   component: markRaw(ReviewsView),
-  img: userStore().rating < 2.5 ? sadOutline : happyOutline
+  img: userStore().rating.averageRating < 2.5 ? sadOutline : happyOutline
 }, {
   name: "Billing",
   component: markRaw(BillingView),

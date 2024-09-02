@@ -160,6 +160,14 @@ export type Rating = {
     }[];
 }
 
+export type PersonalizedRatings = {
+    /** Milliseconds since epoch. */
+    date: number;  
+    description: string;
+    rating: number;
+    restaurantId: string;
+}
+
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ()
 

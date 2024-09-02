@@ -11,10 +11,10 @@
     <ion-content class="ion-padding">
       <h1>Recent Reviews</h1>
       <ion-list>
-        <ion-item v-for="review in reviews" :key="review.id">
+        <ion-item v-for="review in sortedReviews" :key="review.restaurantId">
           <ion-label>
-            <h2>{{ review.rating }} ★ - {{ review.date }}</h2>
-            <p>{{ review.text }}</p>
+            <h2><StarRating :rating="review.rating"/> - {{ formatDate(review.date) }}</h2>
+            <p>{{ review.description }}</p>
           </ion-label>
         </ion-item>
       </ion-list>
@@ -23,25 +23,35 @@
 </template>
   
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel } from '@ionic/vue';
-import { collection, query, where, orderBy, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
+import { PersonalizedRatings, userStore } from '@/stores/userStore';
+import StarRating from '@/components/StarRating.vue';
 
-const reviews = ref([]); 
+// Store the user's reviews here
+const reviews = ref<PersonalizedRatings[]>([]);
 
 onMounted(async () => {
-  const q = query(
-    collection(db, 'users'),
-    where('userId', '==', 'userId'),
-    orderBy('date', 'desc') 
-  );
+  const q = await getDoc(doc(db, "users", userStore().userData?.uid ?? ""));
 
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach(doc => {
-    reviews.value.push({ id: doc.id, ...doc.data() });
-  });
+  if (q) { 
+    const userReviews = q.data()?.rating.ratings;
+    if (userReviews) {
+      reviews.value.push(...userReviews);
+    }
+  }
 });
+
+const sortedReviews = computed(() =>
+  reviews.value.sort((a, b) => b.date - a.date)
+);
+
+function formatDate(unixTime: number): string {
+  const date = new Date(unixTime);
+  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+}
 </script>
 
   
