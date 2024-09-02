@@ -5,9 +5,10 @@
     <ion-content :fullscreen="true">
       <div class="account">
 
-        <div class="name">
+        <div class="name" v-if="userStore().restaurant">
           <h2 class="sequel">{{ userStore().restaurant?.name }}</h2>
           <StarRating :rating="userStore().restaurant?.rating.averageRating"/>
+          
         </div>
 
         <div class="divider"></div>
