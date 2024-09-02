@@ -6,13 +6,14 @@
 
 <script setup lang="ts">
 import { onMounted, nextTick, ref, watch } from "vue";
-import { GoogleMap, Marker as GoogleMapMarker } from "@capacitor/google-maps";
+import { GoogleMap, Marker } from "@capacitor/google-maps";
 import { Geolocation } from "@capacitor/geolocation";
 
 // PROPS
 
 const props = defineProps<{
     markerData: { coordinate: any; title: string; snippet: string }[];
+    querySelect: { lat: number; lng: number; booleanValue: boolean } | undefined; 
 }>();
 
 // EVENTS
@@ -22,7 +23,6 @@ const emits = defineEmits<{
 
 const mapRef = ref<HTMLElement>();
 let newMap: GoogleMap;
-let userMarker: GoogleMapMarker | null = null;
 
 onMounted(async () => {
   await nextTick();
@@ -49,11 +49,18 @@ watch(
   }
 );
 
+watch(
+  () => props.querySelect,
+  () => {
+    ifQueryCompletes();
+  }
+)
+
 async function createMap() {
   if (!mapRef.value) return;
 
   newMap = await GoogleMap.create({
-    id: "my-cool-map",
+    id: "map",
     element: mapRef.value,
     apiKey: import.meta.env.VITE_MAPS_API_KEY as string,
     config: {
@@ -111,7 +118,7 @@ async function createMap() {
         {
             featureType: "road.arterial",
             elementType: "geometry",
-            stylers: [{ color: "#e0d4d3" }], // light purple
+            stylers: [{ color: "#dac8e0" }], // light purple
         },
         {
             featureType: "road.highway",
@@ -126,7 +133,7 @@ async function createMap() {
         {
             featureType: "road.highway.controlled_access",
             elementType: "geometry",
-            stylers: [{ color: "#e98d58" }], // orange-yellow
+            stylers: [{ color: "#e0c694" }], // light-orange
         },
         {
             featureType: "road.highway.controlled_access",
@@ -199,6 +206,10 @@ async function toggleUserLocation() {
   );
   const position = await Geolocation.getCurrentPosition();
   return { latitude: position.coords.latitude, longitude: position.coords.longitude };
+}
+
+async function ifQueryCompletes() {
+  if (props.querySelect) newMap.setCamera( {coordinate: {lat: props.querySelect.lat, lng: props.querySelect.lng}, zoom: 15} )
 }
 
 </script>

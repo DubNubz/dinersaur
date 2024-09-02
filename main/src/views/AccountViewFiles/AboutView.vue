@@ -5,12 +5,14 @@
           <ion-buttons slot="start">
             <ion-back-button default-href="/pages/account"></ion-back-button>
           </ion-buttons>
-          <ion-title>Back Button</ion-title>
+          <ion-title>Version History</ion-title>
         </ion-toolbar>
       </ion-header>
       <ion-content class="ion-padding">
-        <h1>Page Two</h1>
-        <p>Use the back button to navigate to the previous page.</p>
+        <ion-list>
+          <ion-item>v1.00.00000</ion-item>
+          <ion-item>The Era of Dinersaur Begins! Added functionality to the entire app!</ion-item>
+        </ion-list>
       </ion-content>
     </ion-page>
   </template>

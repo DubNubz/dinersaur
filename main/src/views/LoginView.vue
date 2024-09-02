@@ -43,7 +43,7 @@ import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from '@/utils/firebase';
 import { useI18n } from 'vue-i18n';
 import { chevronBack, notifications } from 'ionicons/icons';
-import { fetchFromNuxt } from '@/utils/functions';
+import { delay, fetchFromNuxt } from '@/utils/functions';
 
 const { locale } = useI18n();
 
@@ -204,7 +204,8 @@ async function signinWIthGoogle () {
         access.value = true;
         
         if (!userData) {
-            const { success, message, customer } = await fetchFromNuxt("/create-stripe-customer", JSON.stringify({ uid: user.uid }));
+            await delay(1000);
+            const { success, message, customer } = await fetchFromNuxt("/api/create-stripe-customer", JSON.stringify({ uid: user.uid }));
             if (!success) throw new Error(message);
 
             await setDoc(doc(db, "users", user.uid), {

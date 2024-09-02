@@ -12,9 +12,20 @@
     </ion-header>
 
     <ion-content>
+      <ion-list v-if="results.length > 0" class="dropdown-list">
+        <ion-item
+          v-for="result in results"
+          :key="result.title"
+          @click="chooseWithinList(result)"
+        >
+          {{ result.title }}
+        </ion-item>
+      </ion-list>
+
       <my-map v-if="loaded"
         :markerData="markerData"
-        @onMarkerClicked="openModel">
+        @onMarkerClicked="openModel"
+        :querySelect="querySelect">
       </my-map>
 
       <ion-modal
@@ -42,7 +53,7 @@
 
 <script setup lang="ts">
 
-import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButtons, IonButton, IonSearchbar } from "@ionic/vue";
+import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButtons, IonButton, IonSearchbar, IonItem, IonList } from "@ionic/vue";
 
 import { onMounted, ref, watch } from "vue";
 import MyMap from "./MyMap.vue";
@@ -59,13 +70,9 @@ watch(() => search.value, async () => await onSearch());
 const selectedMarker = ref<Marker | null>(null);
 const markerIsOpen = ref<boolean>(false);
 
-const markerData = ref<Marker[]>([
-    {
-    coordinate: { lat: 40.610199, lng: -74.005980 },
-    title: "title one",
-    snippet: "title one snippet content will be presented here",
-  },
-]);
+const markerData = ref<Marker[]>([]);
+const results = ref<Marker[]>([]);
+const querySelect = ref<{ lat: number; lng: number; booleanValue: boolean }> ();
 
 onMounted(async () => {
   loaded.value = false;
@@ -90,22 +97,31 @@ async function onSearch() {
     const q = query(restaurantCollection, where("name", ">=", queryText), where("name", "<=", queryText + "\uf8ff"));
     
     const querySnapshot = await getDocs(q);
-    console.log(querySnapshot)
 
     const searchResults: Marker[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       searchResults.push({
-        coordinate: { lat: data.lat, lng: data.lng },
+        coordinate: { lat: data.location.latitude, lng: data.location.longitude },
         title: data.name,
         snippet: data.address,
       });
     });
-
     markerData.value = searchResults;
+    results.value = searchResults;
   } else {
     fetchNearbyMarkers();
   }
+}
+
+async function chooseWithinList(chosenMarker: Marker) {
+  querySelect.value = {
+      lat: chosenMarker.coordinate.lat,
+      lng: chosenMarker.coordinate.lng,
+      booleanValue: true,
+  };
+
+  results.value = [];
 }
 
 async function fetchNearbyMarkers() {
@@ -121,7 +137,7 @@ async function fetchNearbyMarkers() {
     const data = doc.data() as RestaurantInfo;
     const distance = calculateDistance(userLat, userLng, data.location.latitude, data.location.longitude);
 
-    if (distance <= 2000) { // 20 miles radius
+    if (distance <= 2) { // 20 miles radius
       nearbyMarkers.push({
         coordinate: { lat: data.location.latitude, lng: data.location.longitude },
         title: data.name,
@@ -155,6 +171,21 @@ function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: numbe
 
 ion-content {
   overflow: hidden;
+}
+
+.dropdown-list {
+  position: absolute;
+  width: 100%;
+  z-index: 1000;
+  background-color: white;
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+ion-item {
+  cursor: pointer;
 }
 
 </style>
