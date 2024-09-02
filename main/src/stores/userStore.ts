@@ -2,7 +2,7 @@
 import { ref, onMounted, watch, computed } from 'vue';
 import { defineStore } from 'pinia';
 import type { User } from 'firebase/auth';
-import { Timestamp } from 'firebase/firestore';
+import { GeoPoint, Timestamp } from 'firebase/firestore';
 import { profile } from 'console';
 
 export type Reservation = {
@@ -124,7 +124,7 @@ export type RestaurantInfo = {
      * -1 means no limit.
      */
     refundLimit: number;
-    location: Geolocation;
+    location: GeoPoint;
 }
 
 export type PointOffer = {

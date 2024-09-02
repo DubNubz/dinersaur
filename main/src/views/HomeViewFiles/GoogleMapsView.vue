@@ -6,7 +6,7 @@
       </ion-toolbar>
       <ion-searchbar
           placeholder="Search location..."
-          @ionInput="onSearch"
+          v-model="search"
           :debounce="500"
         ></ion-searchbar>
     </ion-header>
@@ -44,12 +44,15 @@
 
 import {IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonModal, IonButtons, IonButton, IonSearchbar } from "@ionic/vue";
 
-import { onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import MyMap from "./MyMap.vue";
 import { Marker, RestaurantInfo } from "@/stores/userStore";
 import { db } from "@/utils/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Geolocation } from "@capacitor/geolocation";
+
+const search = ref("");
+watch(() => search.value, async () => await onSearch());
 
 const selectedMarker = ref<Marker | null>(null);
 const markerIsOpen = ref<boolean>(false);
@@ -76,14 +79,15 @@ function closeModal(){
   markerIsOpen.value = false;
 }
 
-async function onSearch(event: any) {
-  const queryText = event.target.value.trim().toLowerCase();
+async function onSearch() {
+  const queryText = search.value;
 
   if (queryText) {
     const restaurantCollection = collection(db, "restaurants");
     const q = query(restaurantCollection, where("name", ">=", queryText), where("name", "<=", queryText + "\uf8ff"));
-
+    
     const querySnapshot = await getDocs(q);
+    console.log(querySnapshot)
 
     const searchResults: Marker[] = [];
     querySnapshot.forEach((doc) => {

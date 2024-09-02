@@ -20,7 +20,7 @@
 
         <ion-content>
 
-          <input ref="fileInput" type="file"></input>
+          <input ref="fileInput" type="file" accept="video/*"></input>
           <ion-input :label="$t('title')" placeholder="Untilted Video" counter :maxlength="100" v-model="title"></ion-input>
           <ion-button @click="createVideo">{{ $t("upload") }}</ion-button>
 
