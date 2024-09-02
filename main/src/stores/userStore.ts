@@ -13,8 +13,8 @@ export type Reservation = {
     time: number;
     /** Number of people in the reservation. */
     people: number;
-    /** Price of the reservation in USD. */
-    price: number;
+    /** Price of the reservation in USD, if applicable. */
+    price: number | null;
     /** Represents if the reservation has been prepaid or not. */
     paid: boolean;
     /** ID of the Stripe payment, if applicable. */
@@ -300,10 +300,13 @@ export const userStore = defineStore('userStore', () => {
     // Restaurant
 
     const restaurant = ref<RestaurantInfo> ();
-    const restaurantReservations = ref<Reservation[]> ();
+    const restaurantReservations = ref<{ incoming: Reservation[]; past: Reservation[]; }> ({
+        incoming: [],
+        past: []
+    });
 
     const restaurantMarkerData = ref<Marker[]>([]);
     const menu = ref<MenuItem[]>([]);
 
-    return { userData, reservations, pastReservations, currentAllergies, notifications, nearbyRestaurants, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscription, menu, profileImage, restaurantMarkerData, restaurant };
+    return { userData, reservations, pastReservations, currentAllergies, notifications, nearbyRestaurants, currentVideo, billing, language, name, rating, smProfile, videoQueue, points, subscription, menu, profileImage, restaurantMarkerData, restaurant, restaurantReservations };
 });

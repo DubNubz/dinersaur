@@ -8,7 +8,7 @@
         <ion-card-content>
             <span><ion-icon :icon="timeOutline"></ion-icon> {{ formatTime(reservation.time) }}</span>
             <span><ion-icon :icon="peopleOutline"></ion-icon> Table for <strong>{{ reservation.people }}</strong></span>
-            <span><ion-icon :icon="pricetagsOutline"></ion-icon> <strong>${{ getDecimals(reservation.price) }}</strong></span>
+            <span v-if="reservation.price"><ion-icon :icon="pricetagsOutline"></ion-icon> <strong>${{ getDecimals(reservation.price) }}</strong></span>
         </ion-card-content>
 
         <div class="buttons" v-if="!past">
@@ -41,7 +41,7 @@
               <ion-card-content>
                   <span><ion-icon :icon="timeOutline"></ion-icon> {{ formatTime(reservation.time) }}</span>
                   <span><ion-icon :icon="peopleOutline"></ion-icon> Table for <strong>{{ reservation.people }}</strong></span>
-                  <span><ion-icon :icon="pricetagsOutline"></ion-icon> <strong>${{ getDecimals(reservation.price) }}</strong></span>
+                  <span v-if="reservation.price"><ion-icon :icon="pricetagsOutline"></ion-icon> <strong>${{ getDecimals(reservation.price) }}</strong></span>
               </ion-card-content>
             </ion-card>
 

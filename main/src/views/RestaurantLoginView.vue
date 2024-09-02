@@ -128,8 +128,11 @@ async function login () {
             menu: userData.menu,
             offers: userData.offers,
             phone: userData.phone,
-            refundLimit: userData.refundLimit
+            refundLimit: userData.refundLimit,
+            modal: userData.modal
         };
+        store.restaurantReservations.incoming = userData.reservations.incoming;
+        store.restaurantReservations.past = userData.reservations.past;
         
     } catch (error) {
         if (error instanceof Error) getErrorMessage(error.message);

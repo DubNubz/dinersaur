@@ -39,7 +39,11 @@ onIonViewDidEnter(async () => {
 
     /* when done loading data, set loading bar to 100 */
     if (!userStore().userData) loadingBarPercentage.value = 100;
-    else router.push("/pages/home");
+    else {
+        console.log(userStore().restaurant)
+        if (userStore().restaurant) router.push("/restaurant/home");
+        else router.push("/pages/home");
+    }
 });
 
 </script>

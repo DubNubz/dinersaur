@@ -78,11 +78,13 @@ onBeforeMount(async () => {
 });
 
 onAuthStateChanged(getAuth(), async (user) => {
+  console.log(user)
   if (user) {
     const store = userStore();
     store.userData = user;
     const docData = await getDoc(doc(db, "users", user.uid));
     const userData = docData.data();
+    console.log(userData)
     if (!userData) {
       getRestaurantDetails(user);
       return;
@@ -113,6 +115,7 @@ onAuthStateChanged(getAuth(), async (user) => {
 async function getRestaurantDetails (user: User) {
   const docData = await getDoc(doc(db, "restaurants", user.uid));
   const userData = docData.data();
+  console.log(userData)
   if (!userData) return;
 
   userStore().restaurant = {
@@ -124,8 +127,11 @@ async function getRestaurantDetails (user: User) {
     menu: userData.menu,
     offers: userData.offers,
     phone: userData.phone,
-    refundLimit: userData.refundLimit
+    refundLimit: userData.refundLimit,
+    modal: userData.modal
   };
+  userStore().restaurantReservations.incoming = userData.reservations.incoming;
+  userStore().restaurantReservations.past = userData.reservations.past;
 }
 
 async function changeLanguage (language: string) {
