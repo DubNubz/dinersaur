@@ -12,7 +12,10 @@
     <ion-content class="ion-padding">
       <div class="settings-container">
         <ion-list>
-          <h2>Personal Information</h2>
+          <div class="security">
+            <h2>Personal Information</h2>
+          </div>
+          
           <ion-item>
             <ion-label>Username</ion-label>
             <ion-input v-model="username" placeholder="Enter your username"></ion-input>
