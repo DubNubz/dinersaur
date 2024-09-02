@@ -29,7 +29,16 @@ onMounted(async () => {
   await createMap();
   await createMarker();
   await clickMarker();
-  await toggleUserLocation();
+  const { latitude, longitude } = await toggleUserLocation();
+  
+  // Move the camera to the new position
+  await newMap.setCamera({
+    coordinate: {
+      lat: latitude,
+      lng: longitude,
+    },
+    zoom: 15,
+  });
 });
 
 watch(
@@ -52,7 +61,9 @@ async function createMap() {
         lat: 40.610199,
         lng: -74.005980,
       },
-      zoom: 21,
+      zoom: 15,
+      minZoom: 13,
+      maxZoom: 17,
       disableDefaultUI: true,
       styles: [
         {
@@ -182,19 +193,12 @@ async function toggleUserLocation() {
           snippet: "You are here",
         });
 
-        // Move the camera to the new position
-        await newMap.setCamera({
-          coordinate: {
-            lat: latitude,
-            lng: longitude,
-          },
-          zoom: 21,
-        });
+        return { latitude, longitude };
       }
     }
   );
-
-  return watchId;
+  const position = await Geolocation.getCurrentPosition();
+  return { latitude: position.coords.latitude, longitude: position.coords.longitude };
 }
 
 </script>

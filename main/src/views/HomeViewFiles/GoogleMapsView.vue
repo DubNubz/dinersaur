@@ -12,7 +12,7 @@
     </ion-header>
 
     <ion-content>
-      <my-map
+      <my-map v-if="loaded"
         :markerData="markerData"
         @onMarkerClicked="openModel">
       </my-map>
@@ -51,6 +51,8 @@ import { db } from "@/utils/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Geolocation } from "@capacitor/geolocation";
 
+const loaded = ref(false);
+
 const search = ref("");
 watch(() => search.value, async () => await onSearch());
 
@@ -66,6 +68,7 @@ const markerData = ref<Marker[]>([
 ]);
 
 onMounted(async () => {
+  loaded.value = false;
   await fetchNearbyMarkers();
 });
 
@@ -128,6 +131,7 @@ async function fetchNearbyMarkers() {
   });
 
   markerData.value = nearbyMarkers;
+  loaded.value = true;
 }
 
 function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
