@@ -11,8 +11,11 @@
                         <input label="Email" placeholder="Business Email" type="email" required>
                         <input label="Phone Number" placeholder="Business Phone Number" type="tel" required>
                         <input label="Address" placeholder="Business Address" type="text" required>
-                        <label for="file-upload" class="file">Proof of Address <ion-icon :icon="cloudUploadOutline"></ion-icon></label>
-                        <input id="file-upload" type="file" accept=".png,.jpg,.jpeg,.pdf" required>
+                        <label for="file-upload" class="file">
+                            <span>Proof of Address <ion-icon :icon="cloudUploadOutline"></ion-icon></span>
+                            <ion-icon v-if="fileInput?.files?.length != 0" :icon="checkmark"></ion-icon>
+                        </label>
+                        <input ref="fileInput" id="file-upload" type="file" accept=".png,.jpg,.jpeg,.pdf" required>
                     </div>
                     <div class="signUpDiv">
                         <p class="errorMessage" v-if="showError">{{ errorMessage }}</p>
@@ -36,16 +39,18 @@ import router from '@/router';
 import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore"; 
 import { db } from '@/utils/firebase';
 import { useI18n } from 'vue-i18n';
-import { chevronBack, cloudUploadOutline, notifications } from 'ionicons/icons';
+import { checkmark, chevronBack, cloudUploadOutline, notifications } from 'ionicons/icons';
 import { fetchFromNuxt } from '@/utils/functions';
 
 const { locale } = useI18n();
+
+const fileInput = ref<HTMLInputElement> ();
+watch(() => fileInput.value?.files, () => console.log(fileInput.value?.files))
 
 const email = ref("");
 const password = ref("");
 const phone = ref("");
 const address = ref("");
-
 
 const access = ref(false);
 watch(() => access.value, () => router.push("/pages/home"));
@@ -80,66 +85,21 @@ function getErrorMessage (message: string) {
     }
 }
 
+
 async function signUp () {
-    const auth = getAuth();
+    console.log(fileInput.value?.files)
+    /*try {
+        await setDoc(doc(db, "restaurantVerification"), {
+            email: email.value,
+            phone: phone.value,
+            address: address.value,
 
-    try {
-        await setPersistence(auth, browserLocalPersistence);
-        const userCredential = await createUserWithEmailAndPassword(auth, email.value, password.value);
-        const user = userCredential.user;
-        userStore().userData = user;
-        localStorage.setItem("uid", user.uid);
-        localStorage.setItem("lang", "en");
-        localStorage.setItem("name", user.displayName ?? "");
-        access.value = true;
-
-        const { success, message, customer } = await fetchFromNuxt("/api/create-stripe-customer", JSON.stringify({ uid: user.uid }));
-        if (!success) throw new Error(message);
-
-        await setDoc(doc(db, "users", user.uid), {
-            name: "",
-            allergies: [],
-            language: "en",
-            rating: 5,
-            currentReservations: [],
-            pastReservations: [],
-            billing: {
-                cardNumber: 0,
-                name: "",
-                expiration: new Date().getTime(),
-                address: "",
-                stripeId: customer.id
-            },
-            smProfile: {
-                bookmarkedVideos: [],
-                likedVideos: [],
-                followers: [],
-                following: [],
-                posts: []
-            },
-            notifications: [{
-                title: "Welcome to Dinersaur!",
-                text: "Welcome to Dinersaur. Thanks for signing up!",
-                date: new Date().getTime(),
-                read: false
-            }],
-            subscription: {
-                currentlySubscribed: false
-            },
-            points: 0
-        });
-
-        userStore().notifications.push({
-            title: "Welcome to Dinersaur!",
-            text: "Welcome to Dinersaur. Thanks for signing up!",
-            date: new Date().getTime(),
-            read: false
         });
 
     } catch (error) {
         if (error instanceof Error) getErrorMessage(error.message);
         showError.value = true;
-    }
+    }*/
 }
 
 async function login () {
@@ -384,6 +344,13 @@ input[type="file"] {
     background-color: white;
     width: 90vw;
     height: 2.5em;
+
+    span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+    }
 
     ion-icon {
         width: 2em;

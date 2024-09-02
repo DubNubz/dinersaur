@@ -65,12 +65,15 @@ const password = ref('');
 const phoneNumber = ref(userStore().billing.phoneNumber);
 
 async function saveSettings() {
-  userStore().name = username.value;
-  userStore().billing.phoneNumber = phoneNumber.value;
+  const store = userStore();
+  if (!store) return;
+
+  store.name = username.value;
+  store.billing.phoneNumber = phoneNumber.value;
+  
   const auth = getAuth();
   if (auth.currentUser) await updateEmail(auth.currentUser, email.value);
-
-  if (userStore().userData?.uid) await updateDoc(doc(db, "users", userStore().userData?.uid), { name: username.value, billing: { phoneNumber: phoneNumber.value }})
+  if (store.userData) await updateDoc(doc(db, "users", store.userData.uid), { name: username.value, billing: { phoneNumber: phoneNumber.value }});
 }
 
 async function savePassword() {

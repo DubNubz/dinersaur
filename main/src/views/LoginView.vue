@@ -172,7 +172,7 @@ async function login () {
         store.points = userData.points;
         store.subscription = userData.subscription;
 
-        if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language })
+        if (store.language != "en") await updateDoc(doc(db, "users", user.uid), { language: store.language });
         else {
             store.language = userData.language;
             locale.value = userData.language;
@@ -235,7 +235,9 @@ async function signinWIthGoogle () {
                     date: new Date().getTime(),
                     read: false
                 }],
-                subscribed: false,
+                subscription: {
+                    currentlySubscribed: false
+                },
                 points: 0
             });
 

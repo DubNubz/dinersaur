@@ -100,7 +100,9 @@ async function onSearch() {
 
     const searchResults: Marker[] = [];
     querySnapshot.forEach((doc) => {
+      console.log(doc)
       const data = doc.data();
+      console.log(data)
       searchResults.push({
         coordinate: { lat: data.location.latitude, lng: data.location.longitude },
         title: data.name,
