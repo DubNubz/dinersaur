@@ -191,6 +191,8 @@ export type RestaurantInfo = {
     location: GeoPoint;
     /** Modal of the restaurant's display. */
     modal: Modal;
+    /** Information of the Restaurant's ratings */
+    rating: Rating;
 }
 
 export type PointOffer = {
@@ -254,8 +256,19 @@ export type PersonalizedRatings = {
     description: string;
     /** 0-5 star rating. */
     rating: number;
-    /** ID of the restaurant. */
-    restaurantId: string;
+    /** ID of the restaurant / user that has left the review. */
+    id: string;
+}
+
+export type Page = {
+    /** Name of the page. */
+    name: string;
+    /** Sub-text of the name. */
+    flavor?: string;
+    /** The page component. Ex: markRaw(nameOfTheComponent) */
+    component: any;
+    /** Image next to the page. */
+    img: string;
 }
 
 export const userStore = defineStore('userStore', () => {

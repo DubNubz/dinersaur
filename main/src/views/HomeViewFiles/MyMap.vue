@@ -156,12 +156,14 @@ async function createMap() {
 }
 
 async function createMarker() {
-  const number = await newMap.addMarker({
-    coordinate: props.markerData[0].coordinate,
-    title: props.markerData[0].title,
-    snippet: props.markerData[0].snippet
-  });
-  markerInfo.value[number] = props.markerData[0].modal;
+  for (let marker of props.markerData) {
+    const number = await newMap.addMarker({
+      coordinate: marker.coordinate,
+      title: marker.title,
+      snippet: marker.snippet
+    });
+    markerInfo.value[number] = marker.modal;
+  }
 }
 
 async function clickMarker() {
@@ -195,8 +197,8 @@ async function toggleUserLocation() {
             lat: latitude,
             lng: longitude,
           },
-          title: "Your Location",
-          snippet: "You are here",
+          iconUrl: "main/public/icons/customer.png", // these settings dont work for some reason >:(
+          iconSize: { width: 500, height: 500}
         });
 
         return { latitude, longitude };

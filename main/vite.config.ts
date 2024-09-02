@@ -11,7 +11,7 @@ export default defineConfig({
     vue({
       template: {
         compilerOptions: {
-          isCustomElement: (tag) => tag === "capacitor-google-map"
+          isCustomElement: (tag) => tag === 'capacitor-google-map' || tag.startsWith('swiper-'),
         },
       },
     }),

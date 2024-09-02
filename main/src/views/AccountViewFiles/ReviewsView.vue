@@ -11,10 +11,11 @@
     <ion-content class="ion-padding">
       <h1>Recent Reviews</h1>
       <ion-list>
-        <ion-item v-for="review in sortedReviews" :key="review.restaurantId">
+        <ion-item v-for="review in sortedReviews" :key="review.id">
           <ion-label>
-            <h2><StarRating :rating="review.rating"/> - {{ formatDate(review.date) }}</h2>
+            <h2><StarRating :rating="review.rating"/> - {{ formatTime(review.date) }}</h2>
             <p>{{ review.description }}</p>
+            <p>{{ getName(review.id) }}</p>
           </ion-label>
         </ion-item>
       </ion-list>
@@ -27,8 +28,9 @@ import { ref, computed, onMounted } from 'vue';
 import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonList, IonItem, IonLabel } from '@ionic/vue';
 import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
-import { PersonalizedRatings, userStore } from '@/stores/userStore';
+import { PersonalizedRatings, RestaurantInfo, userStore } from '@/stores/userStore';
 import StarRating from '@/components/StarRating.vue';
+import { formatTime } from '@/utils/functions';
 
 // Store the user's reviews here
 const reviews = ref<PersonalizedRatings[]>([]);
@@ -48,9 +50,10 @@ const sortedReviews = computed(() =>
   reviews.value.sort((a, b) => b.date - a.date)
 );
 
-function formatDate(unixTime: number): string {
-  const date = new Date(unixTime);
-  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+async function getName(id: string) {
+    const q = await getDoc(doc(db, "restaurants", id));
+    const data = q.data() as RestaurantInfo;
+    return data.name;
 }
 </script>
 

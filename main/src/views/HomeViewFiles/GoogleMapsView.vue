@@ -47,8 +47,15 @@
           <!-- Image Carousel Section -->
           <div class="section" v-if="selectedModal">
             <div v-if="selectedModal?.images.length > 0">
-              <img v-for="(photo, index) in selectedModal?.images" :key="index"
-              :src="photo" alt="Selected Image" class="carousel-image" />
+              <swiper-container
+              slides-per-view="1.3"
+              :space-between="30"
+              navigation pagination centered-slides
+              >
+                <swiper-slide v-for="(photo, index) in selectedModal?.images" :key="index">
+                  <img :src="photo" alt="Selected Image" class="carousel-image" />
+                </swiper-slide>
+              </swiper-container>
             </div>
           </div>  
 
@@ -106,6 +113,9 @@ import { Marker, Modal, RestaurantInfo } from "@/stores/userStore";
 import { db } from "@/utils/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { Geolocation } from "@capacitor/geolocation";
+import 'swiper/swiper-bundle.css';
+import { register } from 'swiper/element/bundle';
+register();
 
 const loaded = ref(false);
 
@@ -121,7 +131,7 @@ const results = ref<Marker[]>([]);
 const querySelect = ref<{ lat: number; lng: number; booleanValue: boolean }> ();
 
 onMounted(async () => {
-  loaded.value = false;
+  loaded.value = true;
   await fetchNearbyMarkers();
 });
 
@@ -138,28 +148,30 @@ function closeModal (){
 }
 
 async function onSearch () {
-  const queryText = search.value;
+  const queryText = search.value.toLowerCase();
 
   if (queryText) {
     const restaurantCollection = collection(db, "restaurants");
-    const q = query(restaurantCollection, where("name", ">=", queryText), where("name", "<=", queryText + "\uf8ff"));
+    const q = query(restaurantCollection);
     
     const querySnapshot = await getDocs(q);
 
     const searchResults: Marker[] = [];
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      console.log(data, data.modal)
-      searchResults.push({
-        coordinate: { lat: data.location.latitude, lng: data.location.longitude },
-        title: data.name,
-        snippet: data.address,
-        modal: data.modal
-      });
+      if (data.name.toLowerCase().includes(queryText)) { 
+        searchResults.push({
+          coordinate: { lat: data.location.latitude, lng: data.location.longitude },
+          title: data.name,
+          snippet: data.address,
+          modal: data.modal
+        });
+      }
     });
     markerData.value = searchResults;
     results.value = searchResults;
   } else {
+    results.value = [];
     fetchNearbyMarkers();
   }
 }
@@ -187,7 +199,7 @@ async function fetchNearbyMarkers () {
     const data = doc.data() as RestaurantInfo;
     const distance = calculateDistance(userLat, userLng, data.location.latitude, data.location.longitude);
 
-    if (distance <= 2) { // 20 miles radius
+    if (distance <= 20000) { // 20 miles radius
       nearbyMarkers.push({
         coordinate: { lat: data.location.latitude, lng: data.location.longitude },
         title: data.name,
@@ -238,6 +250,12 @@ ion-content {
 
 ion-item {
   cursor: pointer;
+}
+
+.divider {
+  margin: 20px 0;
+  background-color: var(--ion-color-primary);
+  height: 1px;
 }
 
 </style>

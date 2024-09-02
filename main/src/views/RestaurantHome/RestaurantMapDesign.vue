@@ -13,14 +13,12 @@
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
-    <ion-content class="ion-padding">
-      <div class="map-container">
-        <my-map
-          :markerData="userStore().restaurantMarkerData"
-          @onMarkerClicked="isModalOpen = true"
-          :querySelect="undefined">
-        </my-map>
-      </div>
+    <ion-content>
+      <my-map v-if="loaded"
+        :markerData="userStore().restaurantMarkerData"
+        @onMarkerClicked="isModalOpen = true"
+        :querySelect="undefined">
+      </my-map>
 
       <ion-modal :is-open="isModalOpen" :initial-breakpoint="0.5" :breakpoints="[0, 0.5, 0.75, 1]" @didDismiss="isModalOpen = false">
         <ion-header>
@@ -37,10 +35,16 @@
             <h2>Image Carousel</h2>
             <ion-button @click="triggerFileInput">Upload Image</ion-button>
             <input type="file" ref="fileInput" @change="handleFileChange" accept="image/*" style="display: none;" />
-            <div v-if="imageData">
-              <img :src="imageData" alt="Selected Image" class="carousel-image" />
-            </div>
-          </div>  
+            <swiper-container
+            slides-per-view="1.3"
+            :space-between="30"
+            navigation pagination centered-slides
+            >
+              <swiper-slide v-for="(photo, index) in imageData" :key="index">
+                <img :src="photo" alt="Selected Image" class="carousel-image" />
+              </swiper-slide>
+            </swiper-container>
+          </div>
 
           <!-- Divider -->
           <ion-item lines="full" class="divider"></ion-item>
@@ -101,14 +105,23 @@
 import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonInput, IonItem, IonList, IonLabel } from '@ionic/vue';
 import MyMap from '../HomeViewFiles/MyMap.vue';
 import { userStore } from '@/stores/userStore';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { add, settingsOutline } from 'ionicons/icons';
 import { db } from '@/utils/firebase';
 import { updateDoc, doc } from 'firebase/firestore';
+import 'swiper/swiper-bundle.css';
+import { register } from 'swiper/element/bundle';
+register();
+
+const loaded = ref(false);
+
+onMounted(async () => {
+  loaded.value = true;
+});
 
 const isModalOpen = ref(false);
 
-const imageData = ref<string | null>(null);
+const imageData = ref<string[]>([]);
 const fileInput = ref<HTMLInputElement | null>(null);
 
 const dateTimeButtons = ref<string[]>([]);
@@ -136,7 +149,7 @@ const handleFileChange = (event: Event): void => {
     const reader = new FileReader();
     reader.onload = (e: ProgressEvent<FileReader>) => {
       if (e.target) {
-        imageData.value = e.target.result as string;
+        imageData.value.push(e.target.result as string);
       }
     };
     reader.readAsDataURL(file);

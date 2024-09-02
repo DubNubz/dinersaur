@@ -23,8 +23,6 @@
             </ion-item>
           </ion-nav-link>
         </ion-list>
-
-
       </div>
     </ion-content>
   </ion-page>
