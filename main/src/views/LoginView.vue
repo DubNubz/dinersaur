@@ -111,7 +111,8 @@ async function signUp () {
                 name: "",
                 expiration: new Date().getTime(),
                 address: "",
-                stripeId: customer.id
+                stripeId: customer.id,
+                phoneNumber: 0
             },
             smProfile: {
                 bookmarkedVideos: [],
@@ -220,7 +221,8 @@ async function signinWIthGoogle () {
                     name: "",
                     expiration: new Date().getTime(),
                     address: "",
-                    stripeId: customer.id
+                    stripeId: customer.id,
+                    phoneNumber: 0
                 },
                 smProfile: {
                     bookmarkedVideos: [],

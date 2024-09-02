@@ -149,6 +149,17 @@ export type Marker = {
     snippet: string,
 }
 
+export type Rating = {
+    averageRating: number;
+    ratings: {
+        /** Milliseconds since epoch. */
+        date: number;
+        description: string;
+        rating: number;
+        restaurantId: string;
+    }[];
+}
+
 export const userStore = defineStore('userStore', () => {
     const userData = ref<User> ()
 
@@ -165,7 +176,10 @@ export const userStore = defineStore('userStore', () => {
     const language = ref("en");
     const name = ref("");
     const pastReservations = ref<Reservation[]> ([]);
-    const rating = ref(5);
+    const rating = ref<Rating> ({
+        averageRating: 5,
+        ratings: []
+    });
     const smProfile = ref<smProfile> ({
         bookmarkedVideos: [],
         likedVideos: [],
