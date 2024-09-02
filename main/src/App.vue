@@ -128,7 +128,8 @@ async function getRestaurantDetails (user: User) {
     offers: userData.offers,
     phone: userData.phone,
     refundLimit: userData.refundLimit,
-    modal: userData.modal
+    modal: userData.modal,
+    rating: userData.rating
   };
   userStore().restaurantReservations.incoming = userData.reservations.incoming;
   userStore().restaurantReservations.past = userData.reservations.past;

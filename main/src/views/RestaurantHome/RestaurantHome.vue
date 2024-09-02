@@ -10,6 +10,7 @@
               <h4>{{ formatTime(request.time) }}</h4>
               <p>{{ request.people }}</p>
               <p v-if="request.price">${{ getDecimals(request.price) }}</p>
+              
             </div>
           </div>
         </div>

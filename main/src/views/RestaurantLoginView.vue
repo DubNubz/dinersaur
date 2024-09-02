@@ -129,7 +129,8 @@ async function login () {
             offers: userData.offers,
             phone: userData.phone,
             refundLimit: userData.refundLimit,
-            modal: userData.modal
+            modal: userData.modal,
+            rating: userData.rating
         };
         store.restaurantReservations.incoming = userData.reservations.incoming;
         store.restaurantReservations.past = userData.reservations.past;
