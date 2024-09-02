@@ -17,7 +17,8 @@
       <div class="map-container">
         <my-map
           :markerData="userStore().restaurantMarkerData"
-          @onMarkerClicked="isModalOpen = true">
+          @onMarkerClicked="isModalOpen = true"
+          :querySelect="undefined">
         </my-map>
       </div>
 
