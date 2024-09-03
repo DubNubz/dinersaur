@@ -50,7 +50,7 @@ import EditReviews from '@/components/restaurant/EditReviews.vue';
 import EditMarker from '@/components/restaurant/EditMarker.vue';
 import EditPromotions from '@/components/restaurant/EditPromotions.vue';
 import EditStatistics from '@/components/restaurant/EditStatistics.vue';
-import RestaurantMapDesign from './RestaurantMapDesign.vue';
+import RestaurantMapDesign from '../../components/restaurant/RestaurantMapDesign.vue';
 
 const router = useRouter();
 
