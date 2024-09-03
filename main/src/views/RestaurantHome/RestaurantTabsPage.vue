@@ -7,16 +7,16 @@
           <ion-icon aria-hidden="true" :icon="homeOutline" />
         </ion-tab-button>
 
-        <ion-tab-button tab="tab4" href="/restaurant/map">
-          <ion-icon aria-hidden="true" :icon="gridOutline" />
+        <ion-tab-button tab="tab3" href="/restaurant/account">
+          <ion-icon aria-hidden="true" :icon="compassOutline" />
         </ion-tab-button>
 
-        <ion-tab-button tab="tab2" href="/restaurant/discover">
-          <ion-icon aria-hidden="true" :icon="buildOutline" />
+        <ion-tab-button tab="tab2" href="/restaurant/edit">
+          <ion-icon aria-hidden="true" :icon="restaurantOutline" />
         </ion-tab-button>
 
         <ion-tab-button tab="tab3" href="/restaurant/account">
-          <ion-icon aria-hidden="true" :icon="personCircleOutline" />
+          <ion-icon aria-hidden="true" :icon="settingsOutline" />
         </ion-tab-button>
       </ion-tab-bar>
     </ion-tabs>
@@ -26,7 +26,7 @@
 <script setup lang="ts">
 
 import { IonTabBar, IonTabButton, IonTabs, IonIcon, IonPage, IonRouterOutlet } from '@ionic/vue';
-import { homeOutline, personCircleOutline, buildOutline, gridOutline } from 'ionicons/icons';
+import { homeOutline, personCircleOutline, buildOutline, gridOutline, settingsOutline, restaurantOutline, videocamOutline, compassOutline } from 'ionicons/icons';
 
 </script>
 

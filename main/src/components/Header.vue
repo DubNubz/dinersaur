@@ -4,8 +4,8 @@
           <div class="logo">
             <ion-img v-if="!userStore().subscription.currentlySubscribed || type == 'restaurant'" src="/icons/dinersaurWithShadow.svg"></ion-img>
             <ion-img v-else src="/icons/steakosaurusRight.svg"></ion-img>
-            <ion-title v-if="!userStore().subscription.currentlySubscribed || type == 'restaurant'" class="dinersaurText sequel">Dinersaur</ion-title>
-            <ion-title v-else class="dinersaurText subscribed sequel">Steakosaur</ion-title>
+            <h1 v-if="!userStore().subscription.currentlySubscribed || type == 'restaurant'" class="dinersaurText sequel">Dinersaur</h1>
+            <h1 v-else class="dinersaurText subscribed sequel">Steakosaur</h1>
           </div>
         </ion-toolbar>
         <ion-toolbar>
@@ -15,6 +15,7 @@
               <ion-badge v-if="userStore().notifications.filter((notif) => !notif.read).length != 0" slot="end">{{ userStore().notifications.filter((notif) => !notif.read).length }}</ion-badge>
             </button>
           </div>
+          <div v-else></div>
         </ion-toolbar>
     </ion-header>
 
@@ -107,12 +108,20 @@ ion-header {
   justify-content: center;
   transition: all 0.25s;
   width: 100vw;
-  height: 5.5em;
   background-color: var(--ion-color-light);
+  border: 0;
+  border: 2px solid var(--ion-color-light-shade);
+  border-left: 0;
+  border-right: 0;
+  border-top: 0;
 }
 
 ion-header.enabledHeader {
   justify-content: space-between;
+}
+
+ion-toolbar {
+  height: 5.5em;
 }
 
 .title {
@@ -131,8 +140,8 @@ ion-header.enabledHeader {
     height: 5em;
   }
 
-  ion-title {
-    padding: 0;
+  h1 {
+    margin: 0;
   }
 }
 
@@ -151,7 +160,7 @@ ion-title.disabled {
 
 .statusBar {
   width: 100%;
-  height: 100%;
+  height: 5.5em;
   padding-right: 1em;
   display: flex;
   align-items: center;

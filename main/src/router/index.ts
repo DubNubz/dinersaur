@@ -21,9 +21,8 @@ const routes: Array<RouteRecordRaw> = [
     children: [
       { path: '', redirect: '/restaurant/home' },
       { path: 'home', component: () => import('@/views/RestaurantHome/RestaurantHome.vue') },
-      { path: 'discover', component: () => import('@/views/RestaurantHome/RestaurantDiscover.vue') },
+      { path: 'edit', component: () => import('@/views/RestaurantHome/RestaurantEditView.vue') },
       { path: 'account', component: () => import('@/views/RestaurantHome/InitialRestaurantAccountView.vue') },
-      { path: 'map', component: () => import('@/views/RestaurantHome/RestaurantMap.vue') }
     ]
   }
 ]

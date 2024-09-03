@@ -126,32 +126,37 @@ export type MenuItem = {
     description: string;
     /** Price of the menu item, in USD. */
     price: number;
-    /** Calories of the menu item. */
-    calories: number;
-    /** Amount of saturated fat, in grams. */
-    saturatedFat: number;
-    /** Amount of trans fat, in grams. */
-    transFat: number;
-    /** Amount of cholesterol, in milligrams. */
-    cholesterol: number;
-    /** Amount of sodium, in milligrams. */
-    sodium: number;
-    /** Amount of carbohydrates, in grams. */
-    carbohydrates: number;
-    /** Amount of fiber, in grams. */
-    fiber: number;
-    /** Amount of sugars, in grams. */
-    sugars: number;
-    /** Amount of protein, in grams. */
-    protein: number;
-    /** Amount of vitamin D, in %. */
-    vitaminD: number;
-    /** Amount of calcium, in %. */
-    calcium: number;
-    /** Amount of iron, in %. */
-    iron: number;
-    /** Amount of potassium, in %. */
-    potassium: number;
+    /** Firebase Storage image URL. */
+    img: string;
+    /** Object of nutritional information. */
+    nutritionalInfo: {
+        /** Calories of the menu item. */
+        calories: number;
+        /** Amount of saturated fat, in grams. */
+        saturatedFat?: number;
+        /** Amount of trans fat, in grams. */
+        transFat?: number;
+        /** Amount of cholesterol, in milligrams. */
+        cholesterol?: number;
+        /** Amount of sodium, in milligrams. */
+        sodium?: number;
+        /** Amount of carbohydrates, in grams. */
+        carbohydrates?: number;
+        /** Amount of fiber, in grams. */
+        fiber?: number;
+        /** Amount of sugars, in grams. */
+        sugars?: number;
+        /** Amount of protein, in grams. */
+        protein?: number;
+        /** Amount of vitamin D, in %. */
+        vitaminD?: number;
+        /** Amount of calcium, in %. */
+        calcium?: number;
+        /** Amount of iron, in %. */
+        iron?: number;
+        /** Amount of potassium, in %. */
+        potassium?: number;
+    }
   }
 
 export type Notification = {
@@ -191,8 +196,33 @@ export type RestaurantInfo = {
     location: GeoPoint;
     /** Modal of the restaurant's display. */
     modal: Modal;
-    /** Information of the Restaurant's ratings */
+    /** Information of the Restaurant's ratings. */
     rating: Rating;
+    /** Restaurant's layout, represented as a 3-dimensional array (with objects due to Firebase limitations).
+     * 
+     * Each element is either a number that corresponds to a space in the layout:
+     * - -1 = space does not exist. (wall, void, etc.)
+     * - 0 = space is not occupied by anything.
+     * - 1 = chair, 2 = table, 3 = door, 4 = bathroom.
+     * 
+     * Starting from the inner-most layer of arrays:
+     * - Each array represents a row of the floor.
+     * - Each nested array represents a floor of the building.
+     * - The overall, outer array represents all floor plans of the entire building.
+     * 
+     * @example [{
+        0: [{
+            0: [0, 1, 0, 0, 0, 1, 0],
+            1: [1, 2, 1, 0, 1, 2, 1],
+            2: [0, 1, 0, 0, 0, 1, 0],
+            3: [0, 0, -1, -1, -1, 0, 0, 0, 3],
+            4: [0, 0, -1, -1, -1, 0, 0, 0, 3],
+            5: [0, 0, 0, 0, 0, 0, 0],
+            6: [0, 0, 0, 0, 0, 0, 0],
+            7: [1, 2, 1, 0, 1, 2, 1]
+        }]
+    }] */
+    layout: Record<number, Record<number, number[]>[]>[];
 }
 
 export type PointOffer = {
@@ -235,7 +265,11 @@ export type Modal = {
     description: string;
     /** Array of Firebase Storage image URLs. */
     images: string[];
-    /** Array of day, open, and close times of the restaurant. Ex: {Monday, 8:00AM, 8:00PM} */
+    /** Array of day, open, and close times of the restaurant.
+     * - Close is the time that the restaurant is closed.
+     * - Day is the day of the week.
+     * - Open is the time that the restaurant is open.
+     * @example { close: "8:00AM", day: "Monday", open: "8:00PM" } */
     openCloseTimes: {close: string, day: string, open: string}[];
     /** Array of reservation times of the restaurant. */
     reservationTimes: string[];
@@ -265,7 +299,8 @@ export type Page = {
     name: string;
     /** Sub-text of the name. */
     flavor?: string;
-    /** The page component. Ex: markRaw(nameOfTheComponent) */
+    /** The page component.
+     * @example markRaw(nameOfTheComponent) */
     component: any;
     /** Image next to the page. */
     img: string;

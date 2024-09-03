@@ -23,7 +23,7 @@
       <ion-modal :is-open="isModalOpen" :initial-breakpoint="0.5" :breakpoints="[0, 0.5, 0.75, 1]" @didDismiss="isModalOpen = false">
         <ion-header>
           <ion-toolbar>
-            <ion-title>{{ userStore().restaurantName }}</ion-title>
+            <ion-title>{{ userStore().restaurant?.name }}</ion-title>
             <ion-buttons slot="end">
               <ion-button @click="saveAllChanges">Save</ion-button>
             </ion-buttons>
@@ -103,7 +103,7 @@
 
 <script setup lang="ts">
 import { IonPage, IonBackButton, IonButtons, IonContent, IonHeader, IonTitle, IonToolbar, IonModal, IonButton, IonIcon, IonDatetime, IonDatetimeButton, IonInput, IonItem, IonList, IonLabel } from '@ionic/vue';
-import MyMap from '../HomeViewFiles/MyMap.vue';
+import MyMap from '@/views/HomeViewFiles/MyMap.vue';
 import { userStore } from '@/stores/userStore';
 import { onMounted, ref } from 'vue';
 import { add, settingsOutline } from 'ionicons/icons';

@@ -1,6 +1,6 @@
 <template>
   <ion-page>
-    <Header />
+    <Header :type="'restaurant'" />
 
     <ion-content :fullscreen="true">
       <div class="account">
@@ -62,20 +62,6 @@ const image = ref<string | null>();
 const userName = ref('');
 
 const pages = ref<Page[]> ([{
-  name: "Parternship",
-  component: markRaw(DinersaurPartnershipView),
-  img: peopleOutline,
-  flavor: "View your partnership with Dinersaur"
-}, {
-  name: "Reservations",
-  component: markRaw(ReservationView),
-  img: calendarOutline,
-  flavor: "View all of your reservations"
-}, {
-  name: "Reviews",
-  component: markRaw(ReviewsView),
-  img: userStore().rating.averageRating < 2.5 ? sadOutline : happyOutline
-}, {
   name: "Billing",
   component: markRaw(BillingView),
   img: cardOutline
