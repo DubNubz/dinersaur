@@ -47,7 +47,6 @@ import { delay } from '@/utils/functions';
 import EditMenu from '@/components/restaurant/EditMenu.vue';
 import EditFloorPlan from '@/components/restaurant/EditFloorPlan.vue';
 import EditReviews from '@/components/restaurant/EditReviews.vue';
-import EditMarker from '@/components/restaurant/EditMarker.vue';
 import EditPromotions from '@/components/restaurant/EditPromotions.vue';
 import EditStatistics from '@/components/restaurant/EditStatistics.vue';
 import RestaurantMapDesign from '../../components/restaurant/RestaurantMapDesign.vue';
